@@ -557,7 +557,7 @@ void initCiv(void) {
 			gColonialMilitiaCard = cTechHCColonialMilitia;
 
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
-			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
+			arrayPushInt(gAgeUpList, cTechPoliticianExiledPrince);
 			arrayPushInt(gAgeUpList, cTechPoliticianTycoon);
 			arrayPushInt(gAgeUpList, cTechPoliticianPresidente);
 			break;
@@ -2048,8 +2048,6 @@ void gameStartup(void)
 
 	startupBuildings();
 	xsEnableRuleGroup("postStartup");
-	xsEnableRule("updateNextShipmentTechID");
-	updateNextShipmentTechID();
 }
 
 
@@ -2124,7 +2122,7 @@ minInterval 10
 	{
 		for (player = 1; < cNumberPlayers)
 		{
-			aiChat(player, "Better AI Mod. Version 4.3: Last updated on 5 April 2022.");
+			aiChat(player, "Better AI Mod. Version 4.3: Last updated on 20 May 2022.");
 		}
 	}
 

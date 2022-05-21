@@ -172,6 +172,7 @@ extern bool gIslandMap = false; // Does this map have lands with waters in betwe
 //==============================================================================
 // Economy.
 //==============================================================================
+extern int gPausedPlans = -1;
 
 extern int gEconUnit = cUnitTypeSettler;
 
@@ -206,6 +207,8 @@ extern int gGoldNumWorkers = -1;
 extern int gMaxGoldWorkers = -1;
 extern int gFoodFishResources = -1;
 extern int gGoldFishResources = -1;
+
+extern bool gForceWoodGathering = false;
 
 extern bool gGoodFishingMap = false;      // Set in init(), can be overridden in postInit() if desired.  True indicates that
 										  // fishing is a good idea on this map.
@@ -313,14 +316,19 @@ extern int gMonitorUnit = cUnitTypeMonitor;
 
 extern int gDefaultDeck = -1; // Home city deck used by each AI
 extern int gCardList = -1; // List of cards to include in our deck.
-extern int gNumberShipmentsArrived = 0;
+extern int gCardListIsMilitaryUnit = -1;
+extern int gCardListIsMilitaryUpgrade = -1;
+extern int gCardListIsExtended = -1;
+extern int gCardListIndexInDeck = -1;
+extern int gCardListSentCount = -1;
+extern int gNumberShipmentsSent = 0;
 extern int gNextShipmentTechID = -1;
+extern int gNextShipmentIndexInArray = -1; // The index of gNextShipmentTechID in our storage array.
 extern int gSentCardList = -1;
 extern int gPriorityCards = -1;
 extern int gMilitaryDefensiveCards = -1;
 extern int gLandGrabCard = -1;
 extern int gColonialMilitiaCard = -1;
-// extern int gResourceDependentCards = -1;
 
 
 //==============================================================================

@@ -252,6 +252,7 @@ void buildPlanAddUnitInfluence(int planID = -1, int unitTypeID = -1, float influ
 void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = cInvalidVector)
 {
 	static float edgeOfMapDistance = -1;
+	vector tempVector = cInvalidVector;
 	if (edgeOfMapDistance < 0)
 	{
 		if (kbGetMapXSize() != kbGetMapZSize())
@@ -265,7 +266,6 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 		case cUnitTypeOutpost:
 		case cUnitTypeBlockhouse:
 		case cUnitTypedeCathedral: // Since it can repair buildings, why not.
-		case cUnitTypeFortFrontier:
 		case cUnitTypeWarHut:
 		case cUnitTypeTeepee:
 		case cUnitTypeNoblesHut:
@@ -278,12 +278,23 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 			setTowerPosition(planID, puid);
 			break;
 		}
+		case cUnitTypeFortFrontier:
+		{
+			if (position == gHomeBase)
+				tempVector = position + gDirection_UP * 20.0;
+			else
+				tempVector = position;
+			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, tempVector);
+			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 45.0);
+			buildPlanAddPositionInfluence(planID, tempVector, 45.0, 100.0, cBPIFalloffLinear, true);
+			break;
+		}
 		case cUnitTypeFactory:
 		{
 			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, gHomeBase + gDirection_DOWN * 30.0);
 			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 45.0);
 
-			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, position);
+			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, gHomeBase + gDirection_DOWN * 30.0);
 			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 45.0);
 			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 200.0);
 			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);
@@ -312,11 +323,11 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 		case gHouseUnit:
 		{
 			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, position);
-			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 80.0);
-			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, position);	// Influence toward position
-			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 50.0);	// 100m range.
-			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 50.0);		// 100 points max
-			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);	// Linear slope falloff
+			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 50.0);
+			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, position);
+			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 50.0);
+			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 100.0);
+			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);
 
 			aiPlanSetVariableBool(planID, cBuildPlanInfluenceAtBuilderPosition, 0, true);
 			aiPlanSetVariableFloat(planID, cBuildPlanInfluenceBuilderPositionValue, 0, 100.0);
@@ -377,10 +388,10 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 		{
 			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, position);
 			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 60.0);	// Maybe 60.0 will allow wonder placement some more breathing room.
-			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, position);	// Influence toward position
-			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 60.0);	// 100m range.
-			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 200.0);		// 200 points max
-			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);	// Linear slope falloff
+			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, position);
+			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 60.0);
+			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 200.0);
+			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);
 
 			if (puid == cUnitTypeBarracks || puid == cUnitTypeStable || puid == cUnitTypeArtilleryDepot ||
 				puid == cUnitTypeCorral || puid == cUnitTypeypWarAcademy || puid == cUnitTypeypBarracksJapanese ||
@@ -1879,7 +1890,7 @@ minInterval 5
 		treatyFactor = false;
 
 	vector location = cInvalidVector;
-	vector baseMilitaryBuildingLocation = gHomeBase + gDirection_UP * 35;
+	vector baseMilitaryBuildingLocation = gHomeBase + gDirection_UP * 10.0;
 	if (gMyStrategy == cStrategyTreaty)
 		baseMilitaryBuildingLocation = gHomeBase + gDirection_UP * 45;
 
@@ -2230,20 +2241,19 @@ minInterval 5
 		}
 	}
 
-	// Build Cathedral if Mexican 'Royal Decree' card has been sent
-	if ((cMyCiv == cCivDEMexicans) && (kbTechGetStatus(cTechDEHCRoyalDecreeMexican) == cTechStatusActive))
+	// Cathedral.
+	if (cMyCiv == cCivDEMexicans)
 	{
 		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeCathedral);
-		if ((planID < 0) && (kbUnitCount(cMyID, cUnitTypedeCathedral, cUnitStateAlive) < 1) &&
-			(aiGetWorldDifficulty() >= cDifficultyHard))
-		{ // Start a new one
+		if (planID < 0 && kbUnitCount(cMyID, cUnitTypedeCathedral, cUnitStateAlive) < 1)
+		{
 			planID = createBuildPlan(cUnitTypedeCathedral, 1, 60, gHomeBase);
 			aiPlanSetDesiredResourcePriority(planID, 40);
 			debugBuildings("Starting a new cathedral build plan.");
 		}
 	}
 
-	// Build a consulate if there is none
+	// Consulate.
 	if (civIsAsian() == true)
 	{
 		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeypConsulate);
@@ -2253,12 +2263,14 @@ minInterval 5
 		}
 	}
 
-	// Max Out Town Centers
+	// Max Out Town Centers if beneficial to do so.
 	planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeTownCenter);
-	if ((planID < 0) && (kbUnitCount(cMyID, cUnitTypeTownCenter, cUnitStateAlive) < kbGetBuildLimit(cMyID, cUnitTypeTownCenter)))
+	numBuildings = kbUnitCount(cMyID, cUnitTypeTownCenter, cUnitStateAlive);
+	if (planID < 0 &&
+		kbGetBuildLimit(cMyID, cUnitTypeTownCenter) > numBuildings &&
+		(kbGetBuildLimit(cMyID, gEconUnit) - kbUnitCount(cMyID, gEconUnit, cUnitStateABQ)) > (12 + 6 * (numBuildings - 1)))
 	{
 		planID = createBuildPlan(cUnitTypeTownCenter, 1, 99, gHomeBase);
-		aiPlanSetDesiredResourcePriority(planID, 55);
 		debugBuildings("Starting a new town center build plan.");
 	}
 

@@ -71,6 +71,7 @@ void main(void)
 	gMaxGoldWorkers = arrayCreateInt(1, "Max Workers Allowed on Gold Resource");
 	gMillTypePlans = arrayCreateInt(1, "Mill Type Build Plans");
 	gPlantationTypePlans = arrayCreateInt(1, "Plantation Type Build Plans");
+	gPausedPlans = arrayCreateInt(1, "Paused Plans");
 
 	initMapData();		// Gather vector data about the map, my allies, and my enemies.
 	initPersonality();	// Pick our strategy and gather other info.

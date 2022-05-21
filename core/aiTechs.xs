@@ -160,6 +160,9 @@ minInterval 45
 	int planID = -1;
 	int planPriority = 50;
 
+	if (cMyCiv == cCivDEAmericans && kbTechGetStatus(cTechDEHCHamiltonianEconomics) != cTechStatusActive)
+		return;
+
 	for (i = 0; < arrayGetSize(gMarketTechs))
 	{
 		techID = arrayGetInt(gMarketTechs, i);

@@ -52,6 +52,7 @@ mutable int addMillBuildPlan(void) { return(-1); }
 mutable int addPlantationBuildPlan(void) { return(-1); }
 
 // Economy.
+mutable void updateResourceDistribution(void) {}
 mutable void econMaster(int mode = -1, int value = -1) {}
 
 // Military.
@@ -245,30 +246,10 @@ minInterval 15
 //==============================================================================
 void transportShipmentArrive(int techID = -1)
 {
-	gNumberShipmentsArrived++;
 	wagonMonitor();
 
 	switch(techID)
 	{
-		case cTechHCUnlockFactory:
-		case cTechHCRobberBarons:
-		case cTechHCUnlockFactoryGerman:
-		case cTechHCRobberBaronsGerman:
-		case cTechHCXPIndustrialRevolution:
-		case cTechHCXPIndustrialRevolutionGerman:
-		case cTechDEHCREVUnlockFactory:
-		case cTechDEHCREVIndustrialRevolution:
-		case cTechDEHCREVRobberBarons:
-		case cTechDEHCFedNewHampshireManufacturing:
-		case cTechDEHCPorfiriato:
-		case cTechDEHCREVMXRobberBarons2:
-		case cTechDEHCREVMXUnlockFactory:
-		case cTechDEHCREVMXCaliforniaRobberBarons:
-		{
-			if (xsIsRuleEnabled("factoryTacticMonitor") == false)
-				xsEnableRule("factoryTacticMonitor");
-			break;
-		}
 		case cTechHCGermantownFarmers:
 		{
 			createSimpleMaintainPlan(cUnitTypeSettlerWagon, kbGetBuildLimit(cMyID, cUnitTypeSettlerWagon), true, kbBaseGetMainID(cMyID), 1);
@@ -359,8 +340,8 @@ minInterval 15
 	if (bonusPriestDancers > 25)
 		bonusPriestDancers = 25;
 
-	aiPlanAddUnitType(gPlazaPlan, cUnitTypexpMedicineManAztec, 1, numWarPriests, numWarPriests);
-	aiPlanAddUnitType(gPlazaPlan, cUnitTypedePriestess, 1, numPriestesses, numPriestesses);
+	aiPlanAddUnitType(gPlazaPlan, cUnitTypexpMedicineManAztec, 1, numWarPriests, numWarPriests, true, true);
+	aiPlanAddUnitType(gPlazaPlan, cUnitTypedePriestess, 1, numPriestesses, numPriestesses, true, true);
 
 	numVillsWanted = kbUnitCount(cMyID, gEconUnit, cUnitStateAlive) / (9 - kbGetAge());
 	if (kbGetAge() == cvMaxAge && kbUnitCount(cMyID, gEconUnit, cUnitStateAlive) > 75)
@@ -1225,7 +1206,7 @@ void ageUpEventHandler(int planID = -1)
 	if (state == cPlanStateResearch || state == cPlanStateBuild)
 	{
 		buildingMonitor();
-		updateResourceDistribution();
+		econMaster();
 	}
 	if (state == cPlanStateDone)
 		echoMessage("Age up plan done.");
@@ -1627,8 +1608,8 @@ minInterval 10
 //==============================================================================
 void selfAgeUpHandler(int age = -1)
 {
-	if (age >= cAge3)
-		gHomeBase = gHomeBase + gDirection_UP * 5.0; // Move our base up a bit.
+	// if (age >= cAge3)
+	// 	gHomeBase = gHomeBase + gDirection_UP * 5.0; // Move our base up a bit.
 
 	wagonMonitor();
 
@@ -1637,20 +1618,10 @@ void selfAgeUpHandler(int age = -1)
 		if (age == cAge3)
 			arrayPushInt(gPriorityCards, cTechHCRoyalDecreeRussian);
 	}
-	if (cMyCiv == cCivDEMexicans)
-	{
-		switch(age)
-		{
-			case cAge5:
-			{
-				if (kbTechGetStatus(cTechDEPoliticianFederalMXJalisco) == cTechStatusActive)
-				{
-					arrayPushInt(gPriorityCards, cTechDEHCFedMXTonalaCeramics);
-				}
-				break;
-			}
-		}
-	}
+
+	if (cMyCiv == cCivDEAmericans || cMyCiv == cCivDEMexicans)
+		updateFederalCardIndices();
+
 	if (civIsAfrican() == true)
 	{
 		if (xsIsRuleEnabled("granaryBuildPlanMonitor") == false)
@@ -1705,8 +1676,6 @@ void buildingConstructedHandler(int buildingPUID = -1)
 		}
 		case cUnitTypeFactory:
 		{
-			if (xsIsRuleEnabled("factoryTacticMonitor") == false)
-				xsEnableRule("factoryTacticMonitor");
 			factoryTacticMonitor();
 			break;
 		}

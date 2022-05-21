@@ -13,8 +13,6 @@
 
 void echoMessage (string message = "")
 {
-	if (cMyID != 2)
-		return;
 	for (player = 0; <cNumberPlayers)
 	{
 		aiChat(player, message);
@@ -104,52 +102,6 @@ void debugCore (string message = "")
 //==============================================================================
 // Custom Array functions.
 //==============================================================================
-
-int arrayCreateInt(int numElements = 1, string description = "default")
-{
-	gArrayPlanIDs++;
-	aiPlanAddUserVariableInt(gArrayPlan, gArrayPlanIDs, description, numElements);
-
-	// 1 value (index 0) to represent the size (the defined elements) of the array at index gArrayPlanIDs.
-	aiPlanAddUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, "Size of Array " + description, 1);
-	// Default is size 0, being that when the User Var is created, the default value is -1, or undefined.
-	aiPlanSetUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, 0, 0);
-
-	// 1 value (index 0) to represent the number of (all, even undefined) elements of the array at index gArrayPlanIDs.
-	aiPlanAddUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, "Num Elements of Array " + description, 1);
-	aiPlanSetUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, 0, numElements);
-
-	return(gArrayPlanIDs);
-}
-
-int arrayGetInt(int arrayID = -1, int arrayIndex = -1)
-{
-	if (arrayID <= -1)
-		return(-1);
-	if (arrayID > gArrayPlanIDs)
-		return(-1);
-	if (arrayIndex <= -1)
-		return(-1);
-	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
-		return(-1);
-
-	return(aiPlanGetUserVariableInt(gArrayPlan, arrayID, arrayIndex));
-}
-
-void arraySetInt(int arrayID = -1, int arrayIndex = -1, int value = -1)
-{
-	if (arrayID <= -1)
-		return;
-	if (arrayID > gArrayPlanIDs)
-		return;
-	if (arrayIndex <= -1)
-		return;
-	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
-		return;
-
-	aiPlanSetUserVariableInt(gArrayPlan, arrayID, arrayIndex, value);
-}
-
 int arrayGetSize(int arrayID = -1)
 {
 	if (arrayID <= -1)
@@ -201,6 +153,64 @@ void arraySetNumElements(int arrayID = -1, int numElements = -1, bool clearValue
 	aiPlanSetUserVariableInt(gArrayPlanNumElements, arrayID, 0, numElements);
 }
 
+void arrayResetSelf(int arrayID = -1)
+{
+	if (arrayID <= -1)
+		return;
+	if (arrayID > gArrayPlanIDs)
+		return;
+
+	arraySetNumElements(arrayID, 1, true);
+	arraySetSize(arrayID, 0);
+}
+
+// ========================================
+// Integer User Variables
+int arrayCreateInt(int numElements = 1, string description = "default")
+{
+	gArrayPlanIDs++;
+	aiPlanAddUserVariableInt(gArrayPlan, gArrayPlanIDs, description, numElements);
+
+	// 1 value (index 0) to represent the size (the defined elements) of the array at index gArrayPlanIDs.
+	aiPlanAddUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, "Size of Array " + description, 1);
+	// Default is size 0, being that when the User Var is created, the default value is -1, or undefined.
+	aiPlanSetUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, 0, 0);
+
+	// 1 value (index 0) to represent the number of (all, even undefined) elements of the array at index gArrayPlanIDs.
+	aiPlanAddUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, "Num Elements of Array " + description, 1);
+	aiPlanSetUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, 0, numElements);
+
+	return(gArrayPlanIDs);
+}
+
+int arrayGetInt(int arrayID = -1, int arrayIndex = -1)
+{
+	if (arrayID <= -1)
+		return(-1);
+	if (arrayID > gArrayPlanIDs)
+		return(-1);
+	if (arrayIndex <= -1)
+		return(-1);
+	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
+		return(-1);
+
+	return(aiPlanGetUserVariableInt(gArrayPlan, arrayID, arrayIndex));
+}
+
+void arraySetInt(int arrayID = -1, int arrayIndex = -1, int value = -1)
+{
+	if (arrayID <= -1)
+		return;
+	if (arrayID > gArrayPlanIDs)
+		return;
+	if (arrayIndex <= -1)
+		return;
+	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
+		return;
+
+	aiPlanSetUserVariableInt(gArrayPlan, arrayID, arrayIndex, value);
+}
+
 void arrayPushInt(int arrayID = -1, int value = -1)
 {
 	if (arrayID <= -1)
@@ -217,17 +227,6 @@ void arrayPushInt(int arrayID = -1, int value = -1)
 	arraySetInt(arrayID, size, value);
 	size++;
 	arraySetSize(arrayID, size);
-}
-
-void arrayResetSelf(int arrayID = -1)
-{
-	if (arrayID <= -1)
-		return;
-	if (arrayID > gArrayPlanIDs)
-		return;
-
-	arraySetNumElements(arrayID, 1, true);
-	arraySetSize(arrayID, 0);
 }
 
 void arrayDeleteInt(int arrayID = -1, int arrayIndex = -1)
@@ -271,7 +270,7 @@ void arrayRemoveDonePlans(int arrayID = -1)
 		return;
 	if (arrayID > gArrayPlanIDs)
 		return;
-	
+
 	for (planID = 0; < arrayGetSize(arrayID))
 	{	// If we delete values while inside the loop, the size of the array shrinks
 		// and we may face errors.
@@ -283,6 +282,25 @@ void arrayRemoveDonePlans(int arrayID = -1)
 		if (arrayGetInt(arrayID, planID) < 0)
 			arrayDeleteInt(arrayID, planID);
 	}
+}
+
+void arrayEnablePlans(int arrayID = -1)
+{
+	if (arrayID <= -1)
+		return;
+	if (arrayID > gArrayPlanIDs)
+		return;
+
+	int planID = -1;
+
+	for (index = 0; < arrayGetSize(arrayID))
+	{
+		planID = arrayGetInt(arrayID, index);
+		if (planID >= 0)
+			aiPlanSetActive(planID);
+	}
+
+	arrayResetSelf(arrayID);
 }
 
 void arrayShuffleInt(int arrayID = -1)
@@ -304,7 +322,76 @@ void arrayShuffleInt(int arrayID = -1)
 		i = i - 1;
 	}
 }
+// ========================================
 
+// ========================================
+// Bool User Variables
+int arrayCreateBool(int numElements = 1, string description = "default")
+{
+	gArrayPlanIDs++;
+	aiPlanAddUserVariableBool(gArrayPlan, gArrayPlanIDs, description, numElements);
+
+	// 1 value (index 0) to represent the size (the defined elements) of the array at index gArrayPlanIDs.
+	aiPlanAddUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, "Size of Array " + description, 1);
+	// Default is size 0, being that when the User Var is created, the default value is -1, or undefined.
+	aiPlanSetUserVariableInt(gArrayPlanSizes, gArrayPlanIDs, 0, 0);
+
+	// 1 value (index 0) to represent the number of (all, even undefined) elements of the array at index gArrayPlanIDs.
+	aiPlanAddUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, "Num Elements of Array " + description, 1);
+	aiPlanSetUserVariableInt(gArrayPlanNumElements, gArrayPlanIDs, 0, numElements);
+
+	return(gArrayPlanIDs);
+}
+
+bool arrayGetBool(int arrayID = -1, int arrayIndex = -1)
+{
+	if (arrayID <= -1)
+		return(false);
+	if (arrayID > gArrayPlanIDs)
+		return(false);
+	if (arrayIndex <= -1)
+		return(false);
+	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
+		return(false);
+
+	return(aiPlanGetUserVariableBool(gArrayPlan, arrayID, arrayIndex));
+}
+
+void arraySetBool(int arrayID = -1, int arrayIndex = -1, bool value = false)
+{
+	if (arrayID <= -1)
+		return;
+	if (arrayID > gArrayPlanIDs)
+		return;
+	if (arrayIndex <= -1)
+		return;
+	if (arrayIndex >= aiPlanGetNumberUserVariableValues(gArrayPlan, arrayID))
+		return;
+
+	aiPlanSetUserVariableBool(gArrayPlan, arrayID, arrayIndex, value);
+}
+
+void arrayPushBool(int arrayID = -1, bool value = false)
+{
+	if (arrayID <= -1)
+		return;
+	if (arrayID > gArrayPlanIDs)
+		return;
+
+	int size = arrayGetSize(arrayID);
+	int numElements = arrayGetNumElements(arrayID);
+
+	if (size >= numElements)
+		arraySetNumElements(arrayID, numElements * 2);
+
+	arraySetBool(arrayID, size, value);
+	size++;
+	arraySetSize(arrayID, size);
+}
+// ========================================
+
+// ========================================
+// Vector User Variables
 int arrayCreateVector(int numElements = 1, string description = "default")
 {
 	gArrayPlanIDs++;
@@ -402,6 +489,7 @@ void arrayDeleteVector(int arrayID = -1, int arrayIndex = -1)
 	// Using the function we defined for size is fine, though.
 	arraySetSize(arrayID, size);
 }
+// ========================================
 
 //==============================================================================
 // Civilization checks.
@@ -747,7 +835,6 @@ int getAgingUpAge(void)
 {
 	if (agingUp() == true)
 		return(kbGetAge() + 1);
-	
 	return(kbGetAge());
 }
 
@@ -1985,4 +2072,19 @@ bool getHomeBaseThreatened(void)
 		return(true);
 
 	return(false);
+}
+
+rule forcedWoodCoroutine
+inactive
+minInterval 2
+maxInterval 2
+priority 100
+{
+	if (kbResourceGet(cResourceWood) < 400 && xsGetTime() < 60 * 1000)
+		return;
+
+	gForceWoodGathering = false;
+	arrayEnablePlans(gPausedPlans);
+	updateResourceDistribution();
+	xsDisableSelf();
 }

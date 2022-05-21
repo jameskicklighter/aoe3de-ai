@@ -68,9 +68,39 @@ void updateResourceDistribution()
 	int numberBuildingsWanted = 0;
 	float villagerCost = 0;
 	int villagerTrainTime = 0;
-	
+
 	aiSetResourceGathererPercentageWeight(cRGPScript, 1.0);
 	aiSetResourceGathererPercentageWeight(cRGPCost, 0.0);
+
+	if (gForceWoodGathering == true)
+	{
+		aiSetResourcePercentage(cResourceFood, false, 0.0);
+		aiSetResourcePercentage(cResourceWood, false, 1.0);
+		aiSetResourcePercentage(cResourceGold, false, 0.0);
+		aiNormalizeResourcePercentages();
+
+		for (i = 0; < numPlans)
+		{
+			planID = aiPlanGetIDByActiveIndex(i);
+			planType = aiPlanGetType(planID);
+			if (planType == cPlanTrain ||
+				planType == cPlanBuild ||
+				planType == cPlanBuildWall ||
+				planType == cPlanResearch ||
+				planType == cPlanRepair)
+			{
+				if (planID == aiPlanGetIDByTypeAndVariableType(cPlanTrain, cTrainPlanUnitType, gEconUnit))
+					continue;
+				else
+				{
+					aiPlanSetActive(planID, false);
+					arrayPushInt(gPausedPlans, planID);
+				}
+			}
+
+			return;
+		}
+	}
 
 	debugEconomy("updateResourceDistribution(): number plans="+numPlans);
 	for (i = 0; < numPlans)
@@ -85,9 +115,7 @@ void updateResourceDistribution()
 			planType == cPlanRepair)
 		{
 			if (planID == aiPlanGetIDByTypeAndVariableType(cPlanTrain, cTrainPlanUnitType, gEconUnit))
-			{
 				continue;
-			}
 			else
 			{
 				planFoodNeeded = aiPlanGetFutureNeedsCostPerResource(planID, cResourceFood);
@@ -1069,7 +1097,7 @@ void updateGoldBreakdown(void)
 	}
 
 	// Estates/Paddies/Fields.
-	if (totalResourceWorth < gNumGoldVills || kbGetAge() >= cAge3)
+	if (totalResourceWorth < gNumGoldVills || kbGetAge() >= cAge4)
 	{
 		kbUnitQuerySetMaximumDistance(gGoldQuery, -1);
 		kbUnitQuerySetPlayerID(gGoldQuery, cMyID, false);
@@ -1421,7 +1449,7 @@ minInterval 2
 	{
 		unitID = kbUnitQueryGetResult(gVillagerQuery, i);
 		actionID = kbUnitGetActionType(unitID);
-		echoMessage("kbUnitGetActionType: " + kbUnitGetActionType(unitID) + " of unitID: " + unitID);
+		//echoMessage("kbUnitGetActionType: " + kbUnitGetActionType(unitID) + " of unitID: " + unitID);
 		targetLocation = cInvalidVector;
 		switch (actionID)
 		{
@@ -1792,7 +1820,7 @@ minInterval 2
 				else
 				{
 					aiTaskUnitWork(unitID, foodID);
-					echoMessage("Tasking unit " + unitID + " on dead animal " + foodID);
+					//echoMessage("Tasking unit " + unitID + " on dead animal " + foodID);
 
 					// Update the number of workers on the food unit.
 					arraySetInt(gDecayingNumWorkers, foodIndex, (arrayGetInt(gDecayingNumWorkers, foodIndex) + 1));
@@ -2412,6 +2440,20 @@ group postStartup
 minInterval 20
 {
 	updateResourceDistribution();
+
+	int limit = kbGetBuildLimit(cMyID, gEconUnit);
+	if (kbGetAge() == cAge1 && agingUp() == false)
+	{
+		if (kbUnitCount(cMyID, gEconUnit, cUnitStateABQ) > 16)
+			aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, 16);
+		else
+			aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, limit);
+	}
+	else
+	{
+		// Update regularly as the limit can change due to various factors.
+		aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, limit);
+	}
 }
 
 rule herdMonitor
@@ -2458,7 +2500,7 @@ minInterval 30
 	}
 
 	// Gather at TC as fallback.
-	int tcID = getUnit(cUnitTypeTownCenter);
+	int tcID = getClosestUnit(cUnitTypeTownCenter, cMyID, cUnitStateAlive, gHomeBase, -1);
 	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypeTownCenter);
 	if (aiPlanGetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0) != tcID)
 		aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0, tcID);
@@ -2632,9 +2674,7 @@ minInterval 60
 	}
 }
 
-rule factoryTacticMonitor
-inactive
-minInterval 60
+void factoryTacticMonitor()
 {
 	if (civIsNative() == true || (civIsAsian() && cMyCiv != cCivChinese) || civIsAfrican())
 	{
@@ -2642,8 +2682,7 @@ minInterval 60
 		return;
 	}
 
-	int factoryQueryID = createSimpleUnitQuery(cUnitTypeAbstractResourceCrate, cMyID, cUnitStateAlive);
-	factoryQueryID = kbUnitQueryCreate("factoryGetUnitQuery");
+	int factoryQueryID = createSimpleUnitQuery(cUnitTypeFactory, cMyID, cUnitStateAlive);
 	kbUnitQuerySetIgnoreKnockedOutUnits(factoryQueryID, true);
 	int numberFound = kbUnitQueryExecute(factoryQueryID);
 	if (numberFound <= 0)
@@ -2651,7 +2690,7 @@ minInterval 60
 
 	if (numberFound == 1)
 	{
-		createResearchPlan(cTechFactoryWaterPower, cUnitTypeFactory, 99);
+		researchSimpleTech(cTechFactoryWaterPower, -1, cUnitTypeFactory, 99);
 		aiUnitSetTactic(kbUnitQueryGetResult(factoryQueryID, 0), cTacticWood);
 		// Chinese can only get one.
 		if (cMyCiv == cCivChinese)
@@ -2660,7 +2699,25 @@ minInterval 60
 
 	if (numberFound == 2)
 	{
-		createResearchPlan(cTechFactoryMassProduction, cUnitTypeFactory, 99);
+		researchSimpleTech(cTechFactoryMassProduction, -1, cUnitTypeFactory, 99);
+		switch (cMyCiv)
+		{
+			case cCivBritish:
+			{
+				researchSimpleTech(cTechImperialRocket, -1, cUnitTypeFactory, 50);
+				break;
+			}
+			case cCivOttomans:
+			{
+				researchSimpleTech(cTechImperialBombard, -1, cUnitTypeFactory, 50);
+				break;
+			}
+			default:
+			{
+				researchSimpleTech(cTechImperialCannon, -1, cUnitTypeFactory, 50);
+				break;
+			}
+		}
 		aiUnitSetTactic(kbUnitQueryGetResult(factoryQueryID, 1), cTacticCannon);
 		// European style civs can only get 2, except for the US.
 		if (cMyCiv != cCivDEAmericans)

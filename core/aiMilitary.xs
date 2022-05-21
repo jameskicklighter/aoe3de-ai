@@ -129,6 +129,13 @@ void addUnitsToMilitaryPlan(int planID = -1)
 	if ((gRevolutionType & cRevolutionFinland) == 0)
 	{
 		aiPlanAddUnitType(planID, cUnitTypeLogicalTypeLandMilitary, 0, 0, 200);
+		aiPlanAddUnitType(planID, cUnitTypeMinuteman, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypeypIrregular, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypeypPeasant, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypexpWarrior, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypedeSpearmanLevy, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypedeBowmanLevy, 0, 0, 0, true, true);
+		aiPlanAddUnitType(planID, cUnitTypedeGunnerLevy, 0, 0, 0, true, true);
 		return;
 	}
 
