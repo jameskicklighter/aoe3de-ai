@@ -13,6 +13,8 @@
 
 void echoMessage (string message = "")
 {
+	return; // When I release updates.
+
 	for (player = 0; <cNumberPlayers)
 	{
 		aiChat(player, message);
@@ -519,7 +521,7 @@ bool civIsAfrican(void)
 	return (false);
 }
 
-bool civIsEuropean(void) // Americans/Mexicans included for simplicity.
+bool civIsEuropean(void) // Italians/Maltese/Americans/Mexicans included for simplicity.
 {
 	if (civIsNative() == false && civIsAsian() == false &&
 		civIsAfrican() == false)
@@ -531,7 +533,8 @@ bool civIsEuropean(void) // Americans/Mexicans included for simplicity.
 bool civIsDEciv(void)
 {
 	if ((cMyCiv == cCivDEInca) || (cMyCiv == cCivDESwedish) || (cMyCiv == cCivDEAmericans) ||
-		(cMyCiv == cCivDEEthiopians) || (cMyCiv == cCivDEEthiopians) || (cMyCiv == cCivDEHausa) || (cMyCiv == cCivDEMexicans))
+		(cMyCiv == cCivDEEthiopians) || (cMyCiv == cCivDEEthiopians) || (cMyCiv == cCivDEHausa) ||
+		(cMyCiv == cCivDEMexicans) || (cMyCiv == cCivDEItalians) || (cMyCiv == cCivDEMaltese))
 		return (true);
 
 	return (false);
@@ -1443,6 +1446,30 @@ int createSimpleResearchPlan(int techID = -1, int buildingConstantID = -1, int e
 }
 
 //==============================================================================
+// createProtoUnitCommandResearchPlan
+//==============================================================================
+int createProtoUnitCommandResearchPlan(int protoUnitCommandID = -1, int buildingID = -1, int escrowID = cRootEscrowID,
+	int pri = 50, int resourcePri = 50)
+{
+	int planID = aiPlanCreate("Proto Unit Command Research Plan, " + kbProtoUnitCommandGetName(protoUnitCommandID), cPlanResearch);
+	if (planID < 0)
+	{
+		debugTechs("Failed to create Proto Unit Command Research Plan for " + kbProtoUnitCommandGetName(protoUnitCommandID));
+	}
+	else
+	{
+		aiPlanSetVariableInt(planID, cResearchPlanProtoUnitCommandID, 0, protoUnitCommandID);
+		aiPlanSetVariableInt(planID, cResearchPlanBuildingID, 0, buildingID);
+		aiPlanSetDesiredPriority(planID, pri);
+		aiPlanSetDesiredResourcePriority(planID, resourcePri);
+		aiPlanSetActive(planID);
+		debugTechs("Created a Proto Unit Command Research Plan for: " + kbProtoUnitCommandGetName(protoUnitCommandID) + " with plan number: " + planID);
+	}
+
+	return (planID);
+}
+
+//==============================================================================
 // createSimpleResearchPlanSpecificBuilding
 //==============================================================================
 int createSimpleResearchPlanSpecificBuilding(int techID = -1, int buildingID = -1, int escrowID = cRootEscrowID,
@@ -1637,33 +1664,111 @@ int createSimpleMaintainPlan(int puid = -1, int number = 1, bool economy = true,
 //==============================================================================
 // addBuildersToPlan
 //==============================================================================
-bool addBuildersToPlan(int planID = -1, int puid = -1, int numBuilders = 1)
+bool addBuildersToPlan(int planID = -1, int puid = -1, int numBuilders = 1, int builderTypeID = -1)
 {
 	if (numBuilders <= 0)
 		return(false);
 
+	// If we have a wagon that can build this bulding, we do NOT want to assign
+	// anyone else. This is unless we are building with an architect.
+	int builderType = -1;
+	if (builderTypeID != cUnitTypedeArchitect)
+	{
+		builderType = findWagonToBuild(puid);
+		if (builderType >= 0)
+		{
+			aiPlanAddUnitType(planID, builderType, 1, 1, 1);
+			aiPlanSetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0, builderType);
+			return(true);
+		}
+	}
+
+	// If we specified a builder other than cUnitTypeLogicalTypeSettlerBuildLimit,
+	// just assign them and return true.
+	builderType = builderTypeID;
+	if (builderType != cUnitTypeLogicalTypeSettlerBuildLimit)
+	{
+		aiPlanAddUnitType(planID, builderType, 1, numBuilders, numBuilders);
+		aiPlanSetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0, builderType);
+		return(true);
+	}
+
+	// Only the War Chief can build Strongholds.
+	if (puid == cUnitTypedeIncaStronghold)
+	{
+		if (aiGetFallenExplorerID() < 0)
+		{
+			aiPlanAddUnitType(planID, cUnitTypeHero, 1, 1, 1);
+			aiPlanSetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0, cUnitTypeHero);
+			return(true);
+		}
+	}
+
+	// American and Mexican generals cannot construct TCs.
 	if (puid == cUnitTypeTownCenter && cMyCiv != cCivDEAmericans && cMyCiv != cCivDEMexicans)
 	{
 		if (aiGetFallenExplorerID() < 0)
 		{
 			aiPlanAddUnitType(planID, cUnitTypeHero, 1, 2, 2);
+			aiPlanSetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0, cUnitTypeHero);
 			return(true);
 		}
 	}
 
-	int builderType = cUnitTypeLogicalTypeSettlerBuildLimit;
+	// This logic is not necessary when we create a plan via createBuildPlan and pass to the builderType
+	// variable cUnitTypedeArchitect. This logic applies when no builder type is specified (defaulting to
+	// cUnitTypeLogicalTypeSettlerBuildLimit).
+	int architectID = -1;
+	if (cMyCiv == cCivDEItalians &&
+		(kbUnitCostPerResource(puid, cResourceWood) + kbUnitCostPerResource(puid, cResourceGold)) >= 400.0)
+	{
+		int architectQuery = createSimpleUnitQuery(cUnitTypedeArchitect, cMyID, cUnitStateAlive);
+		int numArchitects = kbUnitQueryExecute(architectQuery);
+		for (i = 0; i < numArchitects; i++)
+		{
+			architectID = kbUnitQueryGetResult(architectQuery, i);
+			if (kbUnitGetPlanID(architectID) >= 0)
+			{
+				architectID = -1;
+				continue;
+			}
+			break;
+		}
+		// If we have no architects, fallback to villagers.
+		builderType = cUnitTypeLogicalTypeSettlerBuildLimit;
+	}
+
+	// Check to see if we have a Settler Wagon we can use, since they
+	// construct buildings more quickly.
+	builderType = cUnitTypeLogicalTypeSettlerBuildLimit;
 	if (kbUnitCount(cMyID, cUnitTypeSettlerWagon, cUnitStateAlive) > 0)
 		builderType = cUnitTypeSettlerWagon;
-	if (puid == cUnitTypedeField)
+
+	// If we found an architect to build this building, use him.
+	if (architectID >= 0)
+	{
+		aiPlanAddUnitType(planID, cUnitTypedeArchitect, 1, 1, 1);
+		aiPlanAddUnit(planID, architectID);
+	}
+	// Fields should have no more than one builder assigned to the plan.
+	// It is possible that the AI sends villagers there to "gather" from it,
+	// and since the field is not yet complete more villagers end up building it.
+	else if (puid == cUnitTypedeField)
 		aiPlanAddUnitType(planID, builderType, 1, 1, 1);
+	// If there was a specified number of villagers when we used createBuildPlan,
+	// assign them here. 
 	else if (numBuilders > 1)
 		aiPlanAddUnitType(planID, builderType, numBuilders, numBuilders, numBuilders);
+	// Otherwise if we reached this point, only use more than one villager if there
+	// is a significantly large build time.
 	else
 	{
-		numBuilders = round(kbProtoUnitGetBuildPoints(puid) / 30.0);
+		if (builderType == cUnitTypeLogicalTypeSettlerBuildLimit)
+			numBuilders = round(kbProtoUnitGetBuildPoints(puid) / 30.0);
 		aiPlanAddUnitType(planID, builderType, 1, numBuilders, numBuilders);
 	}
 
+	aiPlanSetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0, builderType);
 	return(true);
 }
 
@@ -1671,7 +1776,7 @@ bool addBuildersToPlan(int planID = -1, int puid = -1, int numBuilders = 1)
 //	createBuildPlan
 // ================================================================================
 int createBuildPlan(int puid = -1, int numPlans = 1, int pri = 100, vector position = cInvalidVector,
-	int numBuilders = 1, int builderType = cUnitTypeLogicalTypeSettlerBuildLimit)
+	int numBuilders = 1, int builderType = cUnitTypeLogicalTypeSettlerBuildLimit, bool setActive = true)
 {
 	for (i = 0; < numPlans)
 	{
@@ -1681,10 +1786,8 @@ int createBuildPlan(int puid = -1, int numPlans = 1, int pri = 100, vector posit
 		aiPlanSetVariableInt(planID, cBuildPlanBuildingTypeID, 0, puid);
 		aiPlanSetVariableFloat(planID, cBuildPlanBuildingBufferSpace, 0, 6.0);
 		aiPlanSetDesiredPriority(planID, pri);
-		if (builderType == cUnitTypeLogicalTypeSettlerBuildLimit)
-			addBuildersToPlan(planID, puid, numBuilders);
-		else
-			aiPlanAddUnitType(planID, builderType, 1, numBuilders, numBuilders);
+		aiPlanAddUserVariableInt(planID, cBuildPlanBuilderTypeID, "Build Plan Builder Type", 1);
+		addBuildersToPlan(planID, puid, numBuilders, builderType);
 		// To my knowledge, these three aren't really relevant.
 		aiPlanSetEscrowID(planID, cRootEscrowID); // <---
 		aiPlanSetEconomy(planID, true); // <---
@@ -1692,10 +1795,19 @@ int createBuildPlan(int puid = -1, int numPlans = 1, int pri = 100, vector posit
 
 		debugBuildings("Making build plan for " + kbGetUnitTypeName(puid));
 		selectBuildPlanPosition(planID, puid, position);
-		aiPlanSetActive(planID);
+		aiPlanSetActive(planID, setActive);
 	}
 	
 	return(planID); // Only really useful if numPlans == 1, otherwise returns last value.
+}
+
+// ================================================================================
+//	createArchitectBuildPlan
+// ================================================================================
+int createArchitectBuildPlan(int puid = -1, int pri = 50, vector position = cInvalidVector)
+{
+	int planID = createBuildPlan(puid, 1, pri, position, 1, cUnitTypedeArchitect, false);
+	return (planID);
 }
 
 // ================================================================================
@@ -1749,7 +1861,8 @@ int createRepairPlan(int pri = 50)
 			buildingTypeID == cUnitTypeFactory ||
 			buildingTypeID == cUnitTypeypDojo ||
 			buildingTypeID == cUnitTypeTownCenter ||
-			buildingTypeID == cUnitTypeTradingPost)
+			buildingTypeID == cUnitTypedeSPCCommandPost ||
+			buildingTypeID == cUnitTypeTradingPost )
 		{
 			if (kbUnitGetHealth(buildingID) < 0.75)
 			{
@@ -1966,15 +2079,15 @@ int createMainBase(vector mainVec = cInvalidVector)
 		kbBaseSetMain(cMyID, newBaseID, true);
 
 		// Add the TC, if any.
-		if (getUnit(cUnitTypeTownCenter, cMyID, cUnitStateABQ) >= 0)
-			kbBaseAddUnit(cMyID, newBaseID, getUnit(cUnitTypeTownCenter, cMyID, cUnitStateABQ));
+		int tcID = getUnit(cUnitTypeAgeUpBuilding, cMyID, cUnitStateABQ);
+		if (tcID >= 0)
+		{
+			kbBaseAddUnit(cMyID, newBaseID, tcID);
+		}
 	}
-
 
 	// Move the defend plan and reserve plan
 	xsEnableRule("endDefenseReflexDelay"); // Delay so that new base ID will exist
-
-//   xsEnableRule("populateMainBase");   // Can't add units yet, they still appear to be owned by deleted base.  This rule adds a slight delay.
 
 	return(newBaseID);
 }
@@ -2072,19 +2185,4 @@ bool getHomeBaseThreatened(void)
 		return(true);
 
 	return(false);
-}
-
-rule forcedWoodCoroutine
-inactive
-minInterval 2
-maxInterval 2
-priority 100
-{
-	if (kbResourceGet(cResourceWood) < 400 && xsGetTime() < 60 * 1000)
-		return;
-
-	gForceWoodGathering = false;
-	arrayEnablePlans(gPausedPlans);
-	updateResourceDistribution();
-	xsDisableSelf();
 }

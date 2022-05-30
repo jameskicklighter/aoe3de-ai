@@ -48,6 +48,7 @@ mutable void selectMountainMonasteryBuildPlanPosition(int planID = -1) {}
 mutable void selectUniversityBuildPlanPosition(int planID = -1, vector position = cInvalidVector) {}
 mutable void selectClosestBuildPlanPosition(int planID = -1, int baseID = -1) {}
 mutable void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = cInvalidVector) {}
+mutable int findWagonToBuild(int puid = -1) { return(-1); }
 mutable int addMillBuildPlan(void) { return(-1); }
 mutable int addPlantationBuildPlan(void) { return(-1); }
 
@@ -76,7 +77,6 @@ mutable void sendStatement(int playerIDorRelation = -1, int commPromptID = -1, v
 
 // Setup.
 mutable void deathMatchStartupBegin(void) {}
-mutable void economyModeMatchStartupBegin(void) {}
 mutable void initCeylonNomadStart(void) {}
 
 // Core.
@@ -598,128 +598,77 @@ void gameOverHandler(int nothing = 0)
 
 }
 
+//==============================================================================
+// ShouldIResign
+//==============================================================================
 rule ShouldIResign
 minInterval 7
-active
+inactive
 {
-	static bool hadHumanAlly = false;
-
-	if (cvOkToResign == false)
+	// Don't resign during treaty since that looks dumb.
+	// Don't resign too soon.
+	// Don't resign if we have over 30 active pop slots.
+	if ((aiTreatyActive() == true) || (kbGetPop() >= 30) || (xsGetTime() < 10 * 60 * 1000))
 	{
-		return;     // Early out if we're not allowed to think about this.
+		return;
 	}
 
-	// Don't resign if you have a human ally that's still in the game
-	int i = 0;
-	bool humanAlly = false;    // Set true if we have a surviving human ally.
-	int humanAllyID = -1;
-	bool complained = false;   // Set flag true if I've already whined to my ally.
-	bool wasHumanInGame = false;  // Set true if any human players were in the game
-	bool isHumanInGame = false;   // Set true if a human survives.  If one existed but none survive, resign.
-
-	// Look for humans
+	bool humanAlly = false; // Set true if we have a surviving human ally.
+	// Look for human allies.
 	for (i = 1; <= cNumberPlayers)
 	{
-		if (kbIsPlayerHuman(i) == true)
-		{
-			wasHumanInGame = true;
-			if (kbHasPlayerLost(i) == false)
-				isHumanInGame = true;
-		}
 		if ((kbIsPlayerAlly(i) == true) && (kbHasPlayerLost(i) == false) && (kbIsPlayerHuman(i) == true))
 		{
-			humanAlly = true; // Don't return just yet, let's see if we should chat.
-			hadHumanAlly = true; // Set flag to indicate that we once had a human ally.
-			humanAllyID = i;  // Player ID of lowest-numbered surviving human ally.
+			humanAlly = true;    // Don't return just yet, let's see if we should chat.
 		}
 	}
 
-		// We do not have to resign when all of our human allies quit, there's still a chance...
-	//   if ( (wasHumanInGame == true) && (isHumanInGame == false) )
-		/*if ((hadHumanAlly == true) && (humanAlly == false)) // Resign if my human allies have quit.
+	// Resign if the known enemy pop is > 10x mine.
+	int enemyPopTotal = 0;
+	int enemyCount = 0;
+	int myPopTotal = 0;
+
+	for (i = 1; < cNumberPlayers)
+	{
+		if (kbHasPlayerLost(i) == false)
 		{
-			//aiResign(); // If there are no humans left, and this wasn't a bot battle from the start, quit.
-			debugCore("Resigning because I had a human ally, and he's gone...");
-			aiResign(); // I had a human ally or allies, but do not any more.  Our team loses.
-			return;  // Probably not necessary, but whatever...
+			if (i == cMyID)
+			{
+				myPopTotal += kbUnitCount(i, cUnitTypeUnit, cUnitStateAlive);
+			}
+			if (kbIsPlayerEnemy(i) == true)
+			{
+				enemyPopTotal += kbUnitCount(i, cUnitTypeUnit, cUnitStateAlive);
+				enemyCount++;
+			}
 		}
-		// Check for MP with human allies gone.  This trumps the OkToResign setting, below.
-		if ((aiIsMultiplayer() == true) && (hadHumanAlly == true) && (humanAlly == false))
-		{  // In a multiplayer game...we had a human ally earlier, but none remain.  Resign immediately
-			debugCore("Resign because my human ally is no longer in the game.");
-			aiResign();    // Don't ask, just quit.
+	}
+
+	if (enemyCount < 1)
+	{
+		enemyCount = 1; // Avoid div by 0.
+	}
+
+	float enemyRatio = (enemyPopTotal / enemyCount) / myPopTotal;
+
+	// My pop is 1/3 the average known pop of enemies so I'm going to whine to my human ally.
+	if ((enemyRatio > 3) && (humanAlly == true)) 
+	{
+		sendStatement(cPlayerRelationAllyExcludingSelf, cAICommPromptToAllyImReadyToQuit);
 			xsEnableRule("resignRetry");
 			xsDisableSelf();
-			return;
-		}*/
-
-
-
-
-		//Don't resign too soon.
-		if (xsGetTime() < 600000)     // 600K = 10 min
-		  return;
-
-		//Don't resign if we have over 30 active pop slots.
-		if (kbGetPop() >= 30)
-			return;
-
-		// Resign if the known enemy pop is > 10x mine
-
-		int enemyPopTotal = 0.0;
-		int enemyCount = 0;
-		int myPopTotal = 0.0;
-
-		for (i = 1; < cNumberPlayers)
-		{
-			if (kbHasPlayerLost(i) == false)
-			{
-				if (i == cMyID)
-					myPopTotal = myPopTotal + kbUnitCount(i, cUnitTypeUnit, cUnitStateAlive);
-				if ((kbIsPlayerEnemy(i) == true) && (kbHasPlayerLost(i) == false))
-				{
-					enemyPopTotal = enemyPopTotal + kbUnitCount(i, cUnitTypeUnit, cUnitStateAlive);
-					enemyCount = enemyCount + 1;
-				}
-			}
+		return; // Never resign if we still have a human ally.
 		}
-
-		if (enemyCount < 1)
-			enemyCount = 1;      // Avoid div 0
-
-		float enemyRatio = (enemyPopTotal / enemyCount) / myPopTotal;
-
-		if (enemyRatio > 10)       // My pop is 1/10 the average known pop of enemies
-		{
-			if (humanAlly == false)
-			{
-				debugCore("Resign at 10:1 pop: EP Total(" + enemyPopTotal + "), MP Total(" + myPopTotal + ")");
-				aiAttemptResign(cAICommPromptToEnemyMayIResign);
-				xsEnableRule("resignRetry");
-				xsDisableSelf();
-				return;
-			}
-			if ((humanAlly == true) && (complained == false))
-			{  // Whine to your partner
-				sendStatement(humanAllyID, cAICommPromptToAllyImReadyToQuit);
-				xsEnableRule("resignRetry");
-				xsDisableSelf();
-				complained = true;
-			}
-		}
-		if ((enemyRatio > 4) && (kbUnitCount(cMyID, cUnitTypeTownCenter, cUnitStateAlive) < 1))       // My pop is 1/4 the average known pop of enemies, and I have no TC
-		{
-			if (humanAlly == false)
-			{
-				debugCore("Resign with no 4:1 pop and no TC: EP Total(" + enemyPopTotal + "), MP Total(" + myPopTotal + ")");
-				//sendStatement(aiGetMostHatedPlayerID(), cAICommPromptAIResignActiveEnemies, -1);
-				aiAttemptResign(cAICommPromptToEnemyMayIResign);
-				//breakpoint;
-				xsEnableRule("resignRetry");
-				xsDisableSelf();
-				return;
-			}
-		}
+	
+	// My pop is 1/4 the average known pop of enemies.
+	// I have no TC.
+	// I have no human ally that I want to stay in the game for so try to resign.
+	if ((enemyRatio > 4) && (kbUnitCount(cMyID, cUnitTypeAgeUpBuilding, cUnitStateAlive) < 1) && (humanAlly == false)) 
+	{
+		debugCore("Attempting to resign since I'm heavily outnumbered and have no Town Center left");
+			aiAttemptResign(cAICommPromptToEnemyMayIResign);
+			xsDisableSelf();
+	}
 }
 
 rule resignRetry
@@ -1053,64 +1002,30 @@ void ageUpHandler(int playerID = -1)
 {
 	debugCore("ageUpHandler is called, player " + playerID + " aged up!");
 	int age = kbGetAgeForPlayer(playerID);
-	bool firstToAge = true; // Set true if this player is the first to reach that age, false otherwise
-	bool lastToAge = true;  // Set true if this player is the last to reach this age, false otherwise
+	bool firstToAge = true; // Set true if this player is the first to reach that age, false otherwise.
+	bool lastToAge = true;  // Set true if this player is the last to reach this age, false otherwise.
 	int slowestPlayer = -1;
 	int lowestAge = 100000;
 	int lowestCount = 0; // How many players are still in the lowest age?
-	static bool foundFirstInFortress = false;
-	static bool foundFirstInIndustrial = false;
-	static bool foundFirstInImperial = false;
+	static int foundFirstInAge = 0;
 
-	if (playerID == cMyID)
-		aiPopulatePoliticianList(); // Update the list of possible age-up choices we have now.
-	// debugCore("AGE HANDLER:  Player "+playerID+" is now in age "+age);
+	if ((foundFirstInAge & (1 << age)) == 0)
+	{
+		foundFirstInAge |= 1 << age;
+	}
+	else
+	{
+		firstToAge = false;
+	}
 
 	for (index = 1; < cNumberPlayers)
 	{
 		if (index != playerID)
 		{
-			switch (age)
-			{
-			case cAge3:
-			{
-				if (foundFirstInFortress == false)
-				{
-				foundFirstInFortress = true;
-				}
-				else
-				{
-				firstToAge = false;
-				}
-				break;
-			}
-			case cAge4:
-			{
-				if (foundFirstInIndustrial == false)
-				{
-				foundFirstInIndustrial = true;
-				}
-				else
-				{
-				firstToAge = false;
-				}
-				break;
-			}
-			case cAge5:
-			{
-				if (foundFirstInImperial == false)
-				{
-				foundFirstInImperial = true;
-				}
-				else
-				{
-				firstToAge = false;
-				}
-				break;
-			}
-			}
 			if (kbGetAgeForPlayer(index) < age)
+			{
 				lastToAge = false; // Someone is still behind playerID.
+			}
 		}
 		if (kbGetAgeForPlayer(index) < lowestAge)
 		{
@@ -1121,46 +1036,60 @@ void ageUpHandler(int playerID = -1)
 		else
 		{
 			if (kbGetAgeForPlayer(index) == lowestAge)
+			{
 				lowestCount = lowestCount + 1;
+			}
 		}
 	}
-	if (firstToAge == true)
+	
+	if ((firstToAge == true) && (age >= cAge3))
 	{
-		switch (age)
+		switch (age) // We don't save times for first to Commerce since we don't use that info.
 		{
-		case cAge3:
-		{
-			xsArraySetInt(gFirstAgeTime, cAge3, xsGetTime());
-			debugCore("Time the first player reached the Fortress Age: " + xsArrayGetInt(gFirstAgeTime, cAge3));
-		}
-		case cAge4:
-		{
-			xsArraySetInt(gFirstAgeTime, cAge4, xsGetTime());
-			debugCore("Time the first player reached the Industrial Age: " + xsArrayGetInt(gFirstAgeTime, cAge4));
-		}
-		case cAge5:
-		{
-			xsArraySetInt(gFirstAgeTime, cAge5, xsGetTime());
-			debugCore("Time the first player reached the Imperial Age: " + xsArrayGetInt(gFirstAgeTime, cAge5));
-		}
+			case cAge3:
+			{
+				xsArraySetInt(gFirstAgeTime, cAge3, xsGetTime());
+				debugCore("Time the first player reached the Fortress Age: " + xsArrayGetInt(gFirstAgeTime, cAge3));
+				break;
+			}
+			case cAge4:
+			{
+				xsArraySetInt(gFirstAgeTime, cAge4, xsGetTime());
+				debugCore("Time the first player reached the Industrial Age: " + xsArrayGetInt(gFirstAgeTime, cAge4));
+				break;
+			}
+			case cAge5:
+			{
+				xsArraySetInt(gFirstAgeTime, cAge5, xsGetTime());
+				debugCore("Time the first player reached the Imperial Age: " + xsArrayGetInt(gFirstAgeTime, cAge5));
+				break;
+			}
 		}
 	}
 
 	if ((firstToAge == true) && (age == cAge2))
-	{ // This player was first to age 2
+	{
 		if ((kbIsPlayerAlly(playerID) == true) && (playerID != cMyID))
+		{
 			sendStatement(playerID, cAICommPromptToAllyHeReachesAge2First);
-		if ((kbIsPlayerEnemy(playerID) == true))
+		}
+		if (kbIsPlayerEnemy(playerID) == true)
+		{
 			sendStatement(playerID, cAICommPromptToEnemyHeReachesAge2First);
-		return ();
+		}
+		return;
 	}
 	if ((lastToAge == true) && (age == cAge2))
-	{ // This player was last to age 2
+	{
 		if ((kbIsPlayerAlly(playerID) == true) && (playerID != cMyID))
+		{
 			sendStatement(playerID, cAICommPromptToAllyHeReachesAge2Last);
-		if ((kbIsPlayerEnemy(playerID) == true))
+		}
+		if (kbIsPlayerEnemy(playerID) == true)
+		{
 			sendStatement(playerID, cAICommPromptToEnemyHeReachesAge2Last);
-		return ();
+		}
+		return;
 	}
 
 	// Check to see if there is a lone player that is behind everyone else
@@ -1169,7 +1098,7 @@ void ageUpHandler(int playerID = -1)
 		// This player is slowest, nobody else is still in that age, and it's not me,
 		// so set the globals and activate the rule...unless it's already active.
 		// This will cause a chat to fire later (currently 120 sec mininterval) if
-		// this player is still lagging technologically.
+		// this player is still lagging behind.
 		if (gLateInAgePlayerID < 0)
 		{
 			if (xsIsRuleEnabled("lateInAge") == false)
@@ -1177,23 +1106,22 @@ void ageUpHandler(int playerID = -1)
 				gLateInAgePlayerID = slowestPlayer;
 				gLateInAgeAge = lowestAge;
 				xsEnableRule("lateInAge");
-				return ();
+				return;
 			}
 		}
 	}
 
-	// Check to see if ally advanced before me
-	if ((kbIsPlayerAlly(playerID) == true) && (age > kbGetAgeForPlayer(cMyID)))
+	// Check to see if either an ally or an enemy advanced before me.
+	if (age > kbGetAgeForPlayer(cMyID))
 	{
-		sendStatement(playerID, cAICommPromptToAllyHeAdvancesAhead);
-		return ();
-	}
-
-	// Check to see if ally advanced before me
-	if ((kbIsPlayerEnemy(playerID) == true) && (age > kbGetAgeForPlayer(cMyID)))
-	{
-		sendStatement(playerID, cAICommPromptToEnemyHeAdvancesAhead);
-		return ();
+		if (kbIsPlayerAlly(playerID) == true)
+		{
+			sendStatement(playerID, cAICommPromptToAllyHeAdvancesAhead);
+		}
+		else if (kbIsPlayerEnemy(playerID) == true)
+		{
+			sendStatement(playerID, cAICommPromptToEnemyHeAdvancesAhead);
+		}
 	}
 }
 
@@ -1208,9 +1136,6 @@ void ageUpEventHandler(int planID = -1)
 		buildingMonitor();
 		econMaster();
 	}
-	if (state == cPlanStateDone)
-		echoMessage("Age up plan done.");
-
 }
 
 rule age2Monitor
@@ -1233,6 +1158,8 @@ minInterval 5
 			xsEnableRule("navyManager");
 			debugCore("Enabling the navy manager.");
 		}
+
+		xsEnableRule("towerManager");
 
 		if (gGoodFishingMap == true)
 			gFishingBoatMaintainPlan = createSimpleMaintainPlan(gFishingUnit, 10, true, kbBaseGetMainID(cMyID), 1);
@@ -1335,19 +1262,6 @@ minInterval 5
 
 		gAgeUpTime = xsGetTime();
 
-		kbEscrowAllocateCurrentResources();
-
-		//-- Set the resource TargetSelector factors.
-		gTSFactorDistance = -40.0;
-		gTSFactorPoint = 5.0;
-		gTSFactorTimeToDone = 0.0;
-		gTSFactorBase = 100.0;
-		gTSFactorDanger = -40.0;
-		kbSetTargetSelectorFactor(cTSFactorDistance, gTSFactorDistance);
-		kbSetTargetSelectorFactor(cTSFactorPoint, gTSFactorPoint);
-		kbSetTargetSelectorFactor(cTSFactorTimeToDone, gTSFactorTimeToDone);
-		kbSetTargetSelectorFactor(cTSFactorBase, gTSFactorBase);
-		kbSetTargetSelectorFactor(cTSFactorDanger, gTSFactorDanger);
 
 		setUnitPickerPreference(gLandUnitPicker);
 
@@ -1355,6 +1269,12 @@ minInterval 5
 			gLastAttackMissionTime = xsGetTime() - 180000; // Pretend they all fired 3 minutes ago, even if that's a negative number.
 		if (gLastDefendMissionTime < 0)
 			gLastDefendMissionTime = xsGetTime() - 300000; // Actually, start defense ratings at 100% charge, i.e. 5 minutes since last one.
+
+		if (cRandomMapName == "euitalianwars")
+		{
+			xsEnableRule("cityStateMonitor");
+			xsEnableRule("cityTowerUpgradeMonitor");
+		}
 
 		debugCore("*** We're in age 2.");
 	}
@@ -1608,16 +1528,23 @@ minInterval 10
 //==============================================================================
 void selfAgeUpHandler(int age = -1)
 {
-	// if (age >= cAge3)
-	// 	gHomeBase = gHomeBase + gDirection_UP * 5.0; // Move our base up a bit.
-
 	wagonMonitor();
+	if (kbResourceGet(cResourceShips) > 0)
+		shipGrantedHandler();
 
 	if (cMyCiv == cCivRussians)
 	{
 		if (age == cAge3)
 			arrayPushInt(gPriorityCards, cTechHCRoyalDecreeRussian);
 	}
+
+	// Correct usage unknown, does not seem to be working.
+	/* if (cMyCiv == cCivDEItalians && age == cAge2)
+	{
+		int lombardID = getUnit(cUnitTypedeLombard);
+		if (lombardID >= 0)
+			createProtoUnitCommandResearchPlan(cProtoUnitCommanddeInvestFood, lombardID, cRootEscrowID, 99, 99);
+	} */
 
 	if (cMyCiv == cCivDEAmericans || cMyCiv == cCivDEMexicans)
 		updateFederalCardIndices();
@@ -1902,59 +1829,4 @@ void buildingConstructedHandler(int buildingPUID = -1)
 			break;
 		}
 	}
-}
-
-rule testActions
-inactive
-minInterval 10
-{
-	if (cMyID != 2)
-	{
-		xsDisableSelf();
-		return;
-	}
-	int testQuery = createSimpleUnitQuery(cUnitTypeHuntable, 0, cUnitStateAny, kbGetPlayerStartingPosition(1), 30.0);
-	kbUnitQueryResetResults(testQuery);
-	int num = kbUnitQueryExecute(testQuery);
-	int unitID = -1;
-	int actionID = -1;
-	int temp = -1;
-	// echoMessage("Data before changing context to 0.");
-	for (i = 0; < num)
-	{
-		unitID = kbUnitQueryGetResult(testQuery, i);
-		echoMessage("Huntable: " + i);
-		echoMessage("       kbUnitGetActionTypeByIndex(unitID, 0): " + kbUnitGetActionTypeByIndex(unitID, 0));
-		temp = kbUnitGetTargetUnitID(unitID);
-		echoMessage("       Target unit ID: " + temp);
-		echoMessage("       Target unit ID Name: " + kbGetUnitTypeName(kbUnitGetProtoUnitID(temp)));
-		echoMessage("       kbUnitIsType(unitID, cUnitTypedeGranary): " + kbUnitIsType(temp, cUnitTypedeGranary));
-		echoMessage("SWITCH to player context 0.");
-		xsSetContextPlayer(0);
-		temp = kbUnitGetTargetUnitID(unitID);
-		xsSetContextPlayer(cMyID);
-		echoMessage("       Target unit ID: " + temp);
-		echoMessage("       Target unit ID Name: " + kbGetUnitTypeName(kbUnitGetProtoUnitID(temp)));
-		echoMessage("       kbUnitIsType(unitID, cUnitTypedeGranary): " + kbUnitIsType(temp, cUnitTypedeGranary));
-		echoMessage("DONE WITH HUNTABLE " + i);
-		echoMessage("       ");
-
-
-	}
-
-	/* echoMessage("Data after changing context to 0.");
-	for (i = 0; < num)
-	{
-		unitID = kbUnitQueryGetResult(testQuery, i);
-
-		echoMessage("Unit: " + unitID);
-		xsSetContextPlayer(0);
-		type = kbUnitGetActionID(unitID);
-		loc = kbUnitGetPosition(unitID);
-		xsSetContextPlayer(cMyID);
-		echoMessage("       Action type is: " + type);
-		echoMessage("       Location is: " + loc);
-		echoMessage("       ");
-	} */
-
 }

@@ -72,36 +72,6 @@ void updateResourceDistribution()
 	aiSetResourceGathererPercentageWeight(cRGPScript, 1.0);
 	aiSetResourceGathererPercentageWeight(cRGPCost, 0.0);
 
-	if (gForceWoodGathering == true)
-	{
-		aiSetResourcePercentage(cResourceFood, false, 0.0);
-		aiSetResourcePercentage(cResourceWood, false, 1.0);
-		aiSetResourcePercentage(cResourceGold, false, 0.0);
-		aiNormalizeResourcePercentages();
-
-		for (i = 0; < numPlans)
-		{
-			planID = aiPlanGetIDByActiveIndex(i);
-			planType = aiPlanGetType(planID);
-			if (planType == cPlanTrain ||
-				planType == cPlanBuild ||
-				planType == cPlanBuildWall ||
-				planType == cPlanResearch ||
-				planType == cPlanRepair)
-			{
-				if (planID == aiPlanGetIDByTypeAndVariableType(cPlanTrain, cTrainPlanUnitType, gEconUnit))
-					continue;
-				else
-				{
-					aiPlanSetActive(planID, false);
-					arrayPushInt(gPausedPlans, planID);
-				}
-			}
-
-			return;
-		}
-	}
-
 	debugEconomy("updateResourceDistribution(): number plans="+numPlans);
 	for (i = 0; < numPlans)
 	{
@@ -983,7 +953,6 @@ void updateGoldBreakdown(void)
 				continue;
 
 			numWorkers = kbUnitGetNumberWorkers(resourceID);
-			echoMessage("TEST: Num workers on monastery: " + numWorkers);
 			if (numWorkers == 20)
 			{	// Still count it because we are gathering it.
 				resourceWorth = resourceWorth + 1;
@@ -1449,7 +1418,6 @@ minInterval 2
 	{
 		unitID = kbUnitQueryGetResult(gVillagerQuery, i);
 		actionID = kbUnitGetActionType(unitID);
-		//echoMessage("kbUnitGetActionType: " + kbUnitGetActionType(unitID) + " of unitID: " + unitID);
 		targetLocation = cInvalidVector;
 		switch (actionID)
 		{
@@ -1811,7 +1779,7 @@ minInterval 2
 					if (targetLocation == cInvalidVector)
 						targetLocation = gHomeBase;
 					aiTaskUnitMove(unitID, (targetLocation + (kbUnitGetPosition(foodID) - targetLocation) +
-						xsVectorNormalize(kbUnitGetPosition(foodID) - targetLocation) * 12.0));
+						xsVectorNormalize(kbUnitGetPosition(foodID) - targetLocation) * 16.0));
 					aiTaskUnitWork(unitID, foodID, true);
 
 					// Update the number of workers on the food unit.
@@ -1820,7 +1788,6 @@ minInterval 2
 				else
 				{
 					aiTaskUnitWork(unitID, foodID);
-					//echoMessage("Tasking unit " + unitID + " on dead animal " + foodID);
 
 					// Update the number of workers on the food unit.
 					arraySetInt(gDecayingNumWorkers, foodIndex, (arrayGetInt(gDecayingNumWorkers, foodIndex) + 1));
@@ -1997,30 +1964,85 @@ int getClosestTreeID(vector location = cInvalidVector)
 	return(-1);
 }
 
-// Grab the closest tree if it isn't too far away.
-rule taskIdleVillagers
+rule architectManager
 inactive
-minInterval 10
+minInterval 2
 {
-	if (gVillagerQuery < 0)
+	int numArchitects = kbUnitCount(cMyID, cUnitTypedeArchitect, cUnitStateAlive);
+
+	if (cMyCiv == cCivDEItalians && kbGetAge() >= cAge2)
+	{
+		static int architectMaintainPlan = -1;
+		int numWanted = (kbGetAge() >= cAge3) ? kbGetBuildLimit(cMyID, cUnitTypedeArchitect) : 2;
+		if (architectMaintainPlan < 0)
+			architectMaintainPlan = createSimpleMaintainPlan(cUnitTypedeArchitect, numWanted, true);
+		else
+			aiPlanSetVariableInt(architectMaintainPlan, cTrainPlanNumberToMaintain, 0, numWanted);
+	}
+
+	if (numArchitects == 0)
 		return;
 
-	int unitID = -1;
-	int actionID = -1;
-	int treeID = -1;
-	int target = -1;
-	float amount = 0.0;
-	vector location = cInvalidVector;
-	for (i = 0; < kbUnitQueryNumberResults(gVillagerQuery))
+	int architectID = -1;
+	int architectQuery = createSimpleUnitQuery(cUnitTypedeArchitect, cMyID, cUnitStateAlive);
+	numArchitects = kbUnitQueryExecute(architectQuery);
+	int previousIndex = 0;
+	int planID = -1;
+	int bestPlanID = -1;
+	int bestPlanPrio = -1;
+
+	for (i = 0; < numArchitects)
 	{
-		unitID = kbUnitQueryGetResult(gVillagerQuery, i);
-		actionID = kbUnitGetActionType(unitID);
-		location = kbUnitGetPosition(unitID);
-		if (actionID == cActionTypeIdle)
+		architectID = kbUnitQueryGetResult(architectQuery, i);
+		if (kbUnitGetPlanID(architectID) >= 0)
 		{
-			treeID = getClosestTreeID(location);
-			if (treeID >= 0)
-				aiTaskUnitWork(unitID, treeID);
+			architectID = -1;
+			continue;
+		}
+	}
+
+	if (architectID >= 0)
+	{
+		for (index = 0; < aiPlanGetNumber(cPlanBuild, cPlanStateNone, false))
+		{
+			planID = aiPlanGetIDByIndex(cPlanBuild, cPlanStateNone, false, index);
+
+			if (aiPlanGetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0) != cUnitTypedeArchitect)
+			{
+				continue;
+			}
+
+			int prio = aiPlanGetDesiredPriority(planID);
+			if (prio > bestPlanPrio)
+			{
+				bestPlanID = planID;
+				bestPlanPrio = prio;
+			}
+		}
+
+		if (bestPlanID >= 0)
+		{
+			// aiPlanAddUnitType(bestPlanID, cUnitTypedeArchitect, 1, 1, 1, true, true);
+			aiPlanAddUnit(bestPlanID, architectID);
+			aiPlanSetActive(bestPlanID, true);
+			// echoMessage("Activating " + aiPlanGetName(planID) + " for architect construction.");
+		}
+		else
+		{
+			if (kbUnitCount(cMyID, gTowerUnit, cUnitStateABQ) < kbGetBuildLimit(cMyID, gTowerUnit))
+			{
+				// echoMessage("Queueing tower build plan for architect construction.");
+				createArchitectBuildPlan(gTowerUnit, 45, gHomeBase);
+			}
+			else
+			{
+				// echoMessage("Nothing to build, looking for tree.");
+				int treeID = getClosestTreeID(gHomeBase);
+				if (treeID >= 0)
+					aiTaskUnitWork(architectID, treeID);
+				else
+					aiTaskUnitMove(architectID, gHomeBase + gDirection_DOWN * 5.0);
+			}
 		}
 	}
 }
@@ -2444,15 +2466,20 @@ minInterval 20
 	int limit = kbGetBuildLimit(cMyID, gEconUnit);
 	if (kbGetAge() == cAge1 && agingUp() == false)
 	{
-		if (kbUnitCount(cMyID, gEconUnit, cUnitStateABQ) > 16)
-			aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, 16);
-		else
-			aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, limit);
+		aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, 16);
 	}
 	else
 	{
 		// Update regularly as the limit can change due to various factors.
 		aiPlanSetVariableInt(gSettlerMaintainPlan, cTrainPlanNumberToMaintain, 0, limit);
+	}
+
+	// Account for Architects that may be acquired outside of Italians.
+	// (Not sure if possible yet).
+	if (xsIsRuleEnabled("architectManager") == false)
+	{
+		if (kbUnitCount(cMyID, cUnitTypedeArchitect, cUnitStateABQ) > 0)
+			xsEnableRule("architectManager");
 	}
 }
 
@@ -2500,8 +2527,8 @@ minInterval 30
 	}
 
 	// Gather at TC as fallback.
-	int tcID = getClosestUnit(cUnitTypeTownCenter, cMyID, cUnitStateAlive, gHomeBase, -1);
-	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypeTownCenter);
+	int tcID = getUnit(cUnitTypeAgeUpBuilding);
+	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, kbUnitGetProtoUnitID(tcID));
 	if (aiPlanGetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0) != tcID)
 		aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0, tcID);
 	aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, false);
@@ -2676,12 +2703,6 @@ minInterval 60
 
 void factoryTacticMonitor()
 {
-	if (civIsNative() == true || (civIsAsian() && cMyCiv != cCivChinese) || civIsAfrican())
-	{
-		xsDisableSelf();
-		return;
-	}
-
 	int factoryQueryID = createSimpleUnitQuery(cUnitTypeFactory, cMyID, cUnitStateAlive);
 	kbUnitQuerySetIgnoreKnockedOutUnits(factoryQueryID, true);
 	int numberFound = kbUnitQueryExecute(factoryQueryID);
@@ -2692,9 +2713,7 @@ void factoryTacticMonitor()
 	{
 		researchSimpleTech(cTechFactoryWaterPower, -1, cUnitTypeFactory, 99);
 		aiUnitSetTactic(kbUnitQueryGetResult(factoryQueryID, 0), cTacticWood);
-		// Chinese can only get one.
-		if (cMyCiv == cCivChinese)
-			xsDisableSelf();
+		return;
 	}
 
 	if (numberFound == 2)
@@ -2719,15 +2738,12 @@ void factoryTacticMonitor()
 			}
 		}
 		aiUnitSetTactic(kbUnitQueryGetResult(factoryQueryID, 1), cTacticCannon);
-		// European style civs can only get 2, except for the US.
-		if (cMyCiv != cCivDEAmericans)
-			xsDisableSelf();
+		return;
 	}
 
 	if (numberFound == 3)
 	{
 		aiUnitSetTactic(kbUnitQueryGetResult(factoryQueryID, 2), cTacticWood);
-		xsDisableSelf();
 	}
 }
 

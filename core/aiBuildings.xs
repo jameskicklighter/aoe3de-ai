@@ -21,7 +21,6 @@ void buildingPlacementFailedHandler(int baseID = -1, int puid = -1)
 		int last = xsArrayGetSize(gTorpPositionsToAvoid);
 		xsArrayResizeVector(gTorpPositionsToAvoid, last + 1);
 		xsArraySetVector(gTorpPositionsToAvoid, last - 1, gTorpPosition);
-		// echoMessage("Torp Building Placement Failed");
 		return;
 	}
 
@@ -146,12 +145,12 @@ minInterval 5
 	xsSetRuleMinIntervalSelf(5);
 
 	arrayRemoveDonePlans(gHouseBuildPlans);
-	if (popRoom < (5 + 10 * kbGetAge()) && arrayGetSize(gHouseBuildPlans) < 1)
+	if (popRoom < (2 + 11 * kbGetAge()) && arrayGetSize(gHouseBuildPlans) < 1)
 	{
 		if (cMyCiv == cCivDESwedish) // Just want to update gTorpBuildPlanPosition.
-			shouldBuildTorp(gHomeBase, 60.0 + kbGetAge() * 10.0);
+			shouldBuildTorp(gHomeBase, 50.0 + kbGetAge() * 5.0);
 		else if (cMyCiv == cCivJapanese) // Just want to update gShrineBuildPlanPosition.
-			shouldBuildShrine(gHomeBase, 60.0 + kbGetAge() * 10.0);
+			shouldBuildShrine(gHomeBase, 50.0 + kbGetAge() * 5.0);
 		planID = createBuildPlan(gHouseUnit, 1, 95, gHomeBase);
 		arrayPushInt(gHouseBuildPlans, planID);
 		aiPlanSetDesiredResourcePriority(planID, 65);
@@ -167,7 +166,7 @@ minInterval 5
 		}
 		else if (cMyCiv == cCivDESwedish)
 		{
-			if (shouldBuildTorp(gHomeBase, 60.0 + kbGetAge() * 10.0))
+			if (shouldBuildTorp(gHomeBase, 50.0 + kbGetAge() * 5.0))
 			{
 				planID = createBuildPlan(gHouseUnit, 1, 75, gHomeBase);
 				arrayPushInt(gHouseBuildPlans, planID);
@@ -176,7 +175,7 @@ minInterval 5
 		}
 		else if (cMyCiv == cCivJapanese)
 		{
-			if (shouldBuildShrine(gHomeBase, 60.0 + kbGetAge() * 10.0))
+			if (shouldBuildShrine(gHomeBase, 50.0 + kbGetAge() * 5.0))
 			{
 				planID = createBuildPlan(gHouseUnit, 1, 75, gHomeBase);
 				arrayPushInt(gHouseBuildPlans, planID);
@@ -265,7 +264,9 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 	{
 		case cUnitTypeOutpost:
 		case cUnitTypeBlockhouse:
-		case cUnitTypedeCathedral: // Since it can repair buildings, why not.
+		case cUnitTypedeCathedral: // Repairs Buildings.
+		case cUnitTypedeBasilica: // Boosts Building Work Rate.
+		case cUnitTypedeCommandery:
 		case cUnitTypeWarHut:
 		case cUnitTypeTeepee:
 		case cUnitTypeNoblesHut:
@@ -279,23 +280,24 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 			break;
 		}
 		case cUnitTypeFortFrontier:
+		case cUnitTypedeMalteseGun:
 		{
 			if (position == gHomeBase)
 				tempVector = position + gDirection_UP * 20.0;
 			else
 				tempVector = position;
 			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, tempVector);
-			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 45.0);
-			buildPlanAddPositionInfluence(planID, tempVector, 45.0, 100.0, cBPIFalloffLinear, true);
+			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 60.0);
+			buildPlanAddPositionInfluence(planID, tempVector, 60.0, 100.0, cBPIFalloffLinear, true);
 			break;
 		}
 		case cUnitTypeFactory:
 		{
 			aiPlanSetVariableVector(planID, cBuildPlanCenterPosition, 0, gHomeBase + gDirection_DOWN * 30.0);
-			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 45.0);
+			aiPlanSetVariableFloat(planID, cBuildPlanCenterPositionDistance, 0, 60.0);
 
 			aiPlanSetVariableVector(planID, cBuildPlanInfluencePosition, 0, gHomeBase + gDirection_DOWN * 30.0);
-			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 45.0);
+			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionDistance, 0, 60.0);
 			aiPlanSetVariableFloat(planID, cBuildPlanInfluencePositionValue, 0, 200.0);
 			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);
 		}
@@ -394,6 +396,7 @@ void selectBuildPlanPosition(int planID = -1, int puid = -1, vector position = c
 			aiPlanSetVariableInt(planID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);
 
 			if (puid == cUnitTypeBarracks || puid == cUnitTypeStable || puid == cUnitTypeArtilleryDepot ||
+				puid == cUnitTypedeLombard || puid == cUnitTypedeHospital || puid == cUnitTypedeCommandery ||
 				puid == cUnitTypeCorral || puid == cUnitTypeypWarAcademy || puid == cUnitTypeypBarracksJapanese ||
 				puid == cUnitTypeypStableJapanese || puid == cUnitTypeYPBarracksIndian || puid == cUnitTypeypCaravanserai ||
 				puid == cUnitTypedeWarCamp)
@@ -704,7 +707,7 @@ minInterval 3
 		tcQuery = kbUnitQueryCreate("TC query for shrine placement");
 		kbUnitQuerySetPlayerID(tcQuery, -1);
 		kbUnitQuerySetPlayerRelation(tcQuery, cPlayerRelationAny);
-		kbUnitQuerySetUnitType(tcQuery, cUnitTypeTownCenter);
+		kbUnitQuerySetUnitType(tcQuery, cUnitTypeAgeUpBuilding);
 		kbUnitQuerySetMaximumDistance(tcQuery, 50.0);  
 	}
 	
@@ -1019,7 +1022,6 @@ void selectUniversityBuildPlanPosition(int planID = -1, vector position = cInval
 // ================================================================================
 int findWagonToBuild(int puid = -1)
 {
-
 	debugBuildings("RUNNING findWagonToBuild");
 	debugBuildings("Looking for a Wagon to build: " + kbGetProtoUnitName(puid));
 
@@ -1110,13 +1112,12 @@ minInterval 20
 	{
 		planID = aiPlanGetIDByActiveIndex(i);
 		if (aiPlanGetType(planID) != cPlanBuild)
-		{
 			continue;
-		}
 		if (aiPlanGetState(planID) == cPlanStateBuild)
-		{
 			continue;
-		}
+		// Wagons cannot build upon a foundation lain by an architect and vice versa.
+		if (aiPlanGetUserVariableInt(planID, cBuildPlanBuilderTypeID, 0) == cUnitTypedeArchitect)
+			continue;
 
 		buildingType = aiPlanGetVariableInt(planID, cBuildPlanBuildingTypeID, 0);
 		wagonType = findWagonToBuild(buildingType);
@@ -1236,7 +1237,7 @@ minInterval 20
 				continue;
 			}
 		}
-		
+
 		switch (wagonType)
 		{
 			// Vanilla.
@@ -1403,6 +1404,10 @@ minInterval 20
 				{
 					buildingType = cUnitTypedeCathedral;
 				}
+				else if (cMyCiv == cCivDEItalians)
+				{
+					buildingType = cUnitTypedeBasilica;
+				}
 				else
 				{
 					buildingType = cUnitTypeChurch;
@@ -1482,12 +1487,18 @@ minInterval 20
 				if (civIsEuropean() == true)
 				{
 					int barracks = cUnitTypeBarracks;
+					int stable = cUnitTypeStable;
 					if (cMyCiv == cCivRussians)
 					{
 						barracks = cUnitTypeBlockhouse;
 					}
+					else if (cMyCiv == cCivDEMaltese)
+					{
+						barracks = cUnitTypedeHospital;
+						stable = cUnitTypedeCommandery;
+					}
 					int barracksCount = kbUnitCount(cMyID, barracks, cUnitStateABQ);
-					int stableCount = kbUnitCount(cMyID, cUnitTypeStable, cUnitStateABQ);
+					int stableCount = kbUnitCount(cMyID, stable, cUnitStateABQ);
 					int artilleryDepotCount = kbUnitCount(cMyID, cUnitTypeArtilleryDepot, cUnitStateABQ);
 					if ((barracksCount < stableCount) || (barracksCount < artilleryDepotCount) || (barracksCount == 0))
 					{
@@ -1495,7 +1506,7 @@ minInterval 20
 					}
 					else if ((stableCount < artilleryDepotCount) || (stableCount == 0))
 					{
-						buildingType = cUnitTypeStable;
+						buildingType = stable;
 					}
 					else
 					{
@@ -1764,6 +1775,38 @@ minInterval 20
 				buildingType = gTowerUnit;
 				break;
 			}
+			case cUnitTypedeLombardWagon:
+			{
+				buildingType = cUnitTypedeLombard;
+				break;
+			}
+			case cUnitTypedeCommanderyWagon:
+			{
+				buildingType = cUnitTypedeCommandery;
+				break;
+			}
+			case cUnitTypedeMalteseGunWagon:
+			{
+				buildingType = cUnitTypedeMalteseGun;
+				break;
+			}
+			case cUnitTypedeHanoverFactoryWagon:
+			{
+				buildingType = cUnitTypedeHanoverFactory;
+				break;
+			}
+			case cUnitTypedeTavernWagon:
+			{
+				if ((cMyCiv == cCivDEAmericans) || (cMyCiv == cCivDEMexicans))
+				{
+					buildingType = cUnitTypeSaloon;
+				}
+				else
+				{
+					buildingType = cUnitTypedeTavern;
+				}
+				break;
+			}
 		}
 		
 		if (buildingType < 0) // Didn't find a building so go to the next iteration.
@@ -1788,7 +1831,7 @@ minInterval 20
 		buildLimit = kbGetBuildLimit(cMyID, buildingType);
 		if (buildLimit >= 1)
 		{
-			buildingCount = kbUnitCount(cMyID, buildingType, cUnitStateABQ) +
+			buildingCount = kbUnitCount(cMyID, buildingType, cUnitStateAlive) +
 				aiPlanGetNumberByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, buildingType, true);
 			if (buildingCount >= buildLimit)
 			{
@@ -1799,6 +1842,7 @@ minInterval 20
 		aiPlanAddUnit(planID, wagon);
 	}
 }
+
 //==============================================================================
 /*	Startup Buildings
 	These are buildings we want to get up and running right at the start.
@@ -1812,6 +1856,12 @@ void startupBuildings()
 	if (cMyCiv == cCivOttomans)
 	{
 		planID = createBuildPlan(cUnitTypeChurch, 1, 99, gHomeBase + gDirection_DOWN * 15);
+	}
+
+	if (cMyCiv == cCivDEItalians)
+	{
+		createArchitectBuildPlan(cUnitTypeMarket, 92, gHomeBase);
+		createArchitectBuildPlan(cUnitTypedeLombard, 91, gHomeBase);
 	}
 
 	if (cMyCiv == cCivXPIroquois)
@@ -1890,16 +1940,16 @@ minInterval 5
 		treatyFactor = false;
 
 	vector location = cInvalidVector;
-	vector baseMilitaryBuildingLocation = gHomeBase + gDirection_UP * 10.0;
+	vector baseMilitaryBuildingLocation = gHomeBase + (gDirection_UP * (5.0 + kbGetAge() * 5.0));
 	if (gMyStrategy == cStrategyTreaty)
 		baseMilitaryBuildingLocation = gHomeBase + gDirection_UP * 45;
 
-	if (gDefenseReflexBaseID == kbBaseGetMainID(cMyID))
+	if (gDefenseReflexBaseID >= 0 && gDefenseReflexBaseID == gMainBase)
 		return;
 
 	// A Town Center if we don't have one.
 	planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeTownCenter);
-	if (planID < 0 && kbUnitCount(cMyID, cUnitTypeTownCenter, cUnitStateAlive) < 1)
+	if (planID < 0 && kbUnitCount(cMyID, cUnitTypeAgeUpBuilding, cUnitStateAlive) < 1)
 	{
 		planID = createBuildPlan(cUnitTypeTownCenter, 1, 99, gHomeBase);
 		aiPlanSetDesiredResourcePriority(planID, 99);
@@ -1927,53 +1977,106 @@ minInterval 5
 		debugBuildings("Starting a new Market build plan.");
 	}
 
-	// Trading Post.
-	// TODO (James): Use age-up handler to change cvOkToClaimTrade values for lower difficulties.
-	if (cvOkToClaimTrade == true/*  && kbCanAffordUnit(cUnitTypeTradingPost, cEconomyEscrowID) == true */)
-	{
-		// if (gMyStrategy == cStrategyTreaty || kbGetAge() >= cAge3)
-		// {
+	// Trading Posts (Trade Route).
+	// Easy and Standard Difficulties wait until Age 4 before building TPs.
+	if (cDifficultyCurrent >= cDifficultyModerate || kbGetAge() >= cAge4)
+	{	// If we are in Age 2 with a non-treaty strategy, only consider building a TP
+		// if we have >= 500 wood.
+		if (gMyStrategy == cStrategyTreaty ||
+			kbGetAge() >= cAge3 ||
+			kbResourceGet(cResourceWood) >= 500)
+		{
 			float radius = -1.0;
+			bool isNativeTP = false;
+			int postID = -1;
+			int goodSocketID = -1;
+			int totalNumRouteTPs = 0;
+			int totalNumNativeTPs = 0;
+			int myNumRouteTPs = 0;
+			int myNumNativeTPs = 0;
+
 			if (aiTreatyActive() == true)
 				radius = 85.0;
 
 			int socketID = -1;
-			int socketQuery = createSimpleUnitQuery(cUnitTypeSocketTradeRoute, 0, cUnitStateAlive, gHomeBase, radius);
+			int socketQuery = createSimpleUnitQuery(cUnitTypeSocket, 0, cUnitStateAny, gHomeBase, radius);
 			kbUnitQuerySetAscendingSort(socketQuery, true);
 			int numberFound = kbUnitQueryExecute(socketQuery);
 			numBuildings = 0;
 
 			for (i = 0; < numberFound)
 			{
-				socketID = kbUnitQueryGetResult(socketQuery, i);
-				// Already claimed.
-				if (getUnitByLocation(cUnitTypeTradingPost, cPlayerRelationAny, cUnitStateABQ, kbUnitGetPosition(socketID), 10.0) >= 0)
-				{
-					if (getUnitByLocation(cUnitTypeTradingPost, cMyID, cUnitStateABQ, kbUnitGetPosition(socketID), 10.0) >= 0)
-						numBuildings++;
-					continue;
-				}
-				if (getUnitByLocation(cUnitTypeTownCenter, cPlayerRelationEnemy, cUnitStateABQ, kbUnitGetPosition(socketID), 60.0) >= 0)
-					continue;
-
-				break;
+				if (kbUnitIsType(socketID, cUnitTypeNativeSocket) == true)
+					totalNumNativeTPs++;
+				else
+					totalNumRouteTPs++;
 			}
 
-			numWanted = numberFound / (getAllyCount() + 1);
-			if (numWanted == 0)
-				numWanted++;
-			if (numBuildings < numWanted)
+			for (i = 0; < numberFound)
 			{
-				planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeTradingPost);
-				if (planID < 0 && socketID >= 0)
+				isNativeTP = false;
+				socketID = kbUnitQueryGetResult(socketQuery, i);
+				if (kbUnitIsType(socketID, cUnitTypeNativeSocket) == true)
 				{
-					if (aiGetFallenExplorerID() < 0)
-						buildTradingPost(socketID, 60, cUnitTypeHero, 1);
-					else if (kbGetAge() >= cAge3)
-						buildTradingPost(socketID, 60, gEconUnit, 2);
+					isNativeTP = true;
+					// Do not consider alliances with Natives before Age 3.
+					if (kbGetAge() < cAge3)
+						continue;
+					// No city states here, handled in italianWarsCityStateMonitor.
+					if (kbUnitGetProtoUnitID(socketID) == cUnitTypedeSPCSocketCityState)
+						continue;
+				}
+
+				// Already claimed.
+				postID = getUnitByLocation(cUnitTypeTradingPost, cPlayerRelationAny, cUnitStateABQ, kbUnitGetPosition(socketID), 10.0);
+				if (postID >= 0)
+				{
+					if (kbUnitGetPlayerID(postID) == cMyID)
+					{
+						if (isNativeTP == false)
+							myNumRouteTPs++;
+						else
+							myNumNativeTPs++;
+					}
+					continue;
+				}
+
+				// Ignore this location if there are threatening enemy buildings nearby.
+				if (getUnitByLocation(cUnitTypeAbstractCallMinutemen, cPlayerRelationEnemy, cUnitStateABQ, kbUnitGetPosition(socketID), 50.0) >= 0)
+					continue;
+
+				if (goodSocketID < 0)
+					goodSocketID = socketID;
+			}
+
+			if (goodSocketID >= 0)
+			{
+				if (kbUnitIsType(goodSocketID, cUnitTypeNativeSocket) == false)
+				{
+					numWanted = totalNumRouteTPs / (getAllyCount() + 1);
+					numBuildings = myNumRouteTPs;
+				}
+				else
+				{
+					numWanted = totalNumNativeTPs / (getAllyCount() + 1);
+					numBuildings = myNumNativeTPs;
+				}
+
+				if (numWanted == 0)
+					numWanted++;
+				if (numBuildings < numWanted)
+				{
+					planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeTradingPost);
+					if (planID < 0)
+					{
+						if (aiGetFallenExplorerID() < 0)
+							buildTradingPost(goodSocketID, 60, cUnitTypeHero, 2);
+						else if (kbGetAge() >= cAge3)
+							buildTradingPost(goodSocketID, 60, gEconUnit, 2);
+					}
 				}
 			}
-		// }
+		}
 	}
 
 	// Banks for Dutch.
@@ -2025,6 +2128,30 @@ minInterval 5
 		}
 	}
 
+	// Maintain Bascillas and Lombards.
+	if (cMyCiv == cCivDEItalians)
+	{
+		numWanted = kbGetBuildLimit(cMyID, cUnitTypedeBasilica);
+		numBuildings = kbUnitCount(cMyID, cUnitTypedeBasilica, cUnitStateAlive);
+		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeBasilica);
+		// Only build with architects (wagons handled elsewhere).
+		if (planID < 0 && numBuildings < numWanted && kbUnitCount(cMyID, cUnitTypedeArchitect, cUnitStateABQ) > 0)
+			createArchitectBuildPlan(cUnitTypedeBasilica, 95, gHomeBase);
+
+		numWanted = getMin(4, 1 + kbGetAge());
+		numBuildings = kbUnitCount(cMyID, cUnitTypedeLombard, cUnitStateAlive);
+		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeLombard);
+		if (planID < 0 && numBuildings < numWanted)
+		{
+			// Look for an architect to build it, but it is not necessary.
+			if (kbUnitCount(cMyID, cUnitTypedeArchitect, cUnitStateAlive) > 0)
+				createArchitectBuildPlan(cUnitTypedeLombard, 85, gHomeBase);
+			// If a villager needs to build it, default priority is fine.
+			else
+				createBuildPlan(cUnitTypedeLombard, 1, 50, gHomeBase);
+		}
+	}
+
 	// Community Plaza for Natives.
 	if (civIsNative() == true)
 	{
@@ -2048,7 +2175,7 @@ minInterval 5
 	}
 
 	// Church.
-	if (civIsEuropean() == true && cMyCiv != cCivDEMexicans)
+	if (civIsEuropean() == true && cMyCiv != cCivDEMexicans && cMyCiv != cCivDEItalians)
 	{
 		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeChurch);
 		if (planID < 0 && kbUnitCount(cMyID, cUnitTypeChurch, cUnitStateAlive) < 1)
@@ -2065,6 +2192,18 @@ minInterval 5
 				aiPlanSetDesiredResourcePriority(planID, 40);
 				debugBuildings("Starting a new church build plan.");
 			}
+		}
+	}
+
+	// Cathedral.
+	if (cMyCiv == cCivDEMexicans)
+	{
+		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeCathedral);
+		if (planID < 0 && kbUnitCount(cMyID, cUnitTypedeCathedral, cUnitStateAlive) < 1)
+		{
+			planID = createBuildPlan(cUnitTypedeCathedral, 1, 60, gHomeBase);
+			aiPlanSetDesiredResourcePriority(planID, 40);
+			debugBuildings("Starting a new cathedral build plan.");
 		}
 	}
 
@@ -2091,50 +2230,15 @@ minInterval 5
 		}
 	}
 
-	// Mountain Monasteries.
-	if (cMyCiv == cCivDEEthiopians)
-	{
-		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeMountainMonastery);
-		location = gHomeBase;
-		numWanted = getUnitCountByLocation(cUnitTypeAbstractMine, 0, cUnitStateAlive, location, 80.0);
-		if (numWanted > kbGetBuildLimit(cMyID, cUnitTypedeMountainMonastery))
-			numWanted = kbGetBuildLimit(cMyID, cUnitTypedeMountainMonastery);
-		if (numWanted < 1)
-			numWanted = 1;
-		if ((planID < 0) && (kbUnitCount(cMyID, cUnitTypedeMountainMonastery, cUnitStateABQ) < numWanted) &&
-			(aiGetWorldDifficulty() >= cDifficultyModerate))
-		{
-			planID = createBuildPlan(cUnitTypedeMountainMonastery, 1, 60, gHomeBase);
-			debugBuildings("Starting a new mountain monestary build plan.");
-		}
-	}
-
-	// Universities.
-	if (cMyCiv == cCivDEHausa)
-	{
-		numWanted = 1 + kbGetAge();
-		buildLimit = kbGetBuildLimit(cMyID, cUnitTypedeUniversity);
-		if (kbGetAge() == cvMaxAge || numWanted > buildLimit)
-			numWanted = buildLimit;
-		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeUniversity);
-		if (planID < 0 && kbUnitCount(cMyID, cUnitTypedeUniversity, cUnitStateABQ) < numWanted &&
-			aiGetWorldDifficulty() >= cDifficultyModerate)
-		{
-			planID = createBuildPlan(cUnitTypedeUniversity, 1, 60, gHomeBase);
-			aiPlanSetDesiredResourcePriority(planID, 60);
-			debugBuildings("Starting a new university build plan.");
-		}
-	}
-
 	// That's it for Age 2.
 	if (kbGetAge() < cAge3)
 		return;
 
 	// ****************************************************************************************************
 
-	// Native Traing Posts.
-	if (cvOkToAllyNatives == true)
-	{
+	// Trading Posts (Natives).
+/* 	if (cDifficultyCurrent >= cDifficultyModerate || kbGetAge() >= cAge4)
+	{	// Sandbox and Easy Difficulties wait until Age 4 before building TPs.
 		float radius2 = -1.0;
 		if (aiTreatyActive() == true)
 			radius2 = 85.0;
@@ -2155,7 +2259,7 @@ minInterval 5
 					numBuildings++;
 				continue;
 			}
-			if (getUnitByLocation(cUnitTypeTownCenter, cPlayerRelationEnemy, cUnitStateABQ, kbUnitGetPosition(socketID2), 60.0) >= 0)
+			if (getUnitByLocation(cUnitTypeAgeUpBuilding, cPlayerRelationEnemy, cUnitStateABQ, kbUnitGetPosition(socketID2), 60.0) >= 0)
 				continue;
 
 			break;
@@ -2175,7 +2279,7 @@ minInterval 5
 					buildTradingPost(socketID2, 50, gEconUnit, 2);
 			}
 		}
-	}
+	} */
 
 	// Artillery Foundry.
 	if (gArtilleryDepotUnit != -1)
@@ -2241,18 +2345,6 @@ minInterval 5
 		}
 	}
 
-	// Cathedral.
-	if (cMyCiv == cCivDEMexicans)
-	{
-		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeCathedral);
-		if (planID < 0 && kbUnitCount(cMyID, cUnitTypedeCathedral, cUnitStateAlive) < 1)
-		{
-			planID = createBuildPlan(cUnitTypedeCathedral, 1, 60, gHomeBase);
-			aiPlanSetDesiredResourcePriority(planID, 40);
-			debugBuildings("Starting a new cathedral build plan.");
-		}
-	}
-
 	// Consulate.
 	if (civIsAsian() == true)
 	{
@@ -2279,6 +2371,16 @@ minInterval 5
 		return;
 
 	// ****************************************************************************************************
+
+	// Malta should maintain 3 Fixed Guns.
+	if (cMyCiv == cCivDEMaltese)
+	{
+		numBuildings = kbUnitCount(cMyID, cUnitTypedeMalteseGun, cUnitStateABQ);
+		numWanted = 3;
+		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeMalteseGun);
+		if (planID < 0 && numBuildings < numWanted && treatyFactor && aiGetFallenExplorerID() < 0)
+			createBuildPlan(cUnitTypedeMalteseGun, 1, 70, gHomeBase, 1, cUnitTypeHero);
+	}
 
 	// Europeans max out on Outposts/Blockhouses.
 	if (civIsEuropean() == true && cMyCiv != cCivRussians)
@@ -2313,6 +2415,14 @@ minInterval 5
 		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeypCastle);
 		if (planID < 0 && numBuildings < numWanted && treatyFactor)
 			createBuildPlan(cUnitTypeypCastle, 1, 70, gHomeBase);
+	}
+	else if (civIsAfrican() == true)
+	{
+		numBuildings = kbUnitCount(cMyID, cUnitTypedeTower, cUnitStateABQ);
+		numWanted = kbGetBuildLimit(cMyID, cUnitTypedeTower);
+		planID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypedeTower);
+		if (planID < 0 && numBuildings < numWanted && treatyFactor)
+			createBuildPlan(cUnitTypedeTower, 1, 70, gHomeBase);
 	}
 
 	// Aztecs max out on Nobles Huts.
@@ -2381,130 +2491,51 @@ minInterval 20
 
 //==============================================================================
 // towerManager
-// Tries to maintain as many gTowerUnit as gNumTowers / gCommandNumTowers / cvMaxTowers says.
-// updateWantedTowers() takes care of setting gNumTowers.
 //==============================================================================
 rule towerManager
 inactive
-minInterval 10
+minInterval 30
 {
-	if (cvOkToFortify == false)
+	if (civIsEuropean() == true)
 	{
-		return;  // Oops.  I shouldn't be running.
-	}
-
-	static int towerUpgradePlan = -1;
-	int towerUpgrade1 = cTechFrontierOutpost;
-	int towerUpgrade2 = cTechFortifiedOutpost;
-	if (cMyCiv == cCivRussians)
-	{
-		towerUpgrade1 = cTechFrontierBlockhouse;
-		towerUpgrade2 = cTechFortifiedBlockhouse;
-	}
-	if (cMyCiv == cCivXPIroquois)
-	{
-		towerUpgrade1 = cTechStrongWarHut;
-		towerUpgrade2 = cTechMightyWarHut;
-	}
-	if (cMyCiv == cCivXPAztec)
-	{
-		towerUpgrade1 = cTechStrongNoblesHut;
-		towerUpgrade2 = cTechMightyNoblesHut;
-	}
-	if (cMyCiv == cCivXPSioux)
-	{
-		towerUpgrade1 = cTechStrongWarHut;
-		towerUpgrade2 = cTechMightyWarHut;
-	}
-	if (cMyCiv == cCivDEInca)
-	{
-		towerUpgrade1 = cTechStrongWarHut;
-		towerUpgrade2 = cTechMightyWarHut;
-	}
-	if (civIsAsian() == true)
-	{
-		towerUpgrade1 = cTechypFrontierCastle;
-		towerUpgrade2 = cTechypFortifiedCastle;
-	}
-	if (civIsAfrican() == true)
-	{
-		towerUpgrade1 = cTechDESentryTower;
-		towerUpgrade2 = cTechDEGuardTower;
-	}
-
-	if (towerUpgradePlan >= 0)
-	{
-		if ((aiPlanGetState(towerUpgradePlan) < 0) || (aiPlanGetVariableInt(towerUpgradePlan, cResearchPlanBuildingID, 0) < 0))
+		if (cMyCiv == cCivRussians)
 		{
-			aiPlanDestroy(towerUpgradePlan);
-			towerUpgradePlan = -1;  // It's dead, Jim.
-			debugBuildings("Invalid tower upgrade plan destroyed.");
+			researchSimpleTech(cTechFrontierBlockhouse, cUnitTypeBlockhouse, -1, 50);
+			researchSimpleTech(cTechFortifiedBlockhouse, cUnitTypeBlockhouse, -1, 50);
+		}
+		else
+		{
+			researchSimpleTech(cTechFrontierOutpost, cUnitTypeOutpost, -1, 45);
+			researchSimpleTech(cTechFortifiedOutpost, cUnitTypeOutpost, -1, 45);
+		}
+
+		if (cMyCiv == cCivDEMaltese)
+		{
+			researchSimpleTech(cTechDEHeavyFixedGun, cUnitTypedeMalteseGun, -1, 50);
+			researchSimpleTech(cTechDEImperialFixedGun, cUnitTypedeMalteseGun, -1, 50);
 		}
 	}
+	else if (civIsNative() == true)
+	{
+		researchSimpleTech(cTechStrongWarHut, cUnitTypeWarHut, -1, 45);
+		researchSimpleTech(cTechMightyWarHut, cUnitTypeWarHut, -1, 45);
 
-	if ((kbTechGetStatus(towerUpgrade1) == cTechStatusObtainable) &&
-		 (towerUpgradePlan == -1) &&
-		(towerUpgrade1 != -1))
-	{  // The first upgrade is available, and I'm not researching it. 
-		if ((kbUnitCount(cMyID, gTowerUnit, cUnitStateABQ) >= 3) && (kbGetAge() >= cAge3))
-		{  // I have at least 3 towers
-			towerUpgradePlan = createSimpleResearchPlan(towerUpgrade1, -1, cMilitaryEscrowID, 70);
-			aiPlanSetDesiredResourcePriority(towerUpgradePlan, 45);
-			debugBuildings("Starting research plan for first tower upgrade in plan # " + towerUpgradePlan);
+		if (cMyCiv == cCivXPAztec)
+		{
+			researchSimpleTech(cTechStrongNoblesHut, cUnitTypeNoblesHut, -1, 45);
+			researchSimpleTech(cTechMightyNoblesHut, cUnitTypeNoblesHut, -1, 45);
 		}
 	}
-
-	if ((kbTechGetStatus(towerUpgrade2) == cTechStatusObtainable) &&
-		 (towerUpgradePlan == -1) &&
-		(towerUpgrade2 != -1))
-	{  // The second upgrade is available, and I'm not researching it. 
-		if ((kbUnitCount(cMyID, gTowerUnit, cUnitStateABQ) >= 4) && (kbGetAge() >= cAge4))
-		{  // I have at least 4 towers
-			towerUpgradePlan = createSimpleResearchPlan(towerUpgrade2, -1, cMilitaryEscrowID, 70);
-			aiPlanSetDesiredResourcePriority(towerUpgradePlan, 45);
-			debugBuildings("Starting research plan for second tower upgrade in plan # " + towerUpgradePlan);
-		}
+	else if (civIsAsian() == true)
+	{
+		researchSimpleTech(cTechypFrontierCastle, cUnitTypeypCastle, -1, 45);
+		researchSimpleTech(cTechypFortifiedCastle, cUnitTypeypCastle, -1, 45);
 	}
-
-	if ((kbUnitCount(cMyID, gTowerUnit, cUnitStateABQ) >= gNumTowers) && (kbUnitCount(cMyID, cUnitTypeOutpostWagon, cUnitStateAlive) <= 0) && (kbUnitCount(cMyID, cUnitTypeYPCastleWagon, cUnitStateAlive) <= 0))
-		return;  // We have enough, thank you, and no idle outpost or castle wagons.
-
-	int towerBuildPlanID = aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, gTowerUnit);
-	if (towerBuildPlanID >= 0) 
-		return;  // We're already building one.
-
-	if (civIsAsian() == false)
-	{ //BHG: Asians have different outpost wagon types so it's ok to keep going
-		if (aiPlanGetIDByTypeAndVariableType(cPlanBuild, cBuildPlanBuildingTypeID, cUnitTypeOutpost) >= 0)
-			return;  // We're already building one.  Weird case of civs that don't usually make towers having an outpost wagon given to them.
-	}
-	int builderType = -1;
-	if (builderType < 0)
-		builderType = gEconUnit;
-
-	int buildPlan = aiPlanCreate("Tower build plan ", cPlanBuild);
-	// What to build
-	if ((builderType == cUnitTypeOutpostWagon) && (civIsAsian() == false))
-		aiPlanSetVariableInt(buildPlan, cBuildPlanBuildingTypeID, 0, cUnitTypeOutpost);
 	else
-		aiPlanSetVariableInt(buildPlan, cBuildPlanBuildingTypeID, 0, gTowerUnit);
-	// Priority.
-	aiPlanSetDesiredPriority(buildPlan, 85);
-	aiPlanSetDesiredResourcePriority(buildPlan, 45);
-	// Econ, because mil doesn't get enough wood.
-	aiPlanSetMilitary(buildPlan, false);
-	aiPlanSetEconomy(buildPlan, true);
-	// Escrow.
-	aiPlanSetEscrowID(buildPlan, cEconomyEscrowID);
-	// Builders.
-	aiPlanAddUnitType(buildPlan, builderType, 1, 1, 1);
-	
-	// selectTowerBuildPlanPosition(buildPlan);
-	setTowerPosition(buildPlan, gTowerUnit);
-
-	debugBuildings("Cheapest tech for tower buildings is " + kbGetTechName(kbTechTreeGetCheapestUnitUpgrade(gTowerUnit)));
-	debugBuildings("Cheapest tech ID is " + kbTechTreeGetCheapestUnitUpgrade(gTowerUnit));
-	aiPlanSetActive(buildPlan);
+	{
+		researchSimpleTech(cTechDESentryTower, cUnitTypedeTower, -1, 45);
+		researchSimpleTech(cTechDEGuardTower, cUnitTypedeTower, -1, 45);
+	}
 }
 
 //==============================================================================
@@ -2680,5 +2711,122 @@ minInterval 75
 		aiPlanSetVariableInt(strongholdBuildPlanID, cBuildPlanInfluencePositionFalloff, 0, cBPIFalloffLinear);  // Linear slope falloff
 		//Go.
 		aiPlanSetActive(strongholdBuildPlanID);
+	}
+}
+
+
+//==============================================================================
+// buildHistoricalMapSocket
+//==============================================================================
+bool buildHistoricalMapSocket(int socketID = -1, int socketBuildingPUID = -1, int protoUnitCommandID = -1, int resourcePri = 50)
+{
+	// One plan at a time.
+	if (aiPlanGetIDByTypeAndVariableType(cPlanResearch, cResearchPlanProtoUnitCommandID, protoUnitCommandID) >= 0)
+	{
+		return(false);
+	}
+
+	// Already built, skipping.
+	if (getUnitByLocation(socketBuildingPUID, cPlayerRelationAny, cUnitStateABQ, kbUnitGetPosition(socketID), 10.0) >= 0)
+	{
+		return(false);
+	}
+
+	debugBuildings("Creating "+kbGetUnitTypeName(socketBuildingPUID)+" build plan on socket "+kbGetUnitTypeName(kbUnitGetProtoUnitID(socketID))+".");
+	createProtoUnitCommandResearchPlan(protoUnitCommandID, socketID, cEconomyEscrowID, 50, resourcePri);
+
+	return(true);
+}
+
+//==============================================================================
+// turkishWarDistrictMonitor
+//
+// Build TPs on district sockets whenever possible.
+//==============================================================================
+rule turkishWarDistrictMonitor
+active
+minInterval 30
+{
+	if (cRandomMapName != "eugreatturkishwar")
+	{
+		xsDisableSelf();
+		return;
+	}
+
+	static int socketPUIDs = -1;
+
+	if (socketPUIDs < 0)
+	{
+		socketPUIDs = xsArrayCreateInt(4, -1, "Turkish War Sockets");
+		xsArraySetInt(socketPUIDs, 0, cUnitTypedeSPCSocketMilitaryDistrict);
+		xsArraySetInt(socketPUIDs, 1, cUnitTypedeSPCSocketMarketDistrict);
+		xsArraySetInt(socketPUIDs, 2, cUnitTypedeSPCSocketArtilleryDistrict);
+		xsArraySetInt(socketPUIDs, 3, cUnitTypedeSPCSocketReligiousDistrict);
+	}
+
+	// If we are at trading post limit, return.
+	if (kbUnitCount(cMyID, cUnitTypeTradingPost, cUnitStateABQ) >= kbGetBuildLimit(cMyID, cUnitTypeTradingPost))
+	{
+		return;
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		int socketID = getUnit(xsArrayGetInt(socketPUIDs, i), cMyID, cUnitStateAny);
+
+		if (socketID < 0)
+		{
+			continue;
+		}
+
+		if (buildHistoricalMapSocket(socketID, cUnitTypeTradingPost, cProtoUnitCommanddeSocketBuildDistrict, 55) == true)
+		{
+			break;
+		}
+	}
+}
+
+//==============================================================================
+// cityStateMonitor
+//
+// Build TPs and towers in city states whenever possible.
+//==============================================================================
+rule cityStateMonitor
+active
+minInterval 30
+{
+	if (cRandomMapName != "euitalianwars")
+	{
+		xsDisableSelf();
+		return;
+	}
+
+	int cityStateQuery = createSimpleUnitQuery(cUnitTypedeSPCSocketCityState, cMyID, cUnitStateAny);
+	int numCityStates = kbUnitQueryExecute(cityStateQuery);
+
+	// Build city state TPs.
+	for (i = 0; i < numCityStates; i++)
+	{
+		int cityStateSocketID = kbUnitQueryGetResult(cityStateQuery, i);
+		if (buildHistoricalMapSocket(cityStateSocketID, cUnitTypeTradingPost, cProtoUnitCommanddeSocketBuild, 55) == true)
+		{
+			return;
+		}
+	}
+
+	// Build city state towers.
+	if (numCityStates > 0)
+	{
+		int cityTowerQuery = createSimpleUnitQuery(cUnitTypedeSPCSocketCityTower, cMyID, cUnitStateAny);
+		int numCityTowers = kbUnitQueryExecute(cityTowerQuery);
+
+		for (i = 0; i < numCityTowers; i++)
+		{
+			int cityTowerSocketID = kbUnitQueryGetResult(cityTowerQuery, i);
+			if (buildHistoricalMapSocket(cityTowerSocketID, cUnitTypedeSPCCityTower, cProtoUnitCommanddeSocketBuildCityTower, 50) == true)
+			{
+				return;
+			}
+		}
 	}
 }

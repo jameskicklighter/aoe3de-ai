@@ -106,10 +106,10 @@ minInterval 10
 	if (civIsAsian() == false)
 	{
 		politician = arrayGetInt(gAgeUpList, kbGetAge());
-		echoMessage("Politician: " + kbGetTechName(politician));
 		if ((kbTechGetStatus(politician) == cTechStatusObtainable) && (gAgeUpResearchPlan < 0))
 		{
-			gAgeUpResearchPlan = createResearchPlan(politician, cUnitTypeTownCenter, 99);
+			// We search for buildings with AgeUpBuilding abstract type which includes the command post in historical maps.
+			gAgeUpResearchPlan = createResearchPlan(politician, cUnitTypeAgeUpBuilding, 99);
 			aiPlanSetDesiredResourcePriority(gAgeUpResearchPlan, 51);
 			aiPlanSetEventHandler(gAgeUpResearchPlan, cPlanEventStateChange, "ageUpEventHandler");
 			return;
@@ -160,7 +160,18 @@ minInterval 45
 	int planID = -1;
 	int planPriority = 50;
 
+	// Americans can get Market Techs for free via cTechDEHCHamiltonianEconomics, which MUST be in the
+	// deck for Americans to research Market Techs, so be careful if you change that.
 	if (cMyCiv == cCivDEAmericans && kbTechGetStatus(cTechDEHCHamiltonianEconomics) != cTechStatusActive)
+		return;
+
+	// Do not start researching market upgrades prematurely once we have reach Age 2.
+	// If we do not have a barracks unit then we need to get that ASAP if this is a
+	// standard or <=20 min Treaty game. However, if we are Age 1 or aging up to Age 2,
+	// (and greater than Age 2) Then this check is bypassed. It is fine to research the
+	// basic techs then.
+	if (cMyCiv != cCivDEAmericans && gMyStrategy != cStrategyTreaty &&
+		kbGetAge() == cAge2 && kbUnitCount(cMyID, gBarracksUnit, cUnitStateABQ) == 0)
 		return;
 
 	for (i = 0; < arrayGetSize(gMarketTechs))
@@ -241,6 +252,11 @@ minInterval 45
 	int ageReq = -1;
 	int planID = -1;
 	int planPriority = 60;
+
+	// Mexicans can get Hacienda Techs for free via cTechDEHCFedMXElBajio, which MUST be in the
+	// deck for Mexicans to research Hacienda Techs, so be careful if you change that.
+	if (cMyCiv == cCivDEMexicans && kbTechGetStatus(cTechDEHCFedMXElBajio) != cTechStatusActive)
+		return;
 
 	for (i = 0; < arrayGetSize(gMillTechs))
 	{
@@ -1337,11 +1353,186 @@ void setupNativeUpgrades()
 
 				if (canDisableSelf == true)
 				{
-				debugTechs("DISABLING Lambda: 'minorNativeQuechuasUpgradeMonitor' because we have all the upgrades");
+					debugTechs("DISABLING Lambda: 'minorNativeQuechuasUpgradeMonitor' because we have all the upgrades");
 				}
 				return (canDisableSelf);
 			};
 			nativeCivFound = cCivIncas;
+			break;
+		}
+		// Brooklyn minor natives.
+		case cUnitTypedeSocketWittelsbach:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTechByCondition(
+					cTechDENatWittelsbachHuntingGear,
+					[]() -> bool { 
+						return (kbUnitCount(cMyID, cUnitTypeAbstractSkirmisher, cUnitStateABQ) +
+								kbUnitCount(cMyID, cUnitTypedeNatMountainTrooper, cUnitStateABQ) >= 10);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivWittelsbach;
+			break;
+		}
+		case cUnitTypedeSocketHabsburg:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTech(cTechDENatHabsburgViennaCongress, -1, tradingPostID);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivHabsburg;
+			break;
+		}
+		case cUnitTypedeSocketBourbon:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTechByCondition(
+					cTechDENatBourbonRoyalTax,
+					[]() -> bool {
+						return (kbUnitCount(cMyID, cUnitTypeBuilding, cUnitStateABQ) >= 20);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivHabsburg;
+			break;
+		}
+		case cUnitTypedeSocketJagiellon:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTechByCondition(
+					cTechDENatJagiellonPancerni,
+					[]() -> bool {
+						return (kbUnitCount(cMyID, cUnitTypeAbstractHandCavalry, cUnitStateABQ) >= 15);
+					},
+					-1,
+					tradingPostID
+				);
+
+				canDisableSelf &= researchSimpleTechByCondition(
+					cTechDENatJagiellonSarmatism,
+					[]() -> bool {
+						return (kbUnitCount(cMyID, cUnitTypeAbstractArcher, cUnitStateABQ) +
+						kbUnitCount(cMyID, cUnitTypeShip, cUnitStateABQ) >= 15);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivJagiellon;
+			break;
+		}
+		case cUnitTypedeSocketVasa:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = cvMaxAge < cAge3;
+
+				canDisableSelf |= researchSimpleTechByCondition(
+					cTechDENatVasaGoldenLiberty,
+					[]() -> bool { 
+						return (kbGetAge() >= cAge3);
+					},
+					-1,
+					tradingPostID
+				);
+
+				canDisableSelf &= researchSimpleTechByCondition(
+					cTechDENatVasaTarKilns,
+					[]() -> bool {
+						return (kbUnitCount(cMyID, cUnitTypeUnit, cUnitStateABQ) >= 15);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivVasa;
+			break;
+		}
+		case cUnitTypedeSocketHanover:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTech(cTechDENatHanoverRoyalScotsGrey, -1, tradingPostID);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivHanover;
+			break;
+		}
+		case cUnitTypedeSocketOldenburg:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = researchSimpleTechByCondition(
+					cTechDENatOldenBurgKalthoffRepeaters,
+					[]() -> bool {
+						return (kbUnitCount(cMyID, cUnitTypeAbstractSkirmisher, cUnitStateABQ) >= 15);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivOldenburg;
+			break;
+		}
+		case cUnitTypedeSocketWettin: // Get nothing.
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = true;
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivWettin;
+			break;
+		}
+		case cUnitTypedeSPCSocketCityState:
+		{
+			tempLambdaStorage = [](int tradingPostID = -1) -> bool {
+				bool canDisableSelf = cvMaxAge < cAge3;
+
+				canDisableSelf |= researchSimpleTechByCondition(
+					cTechDESPCFortifiedCityState,
+					[]() -> bool {
+						return (kbGetAge() >= cAge3 && kbUnitCount(cMyID, cUnitTypedeSPCCityTower, cUnitStateAlive) >= 3);
+					},
+					-1,
+					tradingPostID
+				);
+
+				canDisableSelf &= researchSimpleTechByCondition(
+					cTechDESPCArtilleryInnovations,
+					[]() -> bool {
+						return (kbGetAge() >= cAge3);
+					},
+					-1,
+					tradingPostID
+				);
+
+				return (canDisableSelf);
+			};
+
+			nativeCivFound = cCivSPCCityState;
 			break;
 		}
 		}
@@ -3015,5 +3206,33 @@ minInterval 60
 		{
 			researchSimpleTech(cTechypShrineFortressUpgrade, cUnitTypeypShrineJapanese);
 		}
+	}
+}
+
+rule cityTowerUpgradeMonitor
+inactive
+minInterval 60
+{
+	bool canDisableSelf = researchSimpleTechByCondition(
+		cTechDESPCCannonTowers, 
+		// Research once we have towers on every socket we owned.
+		[]() -> bool {
+			return (kbUnitCount(cMyID, cUnitTypedeSPCCityTower, cUnitStateABQ) >= kbUnitCount(cMyID, cUnitTypedeSPCSocketCityTower, cUnitStateAny));
+		},
+		cUnitTypedeSPCCityTower
+	);
+
+	canDisableSelf &= researchSimpleTechByCondition(
+		cTechDESPCTraceItalienne,
+		// Research once we have towers on every socket we owned.
+		[]() -> bool {
+			return (kbUnitCount(cMyID, cUnitTypedeSPCCityTower, cUnitStateABQ) >= kbUnitCount(cMyID, cUnitTypedeSPCSocketCityTower, cUnitStateAny));
+		},
+		cUnitTypedeSPCCityTower
+	);
+
+	if (canDisableSelf == true)
+	{
+		xsDisableSelf();
 	}
 }

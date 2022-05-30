@@ -40,6 +40,8 @@ extern vector avgEnemyBaseLocation = cInvalidVector;
 //==============================================================================
 // Buildings.
 //==============================================================================
+extern const int cBuildPlanBuilderTypeID = 0;
+
 extern int gTCBuildPlanID = -1;
 extern vector gTCSearchVector = cInvalidVector; // Used to define the center of the TC building placement search.
 extern int gTCStartTime = 10000;                // Used to define when the TC build plan can go active. In ms.
@@ -63,7 +65,6 @@ extern int gMilitaryBuildings = -1;
 extern int gArmyUnitBuildings = -1;
 extern int gFullGranaries = -1;  // List of granaries surrounded by fields
 extern int gFieldGranaryID = -1; // The current granary chosen to build a field nearby
-extern int gQueuedBuildPlans = -1;
 extern vector gTorpBuildPlanPosition = cInvalidVector;
 extern vector gShrineBuildPlanPosition = cInvalidVector;
 extern vector gGranaryBuildPlanPosition = cInvalidVector;
@@ -83,6 +84,7 @@ extern int gHouseBuildPlans = -1;
 extern int gGarrisonableBuildingQuery = -1;
 extern int gGarrisonableBuilding = -1;
 
+extern int gQueuedBuildingPriority = -1;
 
 //==============================================================================
 // Techs.
@@ -172,8 +174,6 @@ extern bool gIslandMap = false; // Does this map have lands with waters in betwe
 //==============================================================================
 // Economy.
 //==============================================================================
-extern int gPausedPlans = -1;
-
 extern int gEconUnit = cUnitTypeSettler;
 
 extern int cMaxSettlersPerFarm = 10;
@@ -207,8 +207,6 @@ extern int gGoldNumWorkers = -1;
 extern int gMaxGoldWorkers = -1;
 extern int gFoodFishResources = -1;
 extern int gGoldFishResources = -1;
-
-extern bool gForceWoodGathering = false;
 
 extern bool gGoodFishingMap = false;      // Set in init(), can be overridden in postInit() if desired.  True indicates that
 										  // fishing is a good idea on this map.
@@ -356,6 +354,7 @@ extern const int cStartModeScenarioTC = 1;    // Scenario, wait for aiStart unit
 extern const int cStartModeScenarioWagon = 2; // Scenario, wait for aiStart unit, then start TC build plan.
 extern const int cStartModeLandTC = 3;        // RM or GC game, starting with a TC...just go.
 extern const int cStartModeLandWagon = 4;     // RM or GC game, starting with a wagon.  Explore, start TC build plan.
+extern const int cStartModeLandResources = 5; // RM or GC game, starting with enough resources to build a TC.
 
 extern vector gStartingLocationOverride = cInvalidVector;
 extern bool gStartOnDifferentIslands = false; // Does this map have players starting on different islands?

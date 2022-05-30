@@ -628,6 +628,7 @@ minInterval 15
 	int puid = -1;
 	float unitPower = 0.0;
 	int targetBaseID = -1;
+	vector targetBaseLocation = cInvalidVector;
 	int targetPlayer = 2;
 	bool targetIsEnemy = true;
 	bool targetShouldAttack = false;
@@ -638,6 +639,10 @@ minInterval 15
 	float maxBaseAssets = 100.0;
 	int planID = -1;
 	int difficulty = cDifficultyCurrent;
+	bool isItalianWars = (cRandomMapName == "euItalianWars");
+	int cityStateQuery = -1;
+	bool isCityState = false;
+	int numberControlledCityStates = 0;
 
 	if (baseQuery < 0)
 	{
@@ -663,6 +668,30 @@ minInterval 15
 		else
 			attackingMonopoly = true;  // We're attacking, focus on trade posts
 	}
+	else if (isItalianWars == true && kbCounterGetCurrentValue("leagueVictoryTimer") < 600)
+	{
+		// Italian Wars League Victory as Trade Monopoly.
+		cityStateQuery = createSimpleUnitQuery(cUnitTypedeSPCSocketCityState, cPlayerRelationAny, cUnitStateAny);
+		numberFound = kbUnitQueryExecute(cityStateQuery);
+
+		for (i = 0; i < numberFound; i++)
+		{
+			unitID = kbUnitQueryGetResult(cityStateQuery, i);
+			if (kbIsPlayerAlly(kbUnitGetPlayerID(unitID)) == true)
+			{
+				numberControlledCityStates++;
+			}
+		}
+
+		if (numberControlledCityStates > (numberFound / 2))
+		{
+			attackingMonopoly = true;
+		}
+		else
+		{
+			defendingMonopoly = true;
+		}
+	}
 
 	if (gIsKOTHRunning == true || aiIsKOTHAllowed() == true)
 	{
@@ -682,24 +711,61 @@ minInterval 15
 	}
 
 	// Go through all players' bases and calculate values for comparison.
-	for (player = 1; < cNumberPlayers)
+	for (player = 0; < cNumberPlayers)
 	{
-		if (player == cMyID || kbHasPlayerLost(player) == true)
-			continue;
+		cityStateQuery = -1;
 
-		numberBases = kbBaseGetNumber(player);
-		// echoMessage("Number Bases for Player " + player + ": " + numberBases);
-		isEnemy = kbIsPlayerEnemy(player);
+		if (player == 0)
+		{
+			if (isItalianWars == true)
+			{
+				cityStateQuery = createSimpleUnitQuery(cUnitTypedeSPCSocketCityState, 0, cUnitStateAny);
+			}
+			else
+			{
+				continue;
+			}
+		}
 
-		if (isEnemy == true && (cvPlayerToAttack > 0 && cvPlayerToAttack != player && kbHasPlayerLost(cvPlayerToAttack) == false))
-			continue;
+		if (cityStateQuery < 0)
+		{
+			if (player == cMyID || kbHasPlayerLost(player) == true)
+			{
+				continue;
+			}
+
+			numberBases = kbBaseGetNumber(player);
+			isEnemy = kbIsPlayerEnemy(player);
+
+
+			if (isEnemy == true && (cvPlayerToAttack > 0 && cvPlayerToAttack != player && kbHasPlayerLost(cvPlayerToAttack) == false))
+			{
+				continue;
+			}
+		}
+		else
+		{
+			numberBases = kbUnitQueryExecute(cityStateQuery);
+			isEnemy = true;
+		}
 
 		for (baseIndex = 0; < numberBases)
 		{
-			baseID = kbBaseGetIDByIndex(player, baseIndex);
-			baseLocation = kbBaseGetLocation(player, baseID);
-			baseDistance = kbBaseGetDistance(player, baseID);
-			// echoMessage("Base Distance for player " + player + " of base " + baseID + " has distance " + baseDistance);
+			int cityStateID = -1;
+
+			if (cityStateQuery < 0)
+			{
+				baseID = kbBaseGetIDByIndex(player, baseIndex);
+				baseLocation = kbBaseGetLocation(player, baseID);
+				baseDistance = kbBaseGetDistance(player, baseID);
+			}
+			else // city state, treat the gaia controlled city state as an enemy base.
+			{
+				baseID = -1;
+				cityStateID = kbUnitQueryGetResult(cityStateQuery, baseIndex);
+				baseLocation = kbUnitGetPosition(cityStateID);
+				baseDistance = 30.0;
+			}
 
 			kbUnitQuerySetPlayerID(baseQuery, player);
 			kbUnitQuerySetState(baseQuery, cUnitStateABQ);
@@ -713,22 +779,26 @@ minInterval 15
 			buildingPower = 0.0;
 			militaryPower = 0.0;
 			enemyMilitaryPower = 0.0;
-			baseAssets = 0.0;
+			// Gaia city states, prioritize them over everything.
+			baseAssets = cityStateQuery < 0 ? 0.0 : 99999.0;
 			isKOTH = false;
 			isTradingPost = false;
 			shouldAttack = true;
+			isCityState = false;
 
 			if (isEnemy == true)
 			{
 				if (currentTime - gLastAttackMissionTime < gAttackMissionInterval)
+				{
 					shouldAttack = false;
-				else if (numberUnits < 12)
-					shouldAttack = false;
+				}
 			}
 			else
 			{
 				if (currentTime - gLastDefendMissionTime < gDefendMissionInterval)
+				{
 					shouldAttack = false;
+				}
 			}
 
 			for (i = 0; < numberFound)
@@ -737,147 +807,155 @@ minInterval 15
 				puid = kbUnitGetProtoUnitID(unitID);
 				switch (puid)
 				{
-					case cUnitTypeypKingsHill:
+				case cUnitTypeypKingsHill:
+				{
+					baseAssets = baseAssets + 1600.0;
+					isKOTH = true;
+					break;
+				}
+				case cUnitTypeTownCenter:
+				case cUnitTypedeSPCCommandPost:
+				{
+					baseAssets = baseAssets + 1000.0;
+					break;
+				}
+				// Buildings generating resources.
+				case cUnitTypeBank:
+				{
+					baseAssets = baseAssets + 800.0;
+					break;
+				}
+				case cUnitTypeFactory:
+				{
+					baseAssets = baseAssets + 1600.0;
+					break;
+				}
+				case cUnitTypeypWCPorcelainTower2:
+				{
+					baseAssets = baseAssets + 800.0;
+					break;
+				}
+				case cUnitTypeypWCPorcelainTower3:
+				{
+					baseAssets = baseAssets + 1200.0;
+					break;
+				}
+				case cUnitTypeypWCPorcelainTower4:
+				case cUnitTypeypWCPorcelainTower5:
+				{
+					baseAssets = baseAssets + 1600.0;
+					break;
+				}
+				case cUnitTypeypShrineJapanese:
+				{
+					baseAssets = baseAssets + 200.0;
+					break;
+				}
+				case cUnitTypeypWJToshoguShrine2:
+				case cUnitTypeypWJToshoguShrine3:
+				case cUnitTypeypWJToshoguShrine4:
+				case cUnitTypeypWJToshoguShrine5:
+				{
+					baseAssets = baseAssets + 400.0;
+					break;
+				}
+				case cUnitTypedeHouseInca:
+				case cUnitTypedeTorp:
+				{
+					baseAssets = baseAssets + 200.0;
+					break;
+				}
+				case cUnitTypedeMountainMonastery:
+				case cUnitTypedeUniversity:
+				{
+					baseAssets = baseAssets + 300.0;
+					break;
+				}
+				// Buildings automatically creating military units.
+				case cUnitTypeypWCSummerPalace2:
+				case cUnitTypeypWCSummerPalace3:
+				case cUnitTypeypWCSummerPalace4:
+				case cUnitTypeypWCSummerPalace5:
+				case cUnitTypeypDojo:
+				{
+					baseAssets = baseAssets + 1200.0;
+					break;
+				}
+				// Buildings with HC drop off point.
+				case cUnitTypeFortFrontier:
+				case cUnitTypeOutpost:
+				case cUnitTypeBlockhouse:
+				case cUnitTypeNoblesHut:
+				case cUnitTypeypWIAgraFort2:
+				case cUnitTypeypWIAgraFort3:
+				case cUnitTypeypWIAgraFort4:
+				case cUnitTypeypWIAgraFort5:
+				case cUnitTypeypCastle:
+				case cUnitTypeYPOutpostAsian:
+				case cUnitTypedeIncaStronghold:
+				case cUnitTypedeTower:
+				// Military buildings.
+				case cUnitTypeBarracks:
+				case cUnitTypeStable:
+				case cUnitTypeArtilleryDepot:
+				case cUnitTypeCorral:
+				case cUnitTypeypWarAcademy:
+				case cUnitTypeYPBarracksIndian:
+				case cUnitTypeypCaravanserai:
+				case cUnitTypeypBarracksJapanese:
+				case cUnitTypeypStableJapanese:
+				case cUnitTypedeKallanka:
+				case cUnitTypedeWarCamp:
+				case cUnitTypedeHospital:
+				case cUnitTypedeCommandery:
+				{
+					baseAssets = baseAssets + 100.0;
+					break;
+				}
+				case cUnitTypedePalace:
+				{
+					baseAssets = baseAssets + 200.0;
+					break;
+				}
+				// Villagers.
+				case cUnitTypeSettlerWagon:
+				{
+					baseAssets = baseAssets + 400.0;
+					break;
+				}
+				case cUnitTypeSettler:
+				case cUnitTypeCoureur:
+				case cUnitTypeCoureurCree:
+				case cUnitTypeSettlerNative:
+				case cUnitTypeypSettlerAsian:
+				case cUnitTypeypSettlerIndian:
+				case cUnitTypeypSettlerJapanese:
+				case cUnitTypedeSettlerAfrican:
+				{
+					baseAssets = baseAssets + 200.0;
+					break;
+				}
+				default:
+				{
+					if (kbUnitIsType(unitID, cUnitTypeTradingPost) == true)
 					{
-						baseAssets = baseAssets + 1600.0;
-						isKOTH = true;
-						break;
-					}
-					case cUnitTypeTownCenter:
-					{
-						baseAssets = baseAssets + 1000.0;
-						break;
-					}
-					// Buildings generating resources.
-					case cUnitTypeBank:
-					{
-						baseAssets = baseAssets + 800.0;
-						break;
-					}
-					case cUnitTypeFactory:
-					{
-						baseAssets = baseAssets + 1600.0;
-						break;
-					}
-					case cUnitTypeypWCPorcelainTower2:
-					{
-						baseAssets = baseAssets + 800.0;
-						break;
-					}
-					case cUnitTypeypWCPorcelainTower3:
-					{
-						baseAssets = baseAssets + 1200.0;
-						break;
-					}
-					case cUnitTypeypWCPorcelainTower4:
-					case cUnitTypeypWCPorcelainTower5:
-					{
-						baseAssets = baseAssets + 1600.0;
-						break;
-					}
-					case cUnitTypeypShrineJapanese:
-					{
-						baseAssets = baseAssets + 200.0;
-						break;
-					}
-					case cUnitTypeypWJToshoguShrine2:
-					case cUnitTypeypWJToshoguShrine3:
-					case cUnitTypeypWJToshoguShrine4:
-					case cUnitTypeypWJToshoguShrine5:
-					{
-						baseAssets = baseAssets + 400.0;
-						break;
-					}
-					case cUnitTypedeHouseInca:
-					case cUnitTypedeTorp:
-					{
-						baseAssets = baseAssets + 200.0;
-						break;
-					}
-					case cUnitTypedeMountainMonastery:
-					case cUnitTypedeUniversity:
-					{
-						baseAssets = baseAssets + 300.0;
-						break;
-					}
-					// Buildings automatically creating military units.
-					case cUnitTypeypDojo:
-					case cUnitTypeypWCSummerPalace2:
-					case cUnitTypeypWCSummerPalace3:
-					case cUnitTypeypWCSummerPalace4:
-					case cUnitTypeypWCSummerPalace5:
-					{
-						baseAssets = baseAssets + 1200.0;
-						break;
-					}
-					// Buildings with HC drop off point.
-					case cUnitTypeFortFrontier:
-					case cUnitTypeOutpost:
-					case cUnitTypeBlockhouse:
-					case cUnitTypeNoblesHut:
-					case cUnitTypeypWIAgraFort2:
-					case cUnitTypeypWIAgraFort3:
-					case cUnitTypeypWIAgraFort4:
-					case cUnitTypeypWIAgraFort5:
-					case cUnitTypeypCastle:
-					case cUnitTypeYPOutpostAsian:
-					case cUnitTypedeIncaStronghold:
-					case cUnitTypedeTower:
-					// Military buildings.
-					case cUnitTypeBarracks:
-					case cUnitTypeStable:
-					case cUnitTypeArtilleryDepot:
-					case cUnitTypeCorral:
-					case cUnitTypeypWarAcademy:
-					case cUnitTypeYPBarracksIndian:
-					case cUnitTypeypCaravanserai:
-					case cUnitTypeypBarracksJapanese:
-					case cUnitTypeypStableJapanese:
-					case cUnitTypedeKallanka:
-					case cUnitTypedeWarCamp:
-					{
-						baseAssets = baseAssets + 100.0;
-						break;
-					}
-					case cUnitTypedePalace:
-					{
-						baseAssets = baseAssets + 200.0;
-						break;
-					}
-					// Villagers.
-					case cUnitTypeSettlerWagon:
-					{
-						baseAssets = baseAssets + 400.0;
-						break;
-					}
-					case cUnitTypeSettler:
-					case cUnitTypeCoureur:
-					case cUnitTypeCoureurCree:
-					case cUnitTypeSettlerNative:
-					case cUnitTypeypSettlerAsian:
-					case cUnitTypeypSettlerIndian:
-					case cUnitTypeypSettlerJapanese:
-					case cUnitTypedeSettlerAfrican:
-					{
-						baseAssets = baseAssets + 200.0;
-						break;
-					}
-					default:
-					{
-						if (kbUnitIsType(unitID, cUnitTypeTradingPost) == true)
+						if (isItalianWars == true && kbUnitGetSubCiv(unitID) == cCivSPCCityState)
 						{
-							if (kbUnitGetSubCiv(unitID) >= 0)
-							{
-								baseAssets = baseAssets + 400.0;
-							}
-							else // Trade route trading post.
-							{
-								baseAssets = baseAssets + 1600.0;
-							}
-							isTradingPost = true;
+							baseAssets += 2000.0;
+							isCityState = true;
 						}
-						break;
+						else if (kbUnitGetSubCiv(unitID) >= 0)
+						{
+							baseAssets += 400.0;
+						}
+						else // Trade route trading post.
+						{
+							baseAssets += 1600.0;
+						}
+						isTradingPost = true;
 					}
+					break;
+				}
 				}
 			}
 
@@ -890,7 +968,11 @@ minInterval 15
 			// Prioritize trade monopoly and king's hill when active.
 			if ((attackingMonopoly == true || defendingMonopoly == true) && isTradingPost == false)
 			{
+				// When Italian Wars League Victory is active, only attack those TPs.
+				if (isItalianWars == false || isCityState == true)
+				{
 				shouldAttack = false;
+				}
 			}
 			if ((attackingKOTH == true || defendingKOTH == true) && isKOTH == false)
 			{
@@ -903,27 +985,29 @@ minInterval 15
 				kbUnitQuerySetState(baseEnemyQuery, cUnitStateABQ);
 				kbUnitQuerySetPosition(baseEnemyQuery, baseLocation);
 				kbUnitQuerySetMaximumDistance(baseEnemyQuery, baseDistance + 10.0);
-				
+
 				kbUnitQuerySetUnitType(baseEnemyQuery, cUnitTypeLogicalTypeLandMilitary);
 				kbUnitQueryResetResults(baseEnemyQuery);
 				numberEnemyFound = kbUnitQueryExecute(baseEnemyQuery);
 
 				for (i = 0; < numberEnemyFound)
 				{
-					unitID = kbUnitQueryGetResult(baseQuery, i);
-					puid = kbUnitGetProtoUnitID(unitID);
-					enemyMilitaryPower = enemyMilitaryPower + getMilitaryUnitStrength(puid);
+				unitID = kbUnitQueryGetResult(baseQuery, i);
+				puid = kbUnitGetProtoUnitID(unitID);
+				enemyMilitaryPower = enemyMilitaryPower + getMilitaryUnitStrength(puid);
 				}
 
 				if (enemyMilitaryPower == 0.0)
-					continue;
+				{
+				continue;
+			}
 			}
 
 			for (i = 0; < numberFound)
 			{
 				unitID = kbUnitQueryGetResult(baseQuery, i);
 				puid = kbUnitGetProtoUnitID(unitID);
-				
+
 				switch (puid)
 				{
 					case cUnitTypeFortFrontier:
@@ -945,6 +1029,7 @@ minInterval 15
 					case cUnitTypeypWIAgraFort5:
 					case cUnitTypedeIncaStronghold:
 					case cUnitTypeTownCenter:
+					case cUnitTypedeSPCCommandPost:
 					{
 						buildingPower = buildingPower + 4.0;
 						break;
@@ -971,21 +1056,27 @@ minInterval 15
 
 			if (isEnemy == true)
 			{
-				// do we have enough power to defeat the target base?
+				// Do we have enough power to defeat the target base?
 				if (armyPower < militaryPower && availableMilitaryPop > 0)
-				shouldAttack = false;
+				{
+					shouldAttack = false;
+				}
 			}
 			else
 			{
-				// is my ally really in trouble and can I handle the attack?
+				// Is my ally really in trouble and can I handle the attack?
 				if ((militaryPower + buildingPower > enemyMilitaryPower) ||
 					(armyPower + militaryPower + buildingPower < enemyMilitaryPower * 0.8))
-				shouldAttack = false;
+				{
+					shouldAttack = false;
+				}
 			}
 
-			// prioritize defending allies.
+			// Prioritize defending allies.
 			if (isEnemy == true && targetIsEnemy == false)
+			{
 				shouldAttack = false;
+			}
 
 			if (baseAssets > maxBaseAssets)
 			{
@@ -994,24 +1085,33 @@ minInterval 15
 			}
 
 			if (isEnemy == true)
+			{
 				affordable = armyPower / (militaryPower + buildingPower);
+			}
 			else
+			{
 				affordable = (armyPower + militaryPower + buildingPower) / enemyMilitaryPower;
+			}
 
 			// Adjust for distance. If < 100m, leave as is.  Over 100m to 400m, penalize 10% per 100m.
 			distancePenalty = getDistance(mainBaseLocation, baseLocation) / 1000.0;
 			if (distancePenalty > 0.4)
+			{
 				distancePenalty = 0.4;
+			}
 			// Increase penalty by 40% if transporting is required.
 			baseAreaGroup = kbAreaGroupGetIDByPosition(baseLocation);
 			if (mainAreaGroup != baseAreaGroup)
+			{
 				distancePenalty = distancePenalty + 0.4;
+			}
 			distancePenalty = 1.0 - distancePenalty;
 
 			score = (baseAssets / maxBaseAssets) * affordable * distancePenalty;
 			if (score > targetScore || (shouldAttack == true && targetShouldAttack == false))
 			{
 				targetBaseID = baseID;
+				targetBaseLocation = baseLocation;
 				targetPlayer = player;
 				targetIsEnemy = isEnemy;
 				targetBaseAssets = baseAssets;
@@ -1021,11 +1121,19 @@ minInterval 15
 				targetShouldAttack = shouldAttack;
 			}
 		}
+
+		// If we found a city state target, break now.
+		if (isItalianWars == true && cityStateQuery >= 0 && targetShouldAttack == true)
+		{
+			break;
+		}
 	}
 
-	// update target player.
+	// Update target player.
 	if (targetIsEnemy == true)
+	{
 		aiSetMostHatedPlayerID(targetPlayer);
+	}
 
 	if (targetBaseID < 0 || targetShouldAttack == false)
 	{
@@ -1035,16 +1143,13 @@ minInterval 15
 			targetIsEnemy = attackingKOTH;
 			int kothID = getUnit(cUnitTypeypKingsHill, cPlayerRelationAny, cUnitStateAlive);
 			targetPlayer = kbUnitGetPlayerID(kothID);
-			baseLocation = kbUnitGetPosition(kothID);
+			targetBaseLocation = kbUnitGetPosition(kothID);
 		}
-		else
+		// Exclude city state, which doesn't have a base ID.
+		else if (targetPlayer > 0)
 		{
 			return;
 		}
-	}
-	else
-	{
-		baseLocation = kbBaseGetLocation(targetPlayer, targetBaseID);
 	}
 
 	vector gatherPoint = kbBaseGetMilitaryGatherPoint(cMyID, mainBaseID);
@@ -1089,6 +1194,12 @@ minInterval 15
 			aiPlanSetVariableInt(planID, cCombatPlanRefreshFrequency, 0, 1000);
 		}
 		aiPlanSetVariableInt(planID, cCombatPlanDoneMode, 0, cCombatPlanDoneModeBaseGone);
+		// If we do not have a base, destroy the plan when we have no targets.
+		if (targetBaseID < 0)
+		{
+			aiPlanSetVariableInt(planID, cCombatPlanDoneMode, 0, cCombatPlanDoneModeNoTarget | aiPlanGetVariableInt(planID, cCombatPlanDoneMode, 0));
+			aiPlanSetVariableInt(planID, cCombatPlanNoTargetTimeout, 0, 30000);
+		}
 		aiPlanSetBaseID(planID, mainBaseID);
 		aiPlanSetInitialPosition(planID, gatherPoint);
 
@@ -2560,7 +2671,7 @@ minInterval 10
 		arrayID = arrayCreateInt(1, "Levy Plans");
 	}
 
-	int tcQueryID = createSimpleUnitQuery(cUnitTypeTownCenter, cMyID, cUnitStateAlive);
+	int tcQueryID = createSimpleUnitQuery(cUnitTypeAgeUpBuilding, cMyID, cUnitStateAlive);
 	int numberResults = kbUnitQueryExecute(tcQueryID);
 	int townCenterID = -1;
 	int techID = -1;
@@ -2782,7 +2893,7 @@ minInterval 1500
 	}
 	
 	bool canDisableSelf = researchSimpleTech(cTechBigSiouxDogSoldiers, -1, 
-		getUnit(cUnitTypeTownCenter, cMyID, cUnitStateAlive), 50);
+		getUnit(cUnitTypeAgeUpBuilding, cMyID, cUnitStateAlive), 50);
 		
 	if (canDisableSelf == true)
 	{
@@ -2803,7 +2914,7 @@ minInterval 10
 
 	mainBaseVec = kbBaseGetLocation(cMyID, kbBaseGetMainID(cMyID));
 
-	int towncenterID = getUnitByLocation(cUnitTypeTownCenter, cMyID, cUnitStateAlive, mainBaseVec, 40.0);
+	int towncenterID = getUnitByLocation(cUnitTypeAgeUpBuilding, cMyID, cUnitStateAlive, mainBaseVec, 40.0);
 
 	int levy1 = cTechypAssemble;
 	int levy2 = cTechypMuster;
@@ -3077,8 +3188,20 @@ minInterval 120
 		return;
 	}
 
+	if (aiPlanGetIDByTypeAndVariableType(cPlanResearch, cResearchPlanProtoUnitCommandID, cProtoUnitCommandRansomExplorer) >= 0)
+	{
+		return;
+	}
+
+	int tcID = getUnit(cUnitTypeTownCenter, cMyID, cUnitStateAlive);
+
+	if (tcID < 0)
+	{
+		return;
+	}
+
 	aiRansomExplorer(fallenExplorerID, cMilitaryEscrowID, getUnit(cUnitTypeTownCenter, cMyID, cUnitStateAlive));
-	debugMilitary("Ransoming explorer");
+	debugMilitary("Creating ransom explorer plan");
 }
 
 //==============================================================================

@@ -125,15 +125,12 @@ minInterval 5
 		debugChats("Rule IKnowWhereYouLive will threaten player #" + targetPlayer);
 	}
 
-	if (kbUnitCount(targetPlayer, cUnitTypeTownCenter, cUnitStateAlive) > 0)
+	int tcID = getUnit(cUnitTypeAgeUpBuilding, targetPlayer, cUnitStateAlive);
+	if (tcID >= 0)
 	{ // We see his TC for the first time.
-		int tcID = getUnit(cUnitTypeTownCenter, targetPlayer, cUnitStateAlive);
-		if (tcID >= 0)
-		{
-			if (getUnitByLocation(cUnitTypeUnit, cMyID, cUnitStateAlive, kbUnitGetPosition(tcID), 50.0) >= 0)
-			{ // I have a unit nearby, presumably I have LOS.
-				sendStatement(targetPlayer, cAICommPromptToEnemyISpotHisTC, kbUnitGetPosition(tcID));
-			}
+		if (getUnitByLocation(cUnitTypeUnit, cMyID, cUnitStateAlive, kbUnitGetPosition(tcID), 50.0) >= 0)
+		{ // I have a unit nearby, presumably I have LOS.
+			sendStatement(targetPlayer, cAICommPromptToEnemyISpotHisTC, kbUnitGetPosition(tcID));
 		}
 		xsDisableSelf();
 	}
@@ -155,7 +152,7 @@ minInterval 10
 
 	if (tcID1 < 0)
 	{
-		tcID1 = getUnit(cUnitTypeTownCenter, cPlayerRelationEnemy, cUnitStateAlive);
+		tcID1 = getUnit(cUnitTypeAgeUpBuilding, cPlayerRelationEnemy, cUnitStateAlive);
 		if (tcID1 >= 0)
 		{
 			enemy1 = kbUnitGetPlayerID(tcID1);
@@ -167,13 +164,13 @@ minInterval 10
 	{ // init - find all enemy TC's within 150 meters of first one.
 		secondTCQuery = kbUnitQueryCreate("Second enemy TC");
 		kbUnitQuerySetPlayerRelation(secondTCQuery, cPlayerRelationEnemy);
-		kbUnitQuerySetUnitType(secondTCQuery, cUnitTypeTownCenter);
+		kbUnitQuerySetUnitType(secondTCQuery, cUnitTypeAgeUpBuilding);
 		kbUnitQuerySetState(secondTCQuery, cUnitStateAlive);
 		kbUnitQuerySetPosition(secondTCQuery, kbUnitGetPosition(tcID1));
 		kbUnitQuerySetMaximumDistance(secondTCQuery, 150.0);
 		kbUnitQuerySetAscendingSort(secondTCQuery, true);
 	}
-	
+
 	kbUnitQueryResetResults(secondTCQuery);
 	int tcCount = kbUnitQueryExecute(secondTCQuery);
 	if (tcCount > 1) // Found another enemy TC.
@@ -1571,14 +1568,14 @@ void nuggetHandler(int playerID = -1)
 			explorerPos = kbUnitGetPosition(explorerID);
 			if (playerID == cMyID) 
 			{	// Get nearest ally TC distance
-				tcID = getUnitByLocation(cUnitTypeTownCenter, cPlayerRelationAllyExcludingSelf, cUnitStateAlive, explorerPos, cNuggetRange);
+				tcID = getUnitByLocation(cUnitTypeAgeUpBuilding, cPlayerRelationAllyExcludingSelf, cUnitStateAlive, explorerPos, cNuggetRange);
 				if ((tcID > 0) && (kbUnitGetPlayerID(tcID) != cMyID))
 				{ // A TC is near, owned by an ally, and it's not mine so I stole a nugget from him.
 				sendStatement(kbUnitGetPlayerID(tcID), cAICommPromptToAllyWhenIGatherNuggetHisBase);
 				return;
 				}
 				// Check if there in an enemy TC within range.
-				tcID = getUnitByLocation(cUnitTypeTownCenter, cPlayerRelationEnemy, cUnitStateAlive, explorerPos, cNuggetRange);
+				tcID = getUnitByLocation(cUnitTypeAgeUpBuilding, cPlayerRelationEnemy, cUnitStateAlive, explorerPos, cNuggetRange);
 				if (tcID > 0)
 				{ // A TC is near, owned by an enemy so I stole a nugget from him.
 				sendStatement(kbUnitGetPlayerID(tcID), cAICommPromptToEnemyWhenIGatherNuggetHisBase);
@@ -1589,7 +1586,7 @@ void nuggetHandler(int playerID = -1)
 			{
 				if (kbIsPlayerAlly(playerID) == true)
 				{ // An ally has found a nugget, see if it's close to my TC
-				tcID = getUnitByLocation(cUnitTypeTownCenter, cMyID, cUnitStateAlive, explorerPos, cNuggetRange);
+				tcID = getUnitByLocation(cUnitTypeAgeUpBuilding, cMyID, cUnitStateAlive, explorerPos, cNuggetRange);
 				if (tcID > 0)
 				{	// That jerk took my nugget!
 					sendStatement(playerID, cAICommPromptToAllyWhenHeGathersNuggetMyBase); // He got one in my zone.
@@ -1598,7 +1595,7 @@ void nuggetHandler(int playerID = -1)
 				}
 				else
 				{ // An enemy has found a nugget, see if it's in my zone
-				tcID = getUnitByLocation(cUnitTypeTownCenter, cMyID, cUnitStateAlive, explorerPos, cNuggetRange);
+				tcID = getUnitByLocation(cUnitTypeAgeUpBuilding, cMyID, cUnitStateAlive, explorerPos, cNuggetRange);
 				if (tcID > 0)
 				{	// That jerk took my nugget!
 					sendStatement(playerID, cAICommPromptToEnemyWhenHeGathersNuggetMyBase); // He got one in my zone.

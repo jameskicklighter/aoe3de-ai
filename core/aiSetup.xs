@@ -53,7 +53,6 @@ void initMapData(void)
 	gDirection_RIGHT = xsVectorSet(xsVectorGetZ(gDirection_UP), 0.0, xsVectorGetX(gDirection_UP) * -1.0);
 	gDirection_LEFT = gDirection_RIGHT * -1.0;
 
-	gMapNames = xsArrayCreateString(177, "", "Map names");
 	xsArraySetString(gMapNames, 0, "afatlas");
 	xsArraySetString(gMapNames, 1, "afatlaslarge");
 	xsArraySetString(gMapNames, 2, "afdarfur");
@@ -228,7 +227,67 @@ void initMapData(void)
 	xsArraySetString(gMapNames, 171, "texasfrontierlarge");
 	xsArraySetString(gMapNames, 172, "aflakevictoria");
 	xsArraySetString(gMapNames, 173, "aflakevictorialarge");
-	// List above is up to date for the first 2022 patch.
+	xsArraySetString(gMapNames, 174, "afarabia");
+	xsArraySetString(gMapNames, 175, "afarabialarge");
+	xsArraySetString(gMapNames, 176, "afcongobasin");
+	xsArraySetString(gMapNames, 177, "afcongobasinlarge");
+	xsArraySetString(gMapNames, 178, "eualps");
+	xsArraySetString(gMapNames, 179, "eualpslarge");
+	xsArraySetString(gMapNames, 180, "euantolia");
+	xsArraySetString(gMapNames, 181, "euanatolialarge");
+	xsArraySetString(gMapNames, 182, "euarchipelago");
+	xsArraySetString(gMapNames, 183, "euarchipelagolarge");
+	xsArraySetString(gMapNames, 184, "eubalkans");
+	xsArraySetString(gMapNames, 185, "eubalkanslarge");
+	xsArraySetString(gMapNames, 186, "eublackforest");
+	xsArraySetString(gMapNames, 187, "eublackforestlarge");
+	xsArraySetString(gMapNames, 188, "eubohemia");
+	xsArraySetString(gMapNames, 189, "eubohemialarge");
+	xsArraySetString(gMapNames, 190, "eucarpathians");
+	xsArraySetString(gMapNames, 191, "eucarpathianslarge");
+	xsArraySetString(gMapNames, 192, "eudanishstrait");
+	xsArraySetString(gMapNames, 193, "eudanishstraitlarge");
+	xsArraySetString(gMapNames, 194, "eudeluge");
+	xsArraySetString(gMapNames, 195, "eudnieperbasin");
+	xsArraySetString(gMapNames, 196, "eudnieperbasinlarge");
+	xsArraySetString(gMapNames, 197, "eueightyyearswar");
+	xsArraySetString(gMapNames, 198, "euengland");
+	xsArraySetString(gMapNames, 199, "euenglandlarge");
+	xsArraySetString(gMapNames, 200, "eufinland");
+	xsArraySetString(gMapNames, 201, "eufinlandlarge");
+	xsArraySetString(gMapNames, 202, "eufrance");
+	xsArraySetString(gMapNames, 203, "eufrancelarge");
+	xsArraySetString(gMapNames, 204, "eugreatnorthernwar");
+	xsArraySetString(gMapNames, 205, "eugreatturkishwar");
+	xsArraySetString(gMapNames, 206, "euhungarianplans");
+	xsArraySetString(gMapNames, 207, "euhungarianplanslarge");
+	xsArraySetString(gMapNames, 208, "euiberia");
+	xsArraySetString(gMapNames, 209, "euiberialarge");
+	xsArraySetString(gMapNames, 210, "euireland");
+	xsArraySetString(gMapNames, 211, "euirelandlarge");
+	xsArraySetString(gMapNames, 212, "euitalianwars");
+	xsArraySetString(gMapNames, 213, "euitaly");
+	xsArraySetString(gMapNames, 214, "euitalylarge");
+	xsArraySetString(gMapNames, 215, "eulowcountries");
+	xsArraySetString(gMapNames, 216, "eulowcountrieslarge");
+	xsArraySetString(gMapNames, 217, "eunapoleonicwars");
+	xsArraySetString(gMapNames, 218, "eupripetmarshes");
+	xsArraySetString(gMapNames, 219, "eupripetmarsheslarge");
+	xsArraySetString(gMapNames, 220, "eupyrenees");
+	xsArraySetString(gMapNames, 221, "eupyreneeslarge");
+	xsArraySetString(gMapNames, 222, "eurussoturkwar");
+	xsArraySetString(gMapNames, 223, "eusardiniacorsica");
+	xsArraySetString(gMapNames, 224, "eusardiniacorsicalarge");
+	xsArraySetString(gMapNames, 225, "eusaxony");
+	xsArraySetString(gMapNames, 226, "eusaxonylarge");
+	xsArraySetString(gMapNames, 227, "euscandinavia");
+	xsArraySetString(gMapNames, 228, "euscandinavialarge");
+	xsArraySetString(gMapNames, 229, "euthirtyyearswar");
+	xsArraySetString(gMapNames, 230, "euvistulabasin");
+	xsArraySetString(gMapNames, 231, "euvistulabasinlarge");
+	xsArraySetString(gMapNames, 232, "euwallachia");
+	xsArraySetString(gMapNames, 233, "euwallachialarge");
+	// List above is up to date for the Italy/Malta release.
 
 	debugSetup("         Analyzing Map");
 	debugSetup("Map name is: " + cRandomMapName);
@@ -661,14 +720,57 @@ void initCiv(void) {
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
-
 			arrayPushInt(gAgeUpList, cTechPoliticianPhilosopherPrince);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
 			arrayPushInt(gAgeUpList, cTechPoliticianEngineer);
 			arrayPushInt(gAgeUpList, cTechPoliticianPresidente);
 			break;
+		}
+		case cCivDEItalians: {
+			gEconUnit = cUnitTypeSettler;
+			gHouseUnit = cUnitTypeHouseMed;
+			gMarketUnit = cUnitTypeMarket;
+			gFarmUnit = cUnitTypeMill;
+			gPlantationUnit = cUnitTypePlantation;
+			gLivestockPenUnit = cUnitTypeLivestockPen;
+			gBarracksUnit = cUnitTypeBarracks;
+			gStableUnit = cUnitTypeStable;
+			gArtilleryDepotUnit = cUnitTypeArtilleryDepot;
+			gTowerUnit = cUnitTypeOutpost;
+			gDockUnit = cUnitTypeDock;
+			gFishingUnit = cUnitTypeFishingBoat;
+			gCaravelUnit = cUnitTypeCaravel;
+			gGalleonUnit = cUnitTypedeGalleass;
+			gFrigateUnit = cUnitTypeFrigate;
+			gMonitorUnit = cUnitTypeMonitor;
+
+			arrayPushInt(gAgeUpList, cTechPoliticianPhilosopherPrince);
+			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
+			arrayPushInt(gAgeUpList, cTechDEPoliticianPope);
+			arrayPushInt(gAgeUpList, cTechPoliticianPresidente);
+		}
+		case cCivDEMaltese: {
+			gEconUnit = cUnitTypeSettler;
+			gHouseUnit = cUnitTypeHouseMed;
+			gMarketUnit = cUnitTypeMarket;
+			gFarmUnit = cUnitTypeMill;
+			gPlantationUnit = cUnitTypePlantation;
+			gLivestockPenUnit = cUnitTypeLivestockPen;
+			gBarracksUnit = cUnitTypedeHospital;
+			gStableUnit = cUnitTypedeCommandery;
+			gArtilleryDepotUnit = cUnitTypeArtilleryDepot;
+			gTowerUnit = cUnitTypeOutpost;
+			gDockUnit = cUnitTypeDock;
+			gFishingUnit = cUnitTypeFishingBoat;
+			gCaravelUnit = cUnitTypedeOrderGalley;
+			gGalleonUnit = cUnitTypeGalleon;
+			gFrigateUnit = cUnitTypeFrigate;
+			gMonitorUnit = cUnitTypeMonitor;
+
+			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
+			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
+			arrayPushInt(gAgeUpList, cTechDEPoliticianPope);
+			arrayPushInt(gAgeUpList, cTechPoliticianPresidente);
 		}
 		case cCivDEAmericans: {
 			gEconUnit = cUnitTypeSettler;
@@ -1193,71 +1295,95 @@ void initArrays(void)
 	{
 		case cCivRussians:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(3, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(5, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeBlockhouse);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeStable);
 			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypedeTavern);
+			xsArraySetInt(gMilitaryBuildings, 4, cUnitTypeChurch);
+			break;
+		}
+		case cCivDEItalians:
+		{
+			gMilitaryBuildings = xsArrayCreateInt(5, -1, "Military Buildings");
+			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeBarracks);
+			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeStable);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypedeLombard);
+			xsArraySetInt(gMilitaryBuildings, 4, cUnitTypeChurch);
+			break;
+		}
+		case cCivDEMaltese:
+		{
+			gMilitaryBuildings = xsArrayCreateInt(6, -1, "Military Buildings");
+			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypedeHospital);
+			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypedeCommandery);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypedeTavern);
+			xsArraySetInt(gMilitaryBuildings, 4, cUnitTypeChurch);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeOutpost);
 			break;
 		}
 		case cCivXPIroquois:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(3, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(3, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeWarHut);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeCorral);
 			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypeNativeEmbassy);
 			break;
 		}
 		case cCivXPSioux:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(2, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(2, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeWarHut);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeCorral);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeNativeEmbassy);
 			break;
 		}
 		case cCivXPAztec:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(2, -1, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(3, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeWarHut);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeNoblesHut);
-			break;
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeNativeEmbassy);
 		}
 		case cCivDEInca:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(2, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(2, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeWarHut);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypedeKallanka);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeNativeEmbassy);
 			break;
 		}
 		case cCivChinese:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(2, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(3, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeypWarAcademy);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeypCastle);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeypMonastery);
 			break;
 		}
 		case cCivJapanese:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(3, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(5, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeypBarracksJapanese);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeypStableJapanese);
 			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeypCastle);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypeypMonastery);
+			xsArraySetInt(gMilitaryBuildings, 4, cUnitTypeypChurch);
 			break;
 		}
 		case cCivIndians:
 		{
-			gMilitaryBuildings = xsArrayCreateInt(3, 0, "Military Buildings");
+			gMilitaryBuildings = xsArrayCreateInt(4, -1, "Military Buildings");
 			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeYPBarracksIndian);
 			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeypCaravanserai);
 			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeypCastle);
+			xsArraySetInt(gMilitaryBuildings, 3, cUnitTypeypMonastery);
 			break;
 		}
 		case cCivDEEthiopians:
-		{
-			gMilitaryBuildings = xsArrayCreateInt(2, -1, "Military Buildings");
-			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypedeWarCamp);
-			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypedeTower);
-			break;
-		}
 		case cCivDEHausa:
 		{
 			gMilitaryBuildings = xsArrayCreateInt(2, -1, "Military Buildings");
@@ -1267,15 +1393,17 @@ void initArrays(void)
 		}
 		default:
 		{
+			gMilitaryBuildings = xsArrayCreateInt(5, -1, "Military Buildings");
+			xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeBarracks);
+			xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeStable);
+			xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
+			if (cMyCiv == cCivDEAmericans || cMyCiv == cCivDEMexicans)
+				xsArraySetInt(gMilitaryBuildings, 3, cUnitTypeSaloon);
+			else
+				xsArraySetInt(gMilitaryBuildings, 3, cUnitTypedeTavern);
+			xsArraySetInt(gMilitaryBuildings, 4, cUnitTypeChurch);
 			break;
 		}
-	}
-	if (gMilitaryBuildings < 1)
-	{
-		gMilitaryBuildings = xsArrayCreateInt(3, 0, "Military Buildings");
-		xsArraySetInt(gMilitaryBuildings, 0, cUnitTypeBarracks);
-		xsArraySetInt(gMilitaryBuildings, 1, cUnitTypeStable);
-		xsArraySetInt(gMilitaryBuildings, 2, cUnitTypeArtilleryDepot);
 	}
 
 	gArmyUnitBuildings = xsArrayCreateInt(gNumArmyUnitTypes, -1, "Army Unit Buildings");
@@ -1324,13 +1452,17 @@ void initArrays(void)
 		arrayPushInt(gMarketTechsAgeReq, cAge2);
 		arrayPushInt(gMarketTechsPrio, 60);
 		arrayPushInt(gMarketTechs, cTechLogFlume);
-		if (gMyStrategy == cStrategyTreaty)
+		// Italians want techs early for free villager.
+		// Americans can research this free with Hamiltonian Economics.
+		if (gMyStrategy == cStrategyTreaty || cMyCiv == cCivDEItalians || cMyCiv == cCivDEAmericans)
 			arrayPushInt(gMarketTechsAgeReq, cAge2);
 		else
 			arrayPushInt(gMarketTechsAgeReq, cAge3);
 		arrayPushInt(gMarketTechsPrio, -1);
 		arrayPushInt(gMarketTechs, cTechAmalgamation);
-		if (gMyStrategy == cStrategyTreaty)
+		// Italians want techs early for free villager.
+		// Americans can research this free with Hamiltonian Economics.
+		if (gMyStrategy == cStrategyTreaty || cMyCiv == cCivDEItalians || cMyCiv == cCivDEAmericans)
 			arrayPushInt(gMarketTechsAgeReq, cAge2);
 		else
 			arrayPushInt(gMarketTechsAgeReq, cAge3);
@@ -2040,6 +2172,9 @@ void gameStartup(void)
 	if (numCoveredWagons > 0)
 		createBuildPlan(cUnitTypeTownCenter, numCoveredWagons, 100, gHomeBase, 1, cUnitTypeCoveredWagon);
 
+	if (cMyCiv == cCivDEItalians)
+		xsEnableRule("architectManager");
+
 	if (cMyCiv == cCivDEInca)
 		xsEnableRule("chasquiMonitor");
 
@@ -2122,7 +2257,7 @@ minInterval 10
 	{
 		for (player = 1; < cNumberPlayers)
 		{
-			aiChat(player, "Better AI Mod. Version 4.3: Last updated on 20 May 2022.");
+			aiChat(player, "Better AI Mod. Version 4.2: Last updated on 29 May 2022.");
 		}
 	}
 

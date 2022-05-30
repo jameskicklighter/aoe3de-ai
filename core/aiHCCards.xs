@@ -310,6 +310,64 @@ void selectCards(void)
 			addCardInfoToArrays(cTechDEHCShipCaroleansRepeat, true);
 			break;
 		}
+		case cCivDEItalians:
+		{
+			addCardInfoToArrays(cTechHCRobberBarons);
+			addCardInfoToArrays(cTechDEHCAdvancedPoliticians);
+			addCardInfoToArrays(cTechHCXPLandGrab);
+			addCardInfoToArrays(cTechDEHCFlorentineFinancers);
+			addCardInfoToArrays(cTechDEHCGenoeseFinancers);
+			addCardInfoToArrays(cTechHCUnlockFort);
+			addCardInfoToArrays(cTechHCShipFalconets3, true);
+			addCardInfoToArrays(cTechDEHCFreemasonry);
+			addCardInfoToArrays(cTechDEHCAdvancedLombard);
+			addCardInfoToArrays(cTechDEHCUsury);
+			addCardInfoToArrays(cTechHCRefrigeration);
+			addCardInfoToArrays(cTechHCRoyalMint);
+			addCardInfoToArrays(cTechDEHCMonteDiPieta);
+			addCardInfoToArrays(cTechDEHCUffizi);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
+			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCShipPavisiers1, true);
+			addCardInfoToArrays(cTechDEHCMilaneseArsenal);
+			addCardInfoToArrays(cTechDEHCAlpini, false, true);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechHCFencingSchool, false, true);
+			addCardInfoToArrays(cTechHCRidingSchool, false, true);
+			addCardInfoToArrays(cTechDEHCCavalryCombatItalian, false, true);
+			addCardInfoToArrays(cTechDEHCSchiavoniSwords, false, true);
+			addCardInfoToArrays(cTechDEHCShipBersaglieriRepeat, true);
+			break;
+		}
+		case cCivDEMaltese:
+		{
+			addCardInfoToArrays(cTechHCUnlockFactory);
+			addCardInfoToArrays(cTechHCXPLandGrab);
+			addCardInfoToArrays(cTechDEHCFrenchTongue, true);
+			addCardInfoToArrays(cTechHCUnlockFort);
+			addCardInfoToArrays(cTechDEHCMilitaryOutposts);
+			addCardInfoToArrays(cTechDEHCVictoriousCity);
+			addCardInfoToArrays(cTechDEHCFireTowers, false, true);
+			addCardInfoToArrays(cTechDEHCShipHoopThrowers1, true);
+			addCardInfoToArrays(cTechHCRefrigeration);
+			addCardInfoToArrays(cTechHCRoyalMint);
+			addCardInfoToArrays(cTechHCShipSettlers3);
+			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCWignacourtConstructions);
+			addCardInfoToArrays(cTechDEHCHospitality);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
+			addCardInfoToArrays(cTechHCShipCrossbowmen1, true);
+			addCardInfoToArrays(cTechYPHCImprovedBuildingsTeam, false, true);
+			addCardInfoToArrays(cTechDEHCSquires, false, true);
+			addCardInfoToArrays(cTechDEHCMalteseCombat, false, true);
+			addCardInfoToArrays(cTechHCAdvancedArsenal);
+			addCardInfoToArrays(cTechDEHCRocketThrowers, false, true);
+			addCardInfoToArrays(cTechDEHCFlintlockRockets, false, true);
+			addCardInfoToArrays(cTechDEHCDignitaries, false, true);
+			addCardInfoToArrays(cTechDEHCFlameThrowers, false, true);
+			addCardInfoToArrays(cTechHCShipFalconets2, true);
+			break;
+		}
 		// For Americans and Mexicans, include some Federal Cards for priority reasons,
 		// but they won't be added to the deck when gCardList is called because they are not
 		// standard cards, but gained through age-ups.
@@ -326,15 +384,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechDEHCFedPlymouthSettlers, false, false, true); // Federal Card
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCTextileMills);
-			// Don't attempt to chop out French Immigrants shipment if we have negative handicap.
-			if (cDifficultyCurrent >= cDifficultyHard)
-			{
-				addCardInfoToArrays(cTechDEHCImmigrantsFrench);
-				gForceWoodGathering = true;
-				xsEnableRule("forcedWoodCoroutine");
-			}
-			else
-				addCardInfoToArrays(cTechDEHCImmigrantsIrish);
+			addCardInfoToArrays(cTechDEHCImmigrantsIrish);
 			addCardInfoToArrays(cTechDEHCImmigrantsDutch);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCXPLandGrab);
@@ -356,361 +406,289 @@ void selectCards(void)
 		{	// Cards
 			addCardInfoToArrays(cTechDEHCPorfiriato);
 			addCardInfoToArrays(cTechHCUnlockFactory);
+			addCardInfoToArrays(cTechHCXPLandGrab);
+			addCardInfoToArrays(cTechHCShipFalconets3, true);
 			addCardInfoToArrays(cTechDEHCFedMXElBajio); // Federal Card
 			addCardInfoToArrays(cTechHCRefrigeration);
-			addCardInfoToArrays(cTechDEHCMexicanMint);
+			addCardInfoToArrays(cTechHCTextileMills);
 			addCardInfoToArrays(cTechDEHCFedMXTonalaCeramics); // Federal Card
 			addCardInfoToArrays(cTechDEHCFedMXOurLadyOfLight); // Federal Card
 			addCardInfoToArrays(cTechDEHCAlhondigaDeGranaditas);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
-			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCShipSettlers4);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
-			addCardInfoToArrays(cTechDEHCIturbidePalace);
-			addCardInfoToArrays(cTechDEHCPresidialLancers);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechDEHCLiberationMarch);
+			addCardInfoToArrays(cTechDEHCIturbidePalace, false, true);
+			addCardInfoToArrays(cTechDEHCShipInsurgente1, true);
 			addCardInfoToArrays(cTechDEHCSevenLaws);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechDEHCLiberationMarch, false, true);
 			addCardInfoToArrays(cTechHCAdvancedArsenal);
-			addCardInfoToArrays(cTechHCCaballeros);
-			addCardInfoToArrays(cTechDEHCObservers);
-			addCardInfoToArrays(cTechDEHCCavalryCombatMexican);
-			addCardInfoToArrays(cTechHCShipFalconets3);
-			addCardInfoToArrays(cTechDEHCShipSoldado1);
-			addCardInfoToArrays(cTechDEHCShipInsurgente1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCIturbidePalace);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCShipFalconets3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipSoldado1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipInsurgente1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechDEHCPresidialLancers, false, true);
+			addCardInfoToArrays(cTechDEHCObservers, false, true);
+			addCardInfoToArrays(cTechHCCaballeros, false, true);
+			addCardInfoToArrays(cTechDEHCCavalryCombatMexican, false, true);
+			addCardInfoToArrays(cTechHCShipFalconets2, true);
 			break;
 		}
 		case cCivXPIroquois:
 		{	// Cards
+			addCardInfoToArrays(cTechHCXPLandGrab);
+			addCardInfoToArrays(cTechHCXPShipLightCannon2, true);
+			addCardInfoToArrays(cTechHCXPFrenchAllies1, true);
+			addCardInfoToArrays(cTechHCXPShipMusketWarriors3, true);
+			addCardInfoToArrays(cTechHCSustainableAgriculture);
+			addCardInfoToArrays(cTechHCRumDistillery);
 			addCardInfoToArrays(cTechHCXPShipVillagers3);
 			addCardInfoToArrays(cTechHCShipWoodCrates2);
 			addCardInfoToArrays(cTechHCXPShipVillagers4);
 			addCardInfoToArrays(cTechHCShipCoinCrates2);
-			addCardInfoToArrays(cTechHCXPTownDance);
-			addCardInfoToArrays(cTechHCXPLandGrab);
-			addCardInfoToArrays(cTechHCSustainableAgriculture);
-			addCardInfoToArrays(cTechHCRumDistillery);
+			addCardInfoToArrays(cTechHCXPShipTomahawk1, true);
+			addCardInfoToArrays(cTechHCXPTownDance, false, true);
 			addCardInfoToArrays(cTechHCXPNewWaysIroquois);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechHCXPInfantryCombatIroquois);
-			addCardInfoToArrays(cTechHCXPWarHutTrainingIroquois);
-			addCardInfoToArrays(cTechHCXPInfantryLOSTeam);
-			addCardInfoToArrays(cTechHCXPWarChiefIroquois1);
-			addCardInfoToArrays(cTechHCXPWarChiefIroquois2);
-			addCardInfoToArrays(cTechHCXPSiegeDiscipline);
-			addCardInfoToArrays(cTechHCEngineeringSchool);
-			addCardInfoToArrays(cTechHCXPSiegeCombat);
-			addCardInfoToArrays(cTechHCXPConservativeTactics);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechHCXPWarHutTrainingIroquois, false, true);
+			addCardInfoToArrays(cTechHCXPInfantryCombatIroquois, false, true);
+			addCardInfoToArrays(cTechHCXPInfantryLOSTeam, false, true);
+			addCardInfoToArrays(cTechHCXPWarChiefIroquois1, false, true);
+			addCardInfoToArrays(cTechHCXPWarChiefIroquois2, false, true);
+			addCardInfoToArrays(cTechHCXPSiegeDiscipline, false, true);
+			addCardInfoToArrays(cTechHCEngineeringSchool, false, true);
+			addCardInfoToArrays(cTechHCXPSiegeCombat, false, true);
+			addCardInfoToArrays(cTechHCXPConservativeTactics, false, true);
 			addCardInfoToArrays(cTechHCXPShipMixedCratesRepeat);
-			addCardInfoToArrays(cTechHCXPShipLightCannon2);
-			addCardInfoToArrays(cTechHCXPShipMantletsRepeat);
-			addCardInfoToArrays(cTechHCXPFrenchAllies1);
-			addCardInfoToArrays(cTechHCXPShipMusketWarriors3);
-			addCardInfoToArrays(cTechHCXPShipTomahawk1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTownDance);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipLightCannon2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipMantletsRepeat);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPFrenchAllies1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipMusketWarriors3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipTomahawk1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechHCXPShipMantletsRepeat, true);
 			break;
 		}
 		case cCivXPSioux:
 		{	// Cards
-			addCardInfoToArrays(cTechHCXPCommandSkill);
 			addCardInfoToArrays(cTechHCXPAdoption);
-			addCardInfoToArrays(cTechHCXPShipVillagers2);
-			addCardInfoToArrays(cTechHCShipWoodCrates3);
-			addCardInfoToArrays(cTechHCXPShipVillagers4);
-			addCardInfoToArrays(cTechHCXPGreatHunter);
-			addCardInfoToArrays(cTechHCShipCoinCrates3);
-			addCardInfoToArrays(cTechHCXPTownDance);
 			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCFoodSilos);
+			addCardInfoToArrays(cTechHCXPCommandSkill, false, true);
+			addCardInfoToArrays(cTechHCXPSiouxTwoKettleSupport, true);
+			addCardInfoToArrays(cTechHCXPSiouxSanteeSupport, true);
+			addCardInfoToArrays(cTechHCXPShipWarRifles1, true);
+			addCardInfoToArrays(cTechHCXPShipVillagers2);
+			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechHCXPGreatHunter);
+			addCardInfoToArrays(cTechHCXPShipVillagers4);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
+			addCardInfoToArrays(cTechHCXPShipAxeRiders3, true);
+			addCardInfoToArrays(cTechHCXPTownDance, false, true);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechHCXPMustangs, false, true);
+			addCardInfoToArrays(cTechHCRidingSchool, false, true);
+			addCardInfoToArrays(cTechHCXPFriendlyTerritory, false, true);
 			addCardInfoToArrays(cTechHCXPNewWaysSioux);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechHCRidingSchool);
-			addCardInfoToArrays(cTechHCXPFriendlyTerritory);
 			addCardInfoToArrays(cTechHCXPNomadicExpansion);
-			addCardInfoToArrays(cTechHCXPMustangs);
-			addCardInfoToArrays(cTechHCXPWindRunner);
-			addCardInfoToArrays(cTechHCXPCavalryCombatSioux);
-			addCardInfoToArrays(cTechHCXPSiouxTwoKettleSupport);
-			addCardInfoToArrays(cTechHCXPSiouxSanteeSupport);
-			addCardInfoToArrays(cTechHCXPOnikare);
-			addCardInfoToArrays(cTechHCXPBuffalo2);
-			addCardInfoToArrays(cTechHCXPShipAxeRidersRepeat);
-			addCardInfoToArrays(cTechHCXPShipWarRifles1);
-			addCardInfoToArrays(cTechHCXPShipAxeRiders3);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTownDance);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPSiouxTwoKettleSupport);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPSiouxSanteeSupport);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipAxeRidersRepeat);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipWarRifles1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipAxeRiders3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechHCXPWindRunner, false, true);
+			addCardInfoToArrays(cTechHCXPCavalryCombatSioux, false, true);
+			addCardInfoToArrays(cTechHCXPOnikare, false, true);
+			addCardInfoToArrays(cTechHCXPBuffalo2, true);
+			addCardInfoToArrays(cTechHCXPShipAxeRidersRepeat, true);
 			break;
 		}
 		case cCivXPAztec:
 		{	// Cards
+			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCXPChinampa2);
-			addCardInfoToArrays(cTechHCXPTempleXolotl);
 			addCardInfoToArrays(cTechHCXPAztecMining);
+			addCardInfoToArrays(cTechHCXPTempleXolotl);
+			addCardInfoToArrays(cTechHCXPTempleCenteotl, true);
+			addCardInfoToArrays(cTechHCXPTempleXipeTotec, true);
+			addCardInfoToArrays(cTechHCXPTempleTlaloc, true);
+			addCardInfoToArrays(cTechHCGrainMarket);
+			addCardInfoToArrays(cTechHCXPChinampa1);
+			addCardInfoToArrays(cTechHCFoodSilos);
 			addCardInfoToArrays(cTechHCXPShipVillagers3);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCXPShipMedicineMen2Aztec);
 			addCardInfoToArrays(cTechHCXPShipVillagers4);
 			addCardInfoToArrays(cTechHCXPCoinCratesAztec3);
-			addCardInfoToArrays(cTechHCXPTownDance);
-			addCardInfoToArrays(cTechHCXPLandGrab);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechHCFencingSchool);
-			addCardInfoToArrays(cTechHCXPWarHutTraining);
-			addCardInfoToArrays(cTechHCXPScorchedEarth);
-			addCardInfoToArrays(cTechHCXPChinampa1);
-			addCardInfoToArrays(cTechHCXPTempleCenteotl);
-			addCardInfoToArrays(cTechHCXPTempleXipeTotec);
-			addCardInfoToArrays(cTechHCXPTempleTlaloc);
-			addCardInfoToArrays(cTechHCXPKnightCombat);
-			addCardInfoToArrays(cTechHCXPCoyoteCombat);
-			addCardInfoToArrays(cTechHCGrainMarket);
-			addCardInfoToArrays(cTechHCFoodSilos);
+			addCardInfoToArrays(cTechHCXPShipMacehualtins3, true);
+			addCardInfoToArrays(cTechHCXPTownDance, false, true);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechHCFencingSchool, false, true);
+			addCardInfoToArrays(cTechHCXPWarHutTraining, false, true);
+			addCardInfoToArrays(cTechHCXPScorchedEarth, false, true);
+			addCardInfoToArrays(cTechHCXPKnightCombat, false, true);
+			addCardInfoToArrays(cTechHCXPCoyoteCombat, false, true);
 			addCardInfoToArrays(cTechHCXPExtensiveFortificationsAztec);
-			addCardInfoToArrays(cTechHCXPShipMacehualtinsRepeat);
-			addCardInfoToArrays(cTechHCXPShipMacehualtins3);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTownDance);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTempleCenteotl);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTempleXipeTotec);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPTempleTlaloc);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipMacehualtinsRepeat);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCXPShipMacehualtins3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechHCXPShipMacehualtinsRepeat, true);
 			break;
 		}
 		case cCivDEInca:
 		{	// Cards
 			addCardInfoToArrays(cTechDEHCTerraceFarming);
-			addCardInfoToArrays(cTechDEHCChichaBrewing);
 			addCardInfoToArrays(cTechDEHCMachuPicchu);
-			addCardInfoToArrays(cTechDEHCHuankaSupport);
-			addCardInfoToArrays(cTechDEHCIncaFortifications);
-			addCardInfoToArrays(cTechHCXPShipVillagers3);
-			addCardInfoToArrays(cTechDEHCShipWoodCratesInfInca);
-			addCardInfoToArrays(cTechHCShipCoinCrates3);
-			addCardInfoToArrays(cTechDEHCMonumentalArchitecture);
-			addCardInfoToArrays(cTechDEHCChasquisMessengers);
-			addCardInfoToArrays(cTechDEHCRoadBuilding);
-			addCardInfoToArrays(cTechDEHCCurare);
-			addCardInfoToArrays(cTechYPHCImprovedBuildingsTeam);
+			addCardInfoToArrays(cTechDEHCCollaSupport, true);
+			addCardInfoToArrays(cTechDEHCCajamarcaSupport, true);
+			addCardInfoToArrays(cTechDEHCChimuSupport, true);
 			addCardInfoToArrays(cTechHCFoodSilos);
-			addCardInfoToArrays(cTechDEHCMeleeInfCombatInca);
-			addCardInfoToArrays(cTechDEHCIncaBridgesTeam);
-			addCardInfoToArrays(cTechDEHCRangedInfDamageInca);
-			addCardInfoToArrays(cTechDEHCRangedInfHitpointsInca);
-			addCardInfoToArrays(cTechDEHCWarChiefInca2);
-			addCardInfoToArrays(cTechDEHCWarChiefInca1);
-			addCardInfoToArrays(cTechDEHCCollaSupport);
-			addCardInfoToArrays(cTechDEHCCajamarcaSupport);
-			addCardInfoToArrays(cTechDEHCChimuSupport);
-			addCardInfoToArrays(cTechDEHCShipJungleBowmenRepeat);
-			addCardInfoToArrays(cTechDEHCShipJungleBowmen1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCMonumentalArchitecture);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCCollaSupport);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCCajamarcaSupport);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCChimuSupport);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipJungleBowmenRepeat);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipJungleBowmen1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCImprovedBuildingsTeam);
+			addCardInfoToArrays(cTechDEHCIncaFortifications, false, true);
+			addCardInfoToArrays(cTechHCXPShipVillagers3);
+			addCardInfoToArrays(cTechDEHCHuankaSupport);
+			addCardInfoToArrays(cTechDEHCChichaBrewing);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
+			addCardInfoToArrays(cTechHCXPShipVillagers4);
+			addCardInfoToArrays(cTechDEHCShipWoodCratesInfInca);
+			addCardInfoToArrays(cTechDEHCShipJungleBowmen1, true);
+			addCardInfoToArrays(cTechDEHCMonumentalArchitecture, false, true);
+			addCardInfoToArrays(cTechDEHCChasquisMessengers, false, true);
+			addCardInfoToArrays(cTechYPHCImprovedBuildingsTeam, false, true);
+			addCardInfoToArrays(cTechDEHCCurare, false, true);
+			addCardInfoToArrays(cTechDEHCMeleeInfCombatInca, false, true);
+			addCardInfoToArrays(cTechDEHCRangedInfDamageInca, false, true);
+			addCardInfoToArrays(cTechDEHCRoadBuilding, false, true);
+			addCardInfoToArrays(cTechDEHCIncaBridgesTeam, false, true);
+			addCardInfoToArrays(cTechDEHCWarChiefInca2, false, true);
+			addCardInfoToArrays(cTechDEHCWarChiefInca1, false, true);
+			addCardInfoToArrays(cTechDEHCShipJungleBowmenRepeat, true);
 			break;
 		}
 		case cCivJapanese:
 		{	// Cards
-			addCardInfoToArrays(cTechYPHCIncreasedTribute);
+			addCardInfoToArrays(cTechYPHCAdvancedRicePaddy);
 			addCardInfoToArrays(cTechYPHCCheapUnitUpgradesTeam);
+			addCardInfoToArrays(cTechYPHCShipFlamingArrow3, true);
+			addCardInfoToArrays(cTechYPHCShipFlamingArrow1, true);
+			addCardInfoToArrays(cTechYPHCShipAshigaru4, true);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
-			addCardInfoToArrays(cTechypHCShipWoodCrates2);
+			addCardInfoToArrays(cTechYPHCIncreasedTribute);
 			addCardInfoToArrays(cTechYPHCShipSettlersAsian2);
+			addCardInfoToArrays(cTechypHCShipWoodCrates2);
 			addCardInfoToArrays(cTechypHCShipCoinCrates2);
-			addCardInfoToArrays(cTechYPHCAdvancedConsulate);
-			addCardInfoToArrays(cTechYPHCAdvancedRicePaddy);
+			addCardInfoToArrays(cTechYPHCShipAshigaru2, true);
 			addCardInfoToArrays(cTechYPHCShipBerryWagon2);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechYPHCBakufu);
-			addCardInfoToArrays(cTechYPHCJapaneseSiege);
-			addCardInfoToArrays(cTechYPHCAshigaruAntiCavalryDamage);
-			addCardInfoToArrays(cTechYPHCArtilleryCostJapanese);
-			addCardInfoToArrays(cTechYPHCNaginataAntiInfantryDamage);
-			addCardInfoToArrays(cTechYPHCYumiRange);
-			addCardInfoToArrays(cTechYPHCArtilleryHitpointsJapanese);
-			addCardInfoToArrays(cTechYPHCSmoothRelations); // Probably removable.
-			addCardInfoToArrays(cTechYPHCEnlistIrregulars);
-			addCardInfoToArrays(cTechYPHCShipFlamingArrow3);
-			addCardInfoToArrays(cTechYPHCShipNaginataRider1);
-			addCardInfoToArrays(cTechYPHCShipFlamingArrow1);
-			addCardInfoToArrays(cTechYPHCShipAshigaru4);
-			addCardInfoToArrays(cTechYPHCShipAshigaru2);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCEnlistIrregulars);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipFlamingArrow3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipNaginataRider1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipFlamingArrow1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipAshigaru4);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipAshigaru2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechYPHCBakufu, false, true);
+			addCardInfoToArrays(cTechYPHCAshigaruAntiCavalryDamage, false, true);
+			addCardInfoToArrays(cTechYPHCAshigaruDamage, false, true);
+			addCardInfoToArrays(cTechYPHCArtilleryCostJapanese, false, true);
+			addCardInfoToArrays(cTechYPHCNaginataAntiInfantryDamage, false, true);
+			addCardInfoToArrays(cTechYPHCYumiRange, false, true);
+			addCardInfoToArrays(cTechYPHCJapaneseSiege, false, true);
+			addCardInfoToArrays(cTechYPHCArtilleryHitpointsJapanese, false, true);
+			addCardInfoToArrays(cTechYPHCAdvancedConsulate); // Make Viable.
+			addCardInfoToArrays(cTechYPHCSmoothRelations); // Make Viable.
+			addCardInfoToArrays(cTechYPHCShipNaginataRider1, true);
 			break;
 		}
 		case cCivChinese:
 		{	// Cards
+			addCardInfoToArrays(cTechYPHCAdvancedRicePaddy);
 			addCardInfoToArrays(cTechYPHCConfusciousGift);
+			addCardInfoToArrays(cTechYPHCShipArquebusier1, true);
+			addCardInfoToArrays(cTechYPHCShipChangdao2, true);
+			addCardInfoToArrays(cTechYPHCShipChuKoNu2, true);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
 			addCardInfoToArrays(cTechYPHCSpawnRefugees1);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
-			addCardInfoToArrays(cTechYPHCAdvancedConsulate);
-			addCardInfoToArrays(cTechYPHCAdvancedRicePaddy);
-			addCardInfoToArrays(cTechHCImprovedBuildings);
-			addCardInfoToArrays(cTechYPHCBannerSchool);
-			addCardInfoToArrays(cTechYPHCAccupuncture);
-			addCardInfoToArrays(cTechYPHCOldHanArmyReforms);
-			addCardInfoToArrays(cTechYPHCHanAntiCavalryBonus);
-			addCardInfoToArrays(cTechYPHCWesternReforms);
-			addCardInfoToArrays(cTechYPHCTerritorialArmyCombat);
-			addCardInfoToArrays(cTechYPHCEngineeringSchoolTeam);
-			addCardInfoToArrays(cTechYPHCArtilleryCombatChinese);
-			addCardInfoToArrays(cTechYPHCSmoothRelations); // Probably removable.
-			addCardInfoToArrays(cTechYPHCAdvancedIrregulars);
-			addCardInfoToArrays(cTechYPHCVillageShooty);
-			addCardInfoToArrays(cTechYPHCShipFlyingCrow2);
-			addCardInfoToArrays(cTechYPHCShipArquebusier1);
-			addCardInfoToArrays(cTechYPHCShipChangdao2);
-			addCardInfoToArrays(cTechYPHCShipChuKoNu2);
-			addCardInfoToArrays(cTechYPHCShipChuKoNu1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCAdvancedIrregulars);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipFlyingCrow2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipArquebusier1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipChangdao2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipChuKoNu2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipChuKoNu1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechHCImprovedBuildings);
+			addCardInfoToArrays(cTechYPHCVillageShooty, false, true);
+			addCardInfoToArrays(cTechYPHCAdvancedConsulate); // Make Viable.
+			addCardInfoToArrays(cTechYPHCSmoothRelations); // Make Viable.
+			addCardInfoToArrays(cTechYPHCShipChuKoNu1, true);
+			addCardInfoToArrays(cTechYPHCAdvancedIrregulars, false, true);
+			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
+			addCardInfoToArrays(cTechYPHCBannerSchool, false, true);
+			addCardInfoToArrays(cTechYPHCAccupuncture, false, true);
+			addCardInfoToArrays(cTechYPHCOldHanArmyReforms, false, true);
+			addCardInfoToArrays(cTechYPHCHanAntiCavalryBonus, false, true);
+			addCardInfoToArrays(cTechYPHCWesternReforms, false, true);
+			addCardInfoToArrays(cTechYPHCTerritorialArmyCombat, false, true);
+			addCardInfoToArrays(cTechYPHCEngineeringSchoolTeam, false, true);
+			addCardInfoToArrays(cTechYPHCArtilleryCombatChinese, false, true);
+			addCardInfoToArrays(cTechYPHCShipFlyingCrow2, true);
 			break;
 		}
 		case cCivIndians:
 		{	// Cards
+			addCardInfoToArrays(cTechYPHCAdvancedRicePaddyIndians);
+			addCardInfoToArrays(cTechYPHCShipUrumiRegiment, true);
+			addCardInfoToArrays(cTechYPHCShipSepoy3, true);
+			addCardInfoToArrays(cTechYPHCShipUrumi1, true);
 			addCardInfoToArrays(cTechYPHCRoyalMintIndians);
-			addCardInfoToArrays(cTechYPHCGurkhaAid);
+			addCardInfoToArrays(cTechYPHCSustainableAgricultureIndians);
+			addCardInfoToArrays(cTechYPHCFoodSilosIndians);
+			addCardInfoToArrays(cTechYPHCGurkhaAid, false, true);
 			addCardInfoToArrays(cTechYPHCAgrarianism);
 			addCardInfoToArrays(cTechYPHCForeignLogging);
 			addCardInfoToArrays(cTechYPHCShipWoodCrates2Indians);
 			addCardInfoToArrays(cTechYPHCShipCoinCrates2Indians);
+			addCardInfoToArrays(cTechYPHCShipSepoy1, true);
 			addCardInfoToArrays(cTechYPHCAdvancedConsulateIndians);
-			addCardInfoToArrays(cTechYPHCAdvancedRicePaddyIndians);
 			addCardInfoToArrays(cTechYPHCGoraksha);
-			addCardInfoToArrays(cTechYPHCImprovedBuildingsTeam);
-			addCardInfoToArrays(cTechYPHCFencingSchoolIndians);
-			addCardInfoToArrays(cTechYPHCRidingSchoolIndians);
-			addCardInfoToArrays(cTechYPHCSustainableAgricultureIndians);
-			addCardInfoToArrays(cTechYPHCInfantrySpeedHitpointsTeam);
-			addCardInfoToArrays(cTechYPHCEastIndiaCompany);
-			addCardInfoToArrays(cTechYPHCCamelDamageIndians);
-			addCardInfoToArrays(cTechYPHCCamelFrightening);
-			addCardInfoToArrays(cTechYPHCIndianMonkFrighten);
-			addCardInfoToArrays(cTechYPHCSmoothRelationsIndians);
-			addCardInfoToArrays(cTechYPHCEnlistIrregularsIndians);
-			addCardInfoToArrays(cTechYPHCShipUrumiRegiment);
-			addCardInfoToArrays(cTechYPHCShipUrumi2);
-			addCardInfoToArrays(cTechYPHCShipSepoy3);
-			addCardInfoToArrays(cTechYPHCShipUrumi1);
-			addCardInfoToArrays(cTechYPHCShipSepoy1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCEnlistIrregularsIndians);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipUrumiRegiment);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipUrumi2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipSepoy3);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipUrumi1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCShipSepoy1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechYPHCImprovedBuildingsTeam);
+			addCardInfoToArrays(cTechYPHCImprovedBuildingsTeam, false, true);
+			addCardInfoToArrays(cTechYPHCFencingSchoolIndians, false, true);
+			addCardInfoToArrays(cTechYPHCRidingSchoolIndians, false, true);
+			addCardInfoToArrays(cTechYPHCElephantTrampling, false, true);
+			addCardInfoToArrays(cTechYPHCElephantCombatIndians, false, true);
+			addCardInfoToArrays(cTechYPHCEastIndiaCompany, false, true);
+			addCardInfoToArrays(cTechYPHCInfantrySpeedHitpointsTeam, false, true);
+			addCardInfoToArrays(cTechYPHCCamelDamageIndians, false, true);
+			addCardInfoToArrays(cTechYPHCCamelFrightening, false, true);
+			addCardInfoToArrays(cTechYPHCShipUrumi2, true);
 			break;
 		}
 		case cCivDEEthiopians:
 		{	// Cards
+			addCardInfoToArrays(cTechDEHCAdvancedAgriculture);
 			addCardInfoToArrays(cTechDEHCAdvancedLivestockMarket);
+			addCardInfoToArrays(cTechDEHCShipSebastopolMortar1, true);
+			addCardInfoToArrays(cTechDEHCShipNeftenya1, true);
 			addCardInfoToArrays(cTechDEHCRoofAfrica);
 			addCardInfoToArrays(cTechDEHCIyasuReforms);
+			addCardInfoToArrays(cTechDEHCFazogli);
+			addCardInfoToArrays(cTechDEHCBeekeepers);
 			addCardInfoToArrays(cTechDEHCShipVillagersAbunRepeat);
 			addCardInfoToArrays(cTechDEHCFasilidesCastle);
 			addCardInfoToArrays(cTechDEHCJesuitInfluence);
-			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCShipChonkyCattle);
+			addCardInfoToArrays(cTechDEHCShipVillagers2);
+			addCardInfoToArrays(cTechDEHCShipGascenya1, true);
 			addCardInfoToArrays(cTechDEHCLalibelaRockChurch);
+			addCardInfoToArrays(cTechDEHCMassLeviesAfrican, false, true);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechDEHCHeyWat);
-			addCardInfoToArrays(cTechDEHCAdvancedAgriculture);
-			addCardInfoToArrays(cTechDEHCBeekeepers);
-			addCardInfoToArrays(cTechDEHCFazogli);
-			addCardInfoToArrays(cTechDEHCFasterTrainingUnitsAfrican);
-			addCardInfoToArrays(cTechDEHCJesuitSpirituality);
-			addCardInfoToArrays(cTechDEHCCoffeeConsumption);
-			addCardInfoToArrays(cTechDEHCZebenyas);
-			addCardInfoToArrays(cTechDEHCTigrayMekonnen);
-			addCardInfoToArrays(cTechDEHCCartridgeCurrency);
-			addCardInfoToArrays(cTechDEHCChewaWarriors);
-			addCardInfoToArrays(cTechDEHCShewaRiders);
-			addCardInfoToArrays(cTechDEHCMassLeviesAfrican);
-			addCardInfoToArrays(cTechDEHCShipSebastopolMortar1);
-			addCardInfoToArrays(cTechDEHCShipNeftenya1);
-			addCardInfoToArrays(cTechDEHCShipGascenya1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCMassLeviesAfrican);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipSebastopolMortar1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipNeftenya1);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipGascenya1);
+			addCardInfoToArrays(cTechDEHCFasterTrainingUnitsAfrican, false, true);
+			addCardInfoToArrays(cTechDEHCChewaWarriors, false, true);
+			addCardInfoToArrays(cTechDEHCCartridgeCurrency, false, true);
+			addCardInfoToArrays(cTechDEHCZebenyas, false, true);
+			addCardInfoToArrays(cTechDEHCTigrayMekonnen, false, true);
+			addCardInfoToArrays(cTechDEHCShewaRiders, false, true);
+			addCardInfoToArrays(cTechDEHCGascenyaRepeat, true);
 			break;
 		}
 		case cCivDEHausa:
 		{	// Cards
-			addCardInfoToArrays(cTechDEHCAdvancedLivestockMarket);
-			addCardInfoToArrays(cTechDEHCKolaNutCultivation);
-			addCardInfoToArrays(cTechDEHCMassinaMadrasahs);
-			addCardInfoToArrays(cTechDEHCShipVillagers1Repeat);
-			addCardInfoToArrays(cTechDEHCPalaceAmina);
-			addCardInfoToArrays(cTechHCShipWoodCrates3);
-			addCardInfoToArrays(cTechDEHCShipVillagers2);
-			addCardInfoToArrays(cTechHCShipCoinCrates3);
-			addCardInfoToArrays(cTechDEHCGobarauMinaret);
 			addCardInfoToArrays(cTechDEHCAdvancedAgriculture);
-			addCardInfoToArrays(cTechDEHCFasterTrainingUnitsAfrican);
-			addCardInfoToArrays(cTechDEHCFodioTactics);
-			addCardInfoToArrays(cTechDEHCDaneGuns);
-			addCardInfoToArrays(cTechDEHCSarkinDogarai);
-			addCardInfoToArrays(cTechDEHCDurbarParade);
-			addCardInfoToArrays(cTechDEHCFulaniArcherCombat);
-			addCardInfoToArrays(cTechDEHCCounterCavalry);
-			addCardInfoToArrays(cTechDEHCHandCavalryHitpointsHausa);
+			addCardInfoToArrays(cTechDEHCAdvancedLivestockMarket);
+			addCardInfoToArrays(cTechDEHCMassinaMadrasahs);
+			addCardInfoToArrays(cTechDEHCKolaNutCultivation);
 			addCardInfoToArrays(cTechDEHCRanoIndigoProduction);
 			addCardInfoToArrays(cTechDEHCFulaniCattleFertilizer);
 			addCardInfoToArrays(cTechDEHCKoose);
-			addCardInfoToArrays(cTechDEHCMassLeviesAfrican);
-			addCardInfoToArrays(cTechDEHCShipJavelinRiders2);
-			addCardInfoToArrays(cTechDEHCShipFulaWarriors2);
-			addCardInfoToArrays(cTechDEHCShipFulaWarriors1);
-
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCMassLeviesAfrican);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipJavelinRiders2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipFulaWarriors2);
-			arrayPushInt(gMilitaryDefensiveCards, cTechDEHCShipFulaWarriors1);
+			addCardInfoToArrays(cTechDEHCShipFulaWarriors2, true);
+			addCardInfoToArrays(cTechDEHCShipVillagers1Repeat);
+			addCardInfoToArrays(cTechDEHCPalaceAmina);
+			addCardInfoToArrays(cTechDEHCShipVillagers2);
+			addCardInfoToArrays(cTechDEHCFulaniCrossingFestival);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
+			addCardInfoToArrays(cTechDEHCShipFulaWarriors1, true);
+			addCardInfoToArrays(cTechDEHCMassLeviesAfrican, false, true);
+			addCardInfoToArrays(cTechDEHCGobarauMinaret);
+			addCardInfoToArrays(cTechDEHCFasterTrainingUnitsAfrican, false, true);
+			addCardInfoToArrays(cTechDEHCDurbarParade, false, true);
+			addCardInfoToArrays(cTechDEHCFodioTactics, false, true);
+			addCardInfoToArrays(cTechDEHCDaneGuns, false, true);
+			addCardInfoToArrays(cTechDEHCSarkinDogarai, false, true);
+			addCardInfoToArrays(cTechDEHCFulaniArcherCombat, false, true);
+			addCardInfoToArrays(cTechDEHCCounterCavalry, false, true);
+			addCardInfoToArrays(cTechDEHCHandCavalryHitpointsHausa, false, true);
+			addCardInfoToArrays(cTechDEHCShipLifidiKnightsRepeat, true);
 			break;
 		}
 	}
@@ -759,15 +737,61 @@ bool shouldSendCard(int cardTechID = -1)
 	// already in Age 2.
 	switch (cardTechID)
 	{
+		case cTechHCShipFoodCrates3:
+		case cTechHCShipWoodCrates2:
+		case cTechHCShipWoodCrates3:
+		case cTechHCShipWoodCrates3German:
+		case cTechDEHCShipWoodCratesInfInca:
+		case cTechypHCShipWoodCrates2:
+		case cTechYPHCShipWoodCrates2Indians:
+		case cTechHCShipCoinCrates2:
+		case cTechHCShipCoinCrates3:
+		case cTechHCShipCoinCrates3German:
+		case cTechypHCShipCoinCrates2:
+		case cTechYPHCShipCoinCrates2Indians:
+		case cTechHCShipSettlers3:
+		case cTechHCShipSettlers4:
+		case cTechHCShipCoureurs2:
+		case cTechHCShipCoureurs3:
+		case cTechHCShipSettlerWagons3:
+		case cTechHCShipSettlerWagons4:
+		case cTechHCXPShipVillagers2:
+		case cTechHCXPShipVillagers3:
+		case cTechHCXPShipVillagers4:
+		case cTechYPHCShipSettlersAsian2:
+		case cTechDEHCShipVillagers1Repeat:
+		case cTechDEHCShipVillagers2:
+		case cTechDEHCShipVillagersAbunRepeat:
+		{
+			should = getAgingUpAge() <= cAge2;
+			break;
+		}
 		case cTechHCXPLandGrab:
 		case cTechYPHCAdvancedRicePaddy:
 		case cTechYPHCAdvancedRicePaddyIndians:
 		case cTechDEHCAdvancedAgriculture:
+		case cTechHCXPChinampa1:
+		case cTechHCXPChinampa2:
+		case cTechDEHCTerraceFarming:
 		{
 			should = gTimeToFarm | gTimeForPlantations;
 			break;
 		}
+		case cTechHCFoodSilos:
+		case cTechHCSustainableAgriculture:
+		case cTechHCGrainMarket:
+		case cTechYPHCFoodSilosIndians:
+		case cTechYPHCSustainableAgricultureIndians:
+		case cTechDEHCFulaniCattleFertilizer:
+		case cTechDEHCKoose:
+		{
+			should = gTimeToFarm;
+			break;
+		}
+		case cTechHCRumDistillery:
 		case cTechHCTextileMills:
+		case cTechDEHCFedMXTonalaCeramics:
+		case cTechDEHCRanoIndigoProduction:
 		{
 			should = gTimeForPlantations;
 			break;
@@ -792,7 +816,6 @@ bool shouldSendCard(int cardTechID = -1)
 		case cTechHCRoyalDecreeDutch:
 		{
 			should = (kbGetBuildLimit(cMyID, cUnitTypeBank) - kbUnitCount(cMyID, cUnitTypeBank, cUnitStateABQ)) < 2;
-			echoMessage("Should send royal decree dutch? " + should);
 			break;
 		}
 		case cTechHCBanks1:
@@ -802,9 +825,21 @@ bool shouldSendCard(int cardTechID = -1)
 			should |= (kbGetBuildLimit(cMyID, gEconUnit) - kbUnitCount(cMyID, gEconUnit, cUnitStateABQ)) < 6;
 			break;
 		}
+		case cTechHCBetterBanks:
+		{
+			should = kbUnitCount(cMyID, cUnitTypeBank, cUnitStateABQ) >= 4;
+			break;
+		}
 		case cTechHCRoyalDecreeRussian:
 		{
 			should = getAgingUpAge() >= cAge3;
+			break;
+		}
+		case cTechDEHCAdvancedLombard:
+		case cTechDEHCGenoeseFinancers:
+		case cTechDEHCFlorentineFinancers:
+		{
+			should = kbUnitCount(cMyID, cUnitTypedeLombard, cUnitStateAlive) >= 1;
 			break;
 		}
 		case cTechDEHCFedPlymouthSettlers:
@@ -876,10 +911,14 @@ minInterval 10
 			continue;
 
 		// Unless the card is an Age 4 or Federal military unit shipment 
-		// while we are Age4+, ignore it.
+		// while we are Age4+, ignore it. Don't ignore "support" cards
+		// that increase unit stats.
 		if (isMilitaryUnit)
 		{
-			if (kbGetAge() > ageReq && ageReq != -1 && ageReq < cAge4)
+			if (kbGetAge() > ageReq && ageReq != -1 && ageReq < cAge4 &&
+				(kbTechCostPerResource(cardTechID, cResourceFood) +
+				 kbTechCostPerResource(cardTechID, cResourceFood) +
+				 kbTechCostPerResource(cardTechID, cResourceGold) <= 0))
 				continue;
 		}
 
