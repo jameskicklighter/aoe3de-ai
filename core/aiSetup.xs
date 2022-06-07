@@ -15,7 +15,15 @@ void initMapData(void)
 	avgEnemyBaseLocation = cInvalidVector;
 	vector north = cInvalidVector;
 
-	gHomeBase = kbUnitGetPosition(getUnit(cUnitTypeLogicalTypeTCBuildLimit, cMyID, cUnitStateAlive));
+	int tcUnit = getUnit(cUnitTypeLogicalTypeTCBuildLimit);
+	int explorerUnit = getUnit(cUnitTypeHero);
+	if (tcUnit >= 0)
+		gHomeBase = kbUnitGetPosition(tcUnit);
+	else if (explorerUnit >= 0)
+		gHomeBase = kbUnitGetPosition(explorerUnit);
+	else
+		gHomeBase = kbGetPlayerStartingPosition(cMyID);
+
 	gAllyBaseArray = arrayCreateVector(numAllies, "Ally Base Array");
 	gEnemyBaseArray = arrayCreateVector(numEnemies, "Enemy Base Array");
 
@@ -504,9 +512,6 @@ void initCiv(void) {
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
-
 			arrayPushInt(gAgeUpList, cTechPoliticianPhilosopherPrince);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
 			arrayPushInt(gAgeUpList, cTechPoliticianEngineer);
@@ -530,9 +535,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypeGalleon;
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
 
 			arrayPushInt(gAgeUpList, cTechPoliticianPhilosopherPrince);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
@@ -558,9 +560,6 @@ void initCiv(void) {
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
-
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
 			arrayPushInt(gAgeUpList, cTechPoliticianTycoon);
@@ -584,9 +583,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypeGalleon;
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
 
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianExiledPrince);
@@ -612,9 +608,6 @@ void initCiv(void) {
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
-
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianExiledPrince);
 			arrayPushInt(gAgeUpList, cTechPoliticianTycoon);
@@ -638,9 +631,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypeGalleon;
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
 
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
@@ -666,9 +656,6 @@ void initCiv(void) {
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
-
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianBishopFortress);
 			arrayPushInt(gAgeUpList, cTechPoliticianTycoon);
@@ -692,9 +679,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypeGalleon;
 			gFrigateUnit = cUnitTypeFrigate;
 			gMonitorUnit = cUnitTypeMonitor;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCColonialMilitia;
 
 			arrayPushInt(gAgeUpList, cTechPoliticianQuartermaster);
 			arrayPushInt(gAgeUpList, cTechPoliticianExiledPrince);
@@ -790,9 +774,6 @@ void initCiv(void) {
 			gFrigateUnit = -1;
 			gMonitorUnit = cUnitTypexpIronclad;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechDEHCUSMarines;
-
 			arrayPushInt(gAgeUpList, cTechDEPoliticianFederalMassachusetts);
 			arrayPushInt(gAgeUpList, cTechDEPoliticianFederalNewHampshire);
 			arrayPushInt(gAgeUpList, cTechDEPoliticianFederalVermont);
@@ -816,9 +797,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypedeSteamer;
 			gFrigateUnit = -1;
 			gMonitorUnit = cUnitTypexpIronclad;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechDEHCIturbidePalace;
 
 			gFarmFoodTactic = cTacticHaciendaFood;
 			gFarmGoldTactic = cTacticHaciendaCoin;
@@ -847,9 +825,6 @@ void initCiv(void) {
 			gFrigateUnit = -1;
 			gMonitorUnit = -1;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCXPTownDance;
-
 			arrayPushInt(gAgeUpList, cTechTribalIroquoisWisewoman2);
 			arrayPushInt(gAgeUpList, cTechTribalIroquoisYouth3);
 			arrayPushInt(gAgeUpList, cTechTribalIroquoisChief4);
@@ -874,9 +849,6 @@ void initCiv(void) {
 			gFrigateUnit = -1;
 			gMonitorUnit = -1;
 
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCXPTownDance;
-
 			arrayPushInt(gAgeUpList, cTechTribalSiouxChief2);
 			arrayPushInt(gAgeUpList, cTechTribalSiouxShaman3);
 			arrayPushInt(gAgeUpList, cTechTribalSiouxWisewoman4);
@@ -900,9 +872,6 @@ void initCiv(void) {
 			gGalleonUnit = cUnitTypeCanoe;
 			gFrigateUnit = cUnitTypexpTlalocCanoe;
 			gMonitorUnit = -1;
-
-			gLandGrabCard = cTechHCXPLandGrab;
-			gColonialMilitiaCard = cTechHCXPTownDance;
 
 			if (gMyStrategy == cStrategyTreaty) {
 				arrayPushInt(gAgeUpList, cTechTribalAztecYouth2);
@@ -935,9 +904,6 @@ void initCiv(void) {
 			gFrigateUnit = -1;
 			gMonitorUnit = -1;
 
-			gLandGrabCard = -1;
-			gColonialMilitiaCard = cTechDEHCMonumentalArchitecture;
-
 			arrayPushInt(gAgeUpList, cTechTribalIncaShaman2);
 			arrayPushInt(gAgeUpList, cTechTribalIncaChief3);
 			arrayPushInt(gAgeUpList, cTechTribalIncaYouth4);
@@ -964,9 +930,6 @@ void initCiv(void) {
 
 			gFarmFoodTactic = cTacticPaddyFood;
 			gFarmGoldTactic = cTacticPaddyCoin;
-
-			gLandGrabCard = cTechYPHCAdvancedRicePaddy;
-			gColonialMilitiaCard = cTechYPHCEnlistIrregulars;
 
 			arrayPushInt(gAgeUpList, cUnitTypeypWJToshoguShrine2);
 			arrayPushInt(gAgeUpList, cUnitTypeypWJGiantBuddha3);
@@ -995,13 +958,10 @@ void initCiv(void) {
 			gFarmFoodTactic = cTacticPaddyFood;
 			gFarmGoldTactic = cTacticPaddyCoin;
 
-			gLandGrabCard = cTechYPHCAdvancedRicePaddy;
-			gColonialMilitiaCard = cTechYPHCAdvancedIrregulars;
-
 			arrayPushInt(gAgeUpList, cUnitTypeypWCSummerPalace2);
-			arrayPushInt(gAgeUpList, cUnitTypeypWCConfucianAcademy3);
-			arrayPushInt(gAgeUpList, cUnitTypeypWCPorcelainTower4);
-			arrayPushInt(gAgeUpList, cUnitTypeypWCTempleOfHeaven5);
+			arrayPushInt(gAgeUpList, cUnitTypeypWCTempleOfHeaven3);
+			arrayPushInt(gAgeUpList, cUnitTypeypWCConfucianAcademy4);
+			arrayPushInt(gAgeUpList, cUnitTypeypWCPorcelainTower5);
 			break;
 		}
 		case cCivIndians: {
@@ -1024,9 +984,6 @@ void initCiv(void) {
 
 			gFarmFoodTactic = cTacticPaddyFood;
 			gFarmGoldTactic = cTacticPaddyCoin;
-
-			gLandGrabCard = cTechYPHCAdvancedRicePaddyIndians;
-			gColonialMilitiaCard = cTechYPHCEnlistIrregularsIndians;
 
 			arrayPushInt(gAgeUpList, cUnitTypeypWIAgraFort2);
 			arrayPushInt(gAgeUpList, cUnitTypeypWIKarniMata3);
@@ -1054,9 +1011,6 @@ void initCiv(void) {
 
 			gFarmFoodTactic = cTacticFieldFood;
 			gFarmGoldTactic = cTacticFieldCoin;
-
-			gLandGrabCard = cTechDEHCAdvancedAgriculture;
-			gColonialMilitiaCard = cTechDEHCMassLeviesAfrican;
 
 			// Randomize Age Ups before Age 5, where we want Arabs.
 			gAllegianceSomali = arrayCreateInt(3, "Somali Age-ups");
@@ -1146,9 +1100,6 @@ void initCiv(void) {
 
 			gFarmFoodTactic = cTacticFieldFood;
 			gFarmGoldTactic = cTacticFieldCoin;
-
-			gLandGrabCard = cTechDEHCAdvancedAgriculture;
-			gColonialMilitiaCard = cTechDEHCMassLeviesAfrican;
 
 			// Randomize Age Ups before Age 5, where we want British.
 			gAllegianceBerbers = arrayCreateInt(3, "Berber Age-ups");
@@ -2121,14 +2072,16 @@ void gameStartup(void)
 	int planID = -1;
 	int buildingID = -1;
 
-	gMainBase = createMainBase(gHomeBase);
 	createDeck();
 	xsEnableRule("startingCrates");
 	if (cDifficultyCurrent != cDifficultySandbox)
 	{
 		xsEnableRule("mostHatedEnemy");
 		mostHatedEnemy();
+		xsEnableRule("rescueExplorer");
 	}
+
+	xsEnableRule("exploreMonitor");
 
 	//Create a herd plan to gather all herdables that we encounter.
 	gHerdPlanID = aiPlanCreate("GatherHerdable Plan", cPlanHerd);
@@ -2140,49 +2093,68 @@ void gameStartup(void)
 
 	updateResourceDistribution();
 
-	// Set up the generic land explore plan.
-	if (cvOkToExplore == true)
-	{
-		if (cMyCiv == cCivDutch)
-		{  // Keep the envoy busy.
-			int envoyExplore = aiPlanCreate("Envoy Explore", cPlanExplore);
-			aiPlanSetDesiredPriority(envoyExplore, 75);
-			aiPlanAddUnitType(envoyExplore, cUnitTypeEnvoy, 0, 1, 1);
-			aiPlanSetEscrowID(envoyExplore, cEconomyEscrowID);
-			aiPlanSetBaseID(envoyExplore, kbBaseGetMainID(cMyID));
-			aiPlanSetVariableBool(envoyExplore, cExplorePlanDoLoops, 0, false);
-			aiPlanSetActive(envoyExplore);
-		}
-	}
+	xsEnableRule("ageUpgradeMonitor");
 
-	// Disables early groups, starts nugget hunting, moves explorer later.
-	xsEnableRule("exploreMonitor");
-
-	xsEnableRule("townCenterComplete");  // Rule to build other buildings after TC completion
-	xsEnableRule("ageUpgradeMonitor");  // Make sure we freeze spending to allow age-ups at certain villie pop levels
-
-	xsEnableRule("envoyMonitor");
-	xsEnableRule("nativeScoutMonitor");
-	xsEnableRule("mongolScoutMonitor");
-	
-	xsEnableRule("rescueExplorer");
 	xsEnableRule("ransomExplorer");
-
-	int numCoveredWagons = kbUnitCount(cMyID, cUnitTypeCoveredWagon, cUnitStateAlive);
-	if (numCoveredWagons > 0)
-		createBuildPlan(cUnitTypeTownCenter, numCoveredWagons, 100, gHomeBase, 1, cUnitTypeCoveredWagon);
-
-	if (cMyCiv == cCivDEItalians)
-		xsEnableRule("architectManager");
-
-	if (cMyCiv == cCivDEInca)
-		xsEnableRule("chasquiMonitor");
 
 	if (cMyCiv == cCivDEEthiopians)
 		xsEnableRule("taskAbuns");
 
 	startupBuildings();
+	xsEnableRule("townCenterComplete"); // Rule to build other buildings after TC completion
 	xsEnableRuleGroup("postStartup");
+}
+
+
+//=================================================================================
+// checkForTownCenter: Make sure we have a Town Center before we proceed.
+//=================================================================================
+rule checkForTownCenter
+inactive
+minInterval 1
+{
+	static bool done = false;
+	if (done == false)
+	{
+		done = true;
+		// The following are okay to enable while we wait for a TC.
+		gMainBase = createMainBase(gHomeBase);
+		xsEnableRule("envoyMonitor");
+		xsEnableRule("nativeScoutMonitor");
+		xsEnableRule("mongolScoutMonitor");
+		if (cMyCiv == cCivDEItalians)
+			xsEnableRule("architectManager");
+		if (cMyCiv == cCivDEInca)
+			xsEnableRule("chasquiMonitor");
+
+		if (kbUnitCount(cMyID, cUnitTypeAgeUpBuilding, cUnitStateAlive) == 0)
+		{
+			int planID = -1;
+			int numCoveredWagons = kbUnitCount(cMyID, cUnitTypeCoveredWagon, cUnitStateAlive);
+			if (numCoveredWagons > 0)
+				createBuildPlan(cUnitTypeTownCenter, numCoveredWagons, 100, gHomeBase, 1, cUnitTypeCoveredWagon);
+			else
+			{
+				planID = createBuildPlan(cUnitTypeTownCenter, 1, 100, gHomeBase);
+				aiPlanSetDesiredResourcePriority(planID, 99);
+				aiPlanAddUnitType(planID, cUnitTypeLogicalTypeSettlerBuildLimit, 1, 3, 5);
+				if (cMyCiv != cCivDEAmericans && cMyCiv != cCivDEMexicans)
+					aiPlanAddUnitType(planID, cUnitTypeHero, 1, 2, 2);
+				// Big bug on Eurasian Steppe (Indians).
+				if (kbResourceGet(cResourceWood) < 500)
+				{
+					xsDisableSelf();
+					gameStartup();
+				}
+			}
+		}
+	}
+
+	if (kbUnitCount(cMyID, cUnitTypeAgeUpBuilding, cUnitStateAlive) > 0)
+	{
+		xsDisableSelf();
+		gameStartup();
+	}
 }
 
 
@@ -2210,6 +2182,8 @@ minInterval 2
 		gSettlerMaintainPlan = createSimpleMaintainPlan(gEconUnit, kbGetBuildLimit(cMyID, gEconUnit), true, kbBaseGetMainID(cMyID), 1);
 		aiPlanSetDesiredResourcePriority(gSettlerMaintainPlan, 75);
 	}
+
+	xsEnableRule("ShouldIResign");
 
 	if (cMyCiv == cCivJapanese)
 	{
@@ -2257,7 +2231,7 @@ minInterval 10
 	{
 		for (player = 1; < cNumberPlayers)
 		{
-			aiChat(player, "Better AI Mod. Version 4.2: Last updated on 29 May 2022.");
+			aiChat(player, "Better AI Mod. Version 4.2.2: Last updated on 6 June 2022.");
 		}
 	}
 

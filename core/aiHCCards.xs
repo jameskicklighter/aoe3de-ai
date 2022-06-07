@@ -40,8 +40,6 @@ void selectCards(void)
 
 	gSentCardList = arrayCreateInt(30, "Sent Card Tech IDs");
 	gPriorityCards = arrayCreateInt(1, "Priority Cards");
-	gMilitaryDefensiveCards = arrayCreateInt(1, "Military Defensive Cards"); // To be used when the main base is under threat.
-	// gResourceDependentCards = arrayCreateInt(1, "Resource Dependent Cards"); // To be used next update.
 
 	switch (cMyCiv)
 	{
@@ -324,10 +322,10 @@ void selectCards(void)
 			addCardInfoToArrays(cTechDEHCUsury);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
-			addCardInfoToArrays(cTechDEHCMonteDiPieta);
-			addCardInfoToArrays(cTechDEHCUffizi);
-			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCUffizi);
+			addCardInfoToArrays(cTechDEHCMonteDiPieta);
+			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechDEHCShipPavisiers1, true);
 			addCardInfoToArrays(cTechDEHCMilaneseArsenal);
 			addCardInfoToArrays(cTechDEHCAlpini, false, true);

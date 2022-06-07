@@ -127,21 +127,21 @@ void setMilPopLimit(int age1 = 10, int age2 = 30, int age3 = 80, int age4 = 120,
 		case cAge3:
 		{
 			limit = age3;
-			if (aiGetWorldDifficulty() >= cDifficultyHard && limit < 75)
+			if (cDifficultyCurrent >= cDifficultyHard && limit < 75)
 				limit = 75;
 			break;
 		}
 		case cAge4:
 		{
 			limit = age4;
-			if (aiGetWorldDifficulty() >= cDifficultyHard && limit < 100)
+			if (cDifficultyCurrent >= cDifficultyHard && limit < 100)
 				limit = 100;
 			break;
 		}
 		case cAge5:
 		{
 			limit = age5;
-			if (aiGetWorldDifficulty() >= cDifficultyHard && limit < 125)
+			if (cDifficultyCurrent >= cDifficultyHard && limit < 125)
 				limit = 125;
 			break;
 		}
@@ -160,18 +160,16 @@ rule popManager
 active
 minInterval 15
 {
-	float difficulty = aiGetWorldDifficulty();
-	int intDifficulty = difficulty;
-
 	int maxMil = -1;  // The full age-5 max military size...to be reduced in earlier ages to control runaway spending.
 
 	int villBuildLimit = kbGetBuildLimit(cMyID, gEconUnit);
 	float villWorthRatio = 99.0 / villBuildLimit;
 	int economyPop = -1;
 
-	if (intDifficulty <= cDifficultyEasy)
+	if (cDifficultyCurrent <= cDifficultyEasy)
 		gLowDifficulty = true;
-	switch (intDifficulty)
+
+	switch (cDifficultyCurrent)
 	{
 		case cDifficultySandbox: // "Easy"
 		{	// Typically 40 econ, 40 military.
@@ -234,7 +232,7 @@ minInterval 15
 		}
 	}
 
-	if (aiTreatyGetEnd() > xsGetTime() + 7 * 60 * 1000)
+	if (aiTreatyGetEnd() > xsGetTime() + 8 * 60 * 1000)
 		aiSetMilitaryPop(0);
 
 	gGoodArmyPop = aiGetMilitaryPop() / 3;
@@ -602,7 +600,7 @@ void gameOverHandler(int nothing = 0)
 // ShouldIResign
 //==============================================================================
 rule ShouldIResign
-minInterval 7
+minInterval 16
 inactive
 {
 	// Don't resign during treaty since that looks dumb.
@@ -658,7 +656,7 @@ inactive
 			xsEnableRule("resignRetry");
 			xsDisableSelf();
 		return; // Never resign if we still have a human ally.
-		}
+	}
 	
 	// My pop is 1/4 the average known pop of enemies.
 	// I have no TC.
@@ -916,10 +914,10 @@ minInterval 10
 		xsDisableSelf();
 		return;
 	}
-	
+
 	if (aiPlanGetIDByIndex(cPlanTransport, -1, true, 0) >= 0)
 		return;
-	  
+
 	// find idle units away from our base
 	int baseAreaGroupID = kbAreaGroupGetIDByPosition(kbBaseGetLocation(cMyID, kbBaseGetMainID(cMyID)));
 	int areaGroupID = -1;
@@ -1128,7 +1126,7 @@ void ageUpHandler(int playerID = -1)
 void ageUpEventHandler(int planID = -1)
 {
 	// force an update of resource distribution to prepare for stuffs after aging up
-	if (aiGetWorldDifficulty() <= cDifficultyModerate)
+	if (cDifficultyCurrent <= cDifficultyModerate)
 		return;
 	int state = aiPlanGetState(planID);
 	if (state == cPlanStateResearch || state == cPlanStateBuild)
@@ -1153,10 +1151,19 @@ minInterval 5
 			debugCore("Enabling the military manager.");
 			militaryManager();   // runImmediately doesn't work.
 		}
+
 		if (xsIsRuleEnabled("navyManager") == false)
 		{
 			xsEnableRule("navyManager");
 			debugCore("Enabling the navy manager.");
+		}
+
+		// On some maps, this would not be called from buildingConstructedHandler as we start with
+		// a free market.
+		if (xsIsRuleEnabled("marketUpgradeMonitor") == false)
+		{
+			xsEnableRule("marketUpgradeMonitor");
+			marketUpgradeMonitor(); // Call it instantly.
 		}
 
 		xsEnableRule("towerManager");
@@ -1171,7 +1178,7 @@ minInterval 5
 			{
 				xsEnableRule("delayAttackMonitor"); // Wait until I am attacked or we've reached Age4, then let slip the hounds of war.
 			}
-			else if (cDifficultyCurrent != cDifficultySandbox) // We never attack on Easy.
+			else if (cDifficultyCurrent != cDifficultySandbox) // We never attack on Sandbox.
 			{
 				xsEnableRule("mostHatedEnemy"); // Picks a target for us to attack.
 				mostHatedEnemy(); // Instantly get a target so our managers have something to work with.
@@ -1196,18 +1203,24 @@ minInterval 5
 
 		xsEnableRule("baseDefenseForce");
 
+		// Currently not working.
+		/* if (cMyCiv == cCivDEItalians)
+		{
+			xsEnableRule("basilicaMonitor");
+		} */
+
 		setupNativeUpgrades();
 		if (getGaiaUnitCount(cUnitTypeSocketCree) > 0)
 			xsEnableRule("maintainCreeCoureurs");
 		if (getGaiaUnitCount(cUnitTypedeSocketBerbers) > 0)
 			xsEnableRule("maintainBerberNomads");
-
 		if (civIsAfrican() == false)
 			xsEnableRule("nativeMonitor");
+
 		if (gNumberTradeRoutes > 0)
 		{
 			xsEnableRule("tradeRouteUpgradeMonitor");
-			if (aiGetWorldDifficulty() >= cDifficultyEasy)
+			if (cDifficultyCurrent >= cDifficultyEasy)
 				xsEnableRule("tradeRouteTacticMonitor");
 		}
 
@@ -1420,18 +1433,13 @@ minInterval 10
 		if (cMyCiv == cCivJapanese)
 			xsEnableRule("dojoUpgradeMonitor");
 
-		if (aiGetWorldDifficulty() >= cDifficultyModerate)
-		{  // Don't max out on upgrades on lower difficulty levels.
-
+		// Don't max out on upgrades on lower difficulty levels.
+		if (cDifficultyCurrent >= cDifficultyModerate)
+		{
+			xsEnableRule("fortUpgradeMonitor");
 			// Enable shrine upgrade for Japanese
 			if (cMyCiv == cCivJapanese)
 				xsEnableRule("shrineUpgradeMonitor");
-
-			if (aiGetWorldDifficulty() >= cDifficultyModerate)
-			{
-				// Enable fort upgrade
-				xsEnableRule("fortUpgradeMonitor");
-			}
 		}
 	}
 }
@@ -1531,12 +1539,6 @@ void selfAgeUpHandler(int age = -1)
 	wagonMonitor();
 	if (kbResourceGet(cResourceShips) > 0)
 		shipGrantedHandler();
-
-	if (cMyCiv == cCivRussians)
-	{
-		if (age == cAge3)
-			arrayPushInt(gPriorityCards, cTechHCRoyalDecreeRussian);
-	}
 
 	// Correct usage unknown, does not seem to be working.
 	/* if (cMyCiv == cCivDEItalians && age == cAge2)

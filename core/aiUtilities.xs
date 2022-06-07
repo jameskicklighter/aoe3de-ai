@@ -273,16 +273,16 @@ void arrayRemoveDonePlans(int arrayID = -1)
 	if (arrayID > gArrayPlanIDs)
 		return;
 
-	for (planID = 0; < arrayGetSize(arrayID))
+	for (planIndex = 0; < arrayGetSize(arrayID))
 	{	// If we delete values while inside the loop, the size of the array shrinks
 		// and we may face errors.
-		if (aiPlanGetState(arrayGetInt(arrayID, planID)) < 0)
-			arraySetInt(arrayID, planID, -1);
+		if (aiPlanGetState(arrayGetInt(arrayID, planIndex)) < 0)
+			arraySetInt(arrayID, planIndex, -1);
 	}
-	for (planID = 0; < arrayGetSize(arrayID))
+	for (planIndex = 0; < arrayGetSize(arrayID))
 	{
-		if (arrayGetInt(arrayID, planID) < 0)
-			arrayDeleteInt(arrayID, planID);
+		if (arrayGetInt(arrayID, planIndex) < 0)
+			arrayDeleteInt(arrayID, planIndex);
 	}
 }
 
@@ -1096,7 +1096,7 @@ vector getClosestGaiaUnitPosition(int unitTypeID = -1, vector position = cInvali
 	// Define a query to get all matching units.
 	if (unitQueryID != -1)
 	{
-			kbUnitQuerySetPlayerID(unitQueryID, 0);
+		kbUnitQuerySetPlayerID(unitQueryID, 0);
 		kbUnitQuerySetUnitType(unitQueryID, unitTypeID);
 		kbUnitQuerySetState(unitQueryID, cUnitStateAlive);
 		kbUnitQuerySetPosition(unitQueryID, position);
@@ -1503,6 +1503,7 @@ int createResearchPlan(int techID = -1, int buildingType = -1, int pri = 50, int
 	aiPlanSetVariableInt(planID, cResearchPlanBuildingID, 0, buildingID); //important for trading posts
 	aiPlanSetEscrowID(planID, cRootEscrowID);
 	aiPlanSetActive(planID, true);
+	debugUtilities("Created a Research Plan for: " + kbGetTechName(techID) + " with plan number: " + planID);
 
 	return(planID);
 }

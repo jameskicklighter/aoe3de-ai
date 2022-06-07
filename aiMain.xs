@@ -135,8 +135,7 @@ void main(void)
 		}
 	}
 
-	// Call startup directly.
-	gameStartup();
+	xsEnableRule("checkForTownCenter");
 
 	xsEnableRule("modIntroChat");
 }

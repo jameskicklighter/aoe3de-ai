@@ -264,7 +264,7 @@ minInterval 28
 			if (planID >= 0 && puid != aiPlanGetVariableInt(planID, cTrainPlanUnitType, 0))
 			{
 				int otherPlanID = -1;
-				
+
 				for (j = i + 1; < gNumArmyUnitTypes)
 				{
 					otherPlanID = xsArrayGetInt(gArmyUnitMaintainPlans, j);
@@ -305,10 +305,11 @@ minInterval 28
 				numberToMaintain = (kbUnitPickGetResultFactor(gLandUnitPicker, i) / totalFactor) * aiGetMilitaryPop() / popCount;
 			else
 			{
-				numberToMaintain = (kbUnitPickGetResultFactor(gLandUnitPicker, i) / totalFactor) * aiGetMilitaryPop()
-									/ (kbUnitCostPerResource(puid, cResourceFood)
-									+ kbUnitCostPerResource(puid, cResourceWood)
-									+ kbUnitCostPerResource(puid, cResourceGold));
+				numberToMaintain =
+					(kbUnitPickGetResultFactor(gLandUnitPicker, i) / totalFactor) * aiGetMilitaryPop() /
+					(kbUnitCostPerResource(puid, cResourceFood) +
+					 kbUnitCostPerResource(puid, cResourceWood) +
+					 kbUnitCostPerResource(puid, cResourceGold));
 			}
 			aiPlanSetVariableInt(planID, cTrainPlanNumberToMaintain, 0, numberToMaintain);
 			if (aiGetMilitaryPop() != 0)
@@ -1684,7 +1685,6 @@ void setUnitPickerCommon(int upID = -1)
 
 	// Set the default target types and weights, for use until we've seen enough actual units.
 	kbUnitPickAddCombatEfficiencyType(upID, cUnitTypeLogicalTypeLandMilitary, 1.0);
-
 	kbUnitPickAddBuildingCombatEfficiencyType(upID, cUnitTypeMilitaryBuilding, 1.0);
 	kbUnitPickAddBuildingCombatEfficiencyType(upID, cUnitTypeAbstractTownCenter, 1.0);
 
@@ -1695,6 +1695,97 @@ void setUnitPickerCommon(int upID = -1)
 		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateSiegeIndustrial, 0.0);
 		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnit, 0.0);
 		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnitColonial, 0.0);
+	}
+}
+
+void setUnitPickerDisabledUnits(int upID = -1)
+{
+	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractNativeWarrior, 0.0);
+	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpSpy, 0.0);
+	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractOutlaw, 0.0);
+	kbUnitPickSetPreferenceFactor(upID, cUnitTypeGrenadier, 0.0);
+
+	if (kbGetAge() < cAge3)
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMercenary, 0.0);
+	else
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMercenary, 0.2);
+
+	if (cMyCiv == cCivFrench)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeCoureur, 0.0);
+	}
+
+	if (cMyCiv == cCivDEItalians)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractBasilicaUnit, 0.0);
+	}
+
+	if (cMyCiv == cCivDEMaltese)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeMalteseGun, 0.0);
+	}
+
+	if (civIsNative() == true)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypexpWarrior, 0.0);
+	}
+
+	if (cMyCiv == cCivXPSioux)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypexpDogSoldier, 0.0);
+	}
+
+	if (cMyCiv == cCivXPAztec)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypexpMedicineManAztec, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypexpSkullKnight, 0.0);
+	}
+
+	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercFlailiphant, 0.0);
+
+	if ((cMyCiv == cCivIndians) || (cMyCiv == cCivSPCIndians))
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSowarMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRajputMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSepoyMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypUrumiMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypZamburakMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypNatMercGurkhaJemadar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercFlailiphantMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypHowdahMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMahoutMansabdar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSiegeElephantMansabdar, 0.0);
+	}
+
+	if (cMyCiv == cCivDEInca)
+	{
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeChasqui, 0.0);
+	}
+
+	if (civIsAsian() == true && upID == gLandUnitPicker)
+	{
+		// Remove Consulate units.
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateSiegeFortress, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateSiegeIndustrial, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnit, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnitColonial, 0.0);
+	}
+
+	if (civIsAfrican() == true)
+	{
+		// Exclude units costing influence, they are handled in influenceManager.
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMercenary, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeBowmanLevy, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeSpearmanLevy, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeGunnerLevy, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeMaigadi, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeSebastopolMortar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeFalconet, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeOrganGun, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeCulverin, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMortar, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMahout, 0.0);
+		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypHowdah, 0.0);
 	}
 }
 
@@ -1715,87 +1806,8 @@ void setUnitPickerPreference(int upID = -1)
 	if (cMyCiv == cCivDEEthiopians || cMyCiv == cCivDEInca)
 		kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractCoyoteMan, 0.5);
 
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeCoureur, 0.0);    // Avoid coureurs, they mess up econ/mil calcs.   
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpWarrior, 0.0);    // Never pick xpWarrior or xpDogSoldier, available via dance only
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpDogSoldier, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpMedicineManAztec, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpSkullKnight, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercFlailiphant, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercIronTroop, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercYojimbo, 0.0);
-
-	if (cMyCiv == cCivIndians)
-	{
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSowarMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRajputMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSepoyMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypUrumiMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypNatMercGurkhaJemadar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypZamburakMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercFlailiphantMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypHowdahMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMahoutMansabdar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypSiegeElephantMansabdar, 0.0);
-	}
-
-	if (cMyCiv == cCivDEInca)
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeChasqui, 0.0);
-
-	if (civIsAfrican() == true)
-	{
-		// Exclude units costing influence
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMercenary, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeBowmanLevy, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeSpearmanLevy, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeGunnerLevy, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeMaigadi, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypedeSebastopolMortar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeFalconet, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeOrganGun, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeCulverin, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeMortar, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMahout, 0.0);
-		kbUnitPickSetPreferenceFactor(upID, cUnitTypeypHowdah, 0.0);
-	}
-
-	// handled separately in consulate monitor
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateSiegeFortress, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateSiegeIndustrial, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnit, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractConsulateUnitColonial, 0.0);
-	
-	// handled seperately in native monitor
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractNativeWarrior, 0.0);
-	
 	kbUnitPickRemovePreferenceFactor(upID, cUnitTypeAbstractBannerArmy);
-
-	// Avoid siege units for now.
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeMortar, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpPetard, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpRam, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypHandMortar, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMorutaru, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeGrenadier, 0.0);
-
-	// No Outlaws, Mercenaries, or Spies.
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeSaloonOutlawPistol, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeSaloonOutlawRider, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeSaloonOutlawRifleman, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeSaloonPirate, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantOutlawPistol, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantOutlawRifleman, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantOutlawRider, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantPirate, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeAbstractWokou, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypDacoit, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypThuggee, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantDacoit, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypRepentantThuggee, 0.0);
-
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeMercenary, 0.0);
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypeypMercArsonist, 0.0);
-
-	kbUnitPickSetPreferenceFactor(upID, cUnitTypexpSpy, 0.0);
+	setUnitPickerDisabledUnits(upID);
 }
 
 //==============================================================================
@@ -1846,6 +1858,175 @@ int initUnitPicker(string name = "BUG", int numberTypes = 1, int minUnits = 10, 
 
 	return (upID);
 }
+
+//==============================================================================
+// Basilica Monitor
+//
+// The Basilica trains units via techs, so first run a unit pick then get
+// corresponding techs.
+//
+//==============================================================================
+int getBasilicaTechFromPapalUnitType(int unitTypeID = -1)
+{
+	int retVal = -1;
+
+	switch (unitTypeID)
+	{
+		case cUnitTypedePapalGuard:
+		{
+			retVal = cTechDEBasilicaShipPapalGuards2;
+			break;
+		}
+		case cUnitTypedeNMPandour:
+		{
+			retVal = cTechDEBasilicaShipPandours2;
+			break;
+		}
+		case cUnitTypedeNMPapalElmetto:
+		{
+			retVal = cTechDEBasilicaShipPapalElmeti1;
+			break;
+		}
+		case cUnitTypedeNMPapalZouave:
+		{
+			retVal = cTechDEBasilicaShipPapalZouave1;
+			break;
+		}
+	}
+
+	return (retVal);
+}
+
+int getPapalNumUnitsPerTech(int unitTypeID = -1)
+{
+	int retVal = -1;
+
+	switch (unitTypeID)
+	{
+		case cUnitTypedePapalGuard:
+		{
+			retVal = 7;
+			break;
+		}
+		case cUnitTypedeNMPandour:
+		{
+			retVal = 7;
+			break;
+		}
+		case cUnitTypedeNMPapalElmetto:
+		{
+			retVal = 3;
+			break;
+		}
+		case cUnitTypedeNMPapalZouave:
+		{
+			retVal = 4;
+			break;
+		}
+	}
+
+	return (retVal);
+}
+
+// AI refuses to train them via tech?
+/* rule basilicaMonitor
+inactive
+minInterval 30
+{
+	// Maintain plans
+	static int basilicaUPID = -1;
+	static int basilicaUnitTypes = -1;
+	static int basilicaResearchPlans = -1;
+
+	if (cvOkToTrainArmy == false)
+		return;
+
+	if (basilicaUnitTypes < 0)
+	{
+		basilicaUnitTypes = arrayCreateInt(4, "Basilica Papal Unit Types");
+		arrayPushInt(basilicaUnitTypes, cUnitTypedePapalGuard);
+		arrayPushInt(basilicaUnitTypes, cUnitTypedeNMPandour);
+		arrayPushInt(basilicaUnitTypes, cUnitTypedeNMPapalElmetto);
+		arrayPushInt(basilicaUnitTypes, cUnitTypedeNMPapalZouave);
+		basilicaResearchPlans = arrayCreateInt(1, "Basilica Papal Unit Research Plans.");
+	}
+
+	int temp = 4;
+	if (kbGetAge() < cAge3)
+		temp = 2;
+	else if (kbGetAge() < cAge4)
+		temp = 3;
+	int trainUnitID = -1;
+	int techID = -1;
+	int papalUnitsPerTech = -1;
+	int papalUnitCount = -1;
+	int planID = -1;
+	int basilicaID = -1;
+	int numberToMaintain = 0;
+	int popCount = 0;
+
+	for (i = 0; < arrayGetSize(basilicaResearchPlans))
+	{
+		echoMessage("Basilica Plan " + i + " state: " + aiPlanGetState(arrayGetInt(basilicaResearchPlans, i)));
+		echoMessage("Basilica Plan " + i + " active: " + aiPlanGetActive(arrayGetInt(basilicaResearchPlans, i)));
+	}
+
+	arrayRemoveDonePlans(basilicaResearchPlans);
+	int basilicaQuery = createSimpleUnitQuery(cUnitTypedeBasilica, cMyID, cUnitStateAlive);
+	int numberBasilicas = kbUnitQueryExecute(basilicaQuery);
+	// Don't proceed until we have a Basilica from which we can train papal units.
+	if (numberBasilicas == 0)
+		return;
+
+	// Our active research plans do not exceed the number of Basilicas.
+	if (arrayGetSize(basilicaResearchPlans) < numberBasilicas)
+	{
+		// Search for a Basilica that is not being used for a Research plan.
+		for (index = 0; < numberBasilicas)
+		{
+			trainUnitID = arrayGetInt(basilicaUnitTypes, aiRandInt(temp));
+			if (trainUnitID < 0)
+				continue;
+			echoMessage("trainUnitID: " + kbGetUnitTypeName(trainUnitID));
+			techID = getBasilicaTechFromPapalUnitType(trainUnitID);
+			papalUnitsPerTech = getPapalNumUnitsPerTech(trainUnitID);
+			papalUnitCount = kbUnitCount(cMyID, trainUnitID, cUnitStateAlive);
+
+			popCount = kbGetProtoUnitPopCount(trainUnitID);
+			numberToMaintain = (0.5 * (1.0 / (temp * 1.0))) * (aiGetMilitaryPop() / popCount);
+			echoMessage("numberToMaintain:" + numberToMaintain);
+			// We have enough already.
+			if (papalUnitCount - numberToMaintain >= 0)
+				continue;
+
+			for (i = 0; < numberBasilicas)
+			{
+				basilicaID = kbUnitQueryGetResult(basilicaQuery, i);
+				// Check all the current Papal Research plans.
+				for (j = 0; < arrayGetSize(basilicaResearchPlans))
+				{
+					planID = arrayGetInt(basilicaResearchPlans, j);
+					if (basilicaID == aiPlanGetVariableInt(planID, cResearchPlanBuildingID, 0))
+					{	// This Basilica is already occupied with a plan.
+						basilicaID = -1;
+						break;
+					}
+				}
+				if (basilicaID >= 0)
+					break;
+			}
+
+			if (basilicaID < 0)
+			{
+				echoMessage("All Basilicas occupied with plans.");
+				return;
+			}
+
+			echoMessage("Creating research plan.");
+			arrayPushInt(basilicaResearchPlans, createResearchPlan(techID, cUnitTypedeBasilica));
+		}
+	}
+} */
 
 
 //==============================================================================
@@ -1951,7 +2132,7 @@ minInterval 30
 			{
 				trainBuildingID = getUnitByLocation(cUnitTypeNativeEmbassy, cMyID, cUnitStateAlive, mainBaseLocation, mainBaseDist);
 				if (trainBuildingID < 0 && civIsAfrican() == true)
-				trainBuildingID = getUnitByLocation(cUnitTypedePalace, cMyID, cUnitStateAlive, mainBaseLocation, mainBaseDist);
+					trainBuildingID = getUnitByLocation(cUnitTypedePalace, cMyID, cUnitStateAlive, mainBaseLocation, mainBaseDist);
 			}
 			aiPlanSetVariableInt(planID, cTrainPlanBuildingID, 0, trainBuildingID);
 		}
@@ -2002,6 +2183,128 @@ minInterval 30
 		{
 			aiPlanDestroy(planID);
 			xsArraySetInt(nativeMaintainPlans, i, -1);
+		}
+	}
+}
+
+
+//==============================================================================
+/* Influence Manager
+//
+// Train units and research techs with influence resource.
+*/
+//==============================================================================
+rule influenceManager
+inactive
+minInterval 45
+{
+	// Maintain plans
+	static int influenceUPID = -1;
+	static int influenceMaintainPlans = -1;
+
+	researchSimpleTech(cTechDEImportedCannons, cUnitTypedePalace);
+
+	if (cvOkToTrainArmy == false)
+		return;
+
+	if (influenceUPID < 0)
+	{
+		// Create it.
+		influenceUPID = kbUnitPickCreate("Influence military units");
+		if (influenceUPID < 0)
+			return;
+
+		influenceMaintainPlans = xsArrayCreateInt(3, -1, "Influence maintain plans");
+	}
+
+	int numberResults = 0;
+	int i = 0;
+	int trainUnitID = -1;
+	int planID = -1;
+	int numberToMaintain = 0;
+	int popCount = 0;
+	int buildLimit = 0;
+	float totalFactor = 0.0;
+	float unitCost = 0.0;
+
+	// Default init.
+	kbUnitPickResetAll(influenceUPID);
+
+	// Desired number units types, buildings.
+	kbUnitPickSetDesiredNumberUnitTypes(influenceUPID, 2, 1, true);
+
+	setUnitPickerCommon(influenceUPID);
+
+	kbUnitPickSetMinimumCounterModePop(influenceUPID, 15);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeMercenary, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeAbstractNativeWarrior, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypedeMaigadi, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypedeSebastopolMortar, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeFalconet, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeOrganGun, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeCulverin, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeMortar, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeypMahout, 1.0);
+	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeypHowdah, 1.0);
+	kbUnitPickRun(influenceUPID);
+
+	for (i = 0; < 2)
+		totalFactor = totalFactor + kbUnitPickGetResultFactor(influenceUPID, i);
+
+	float influenceAmount = kbResourceGet(cResourceInfluence);
+
+	for (i = 0; < 2)
+	{
+		trainUnitID = kbUnitPickGetResult(influenceUPID, i);
+		planID = xsArrayGetInt(influenceMaintainPlans, i);
+
+		if (planID >= 0)
+		{
+			if (trainUnitID != aiPlanGetVariableInt(planID, cTrainPlanUnitType, 0))
+			{
+				aiPlanDestroy(planID);
+				planID = -1;
+			}
+		}
+		if (trainUnitID < 0)
+			continue;
+
+		// if we do not have enough influence for this unit, don't plan training anymore.
+		if (influenceAmount > 0.0)
+		{
+			popCount = kbGetProtoUnitPopCount(trainUnitID);
+			unitCost = kbUnitCostPerResource(trainUnitID, cResourceInfluence);
+			// hardcoded to at most 40% of our military pop.
+			if (popCount > 0)
+			{
+				numberToMaintain =
+					0.4 * (kbUnitPickGetResultFactor(influenceUPID, i) / totalFactor) * aiGetMilitaryPop() / popCount;
+			}
+			else
+			{
+				numberToMaintain = 0.4 * (kbUnitPickGetResultFactor(influenceUPID, i) / totalFactor) * aiGetMilitaryPop() /
+					(unitCost * 0.01);
+			}
+			buildLimit = kbGetBuildLimit(cMyID, trainUnitID);
+			if (buildLimit > 0 && numberToMaintain > buildLimit)
+				numberToMaintain = buildLimit;
+			influenceAmount =
+				influenceAmount - ((numberToMaintain - kbUnitCount(cMyID, trainUnitID, cUnitStateABQ)) * unitCost);
+		}
+		else
+		{
+			numberToMaintain = 0;
+		}
+
+		if (planID >= 0)
+		{
+			aiPlanSetVariableInt(planID, cTrainPlanNumberToMaintain, 0, numberToMaintain);
+		}
+		else
+		{
+			planID = createSimpleMaintainPlan(trainUnitID, numberToMaintain, false, kbBaseGetMainID(cMyID), 1);
+			aiPlanSetDesiredResourcePriority(planID, 45 - i); // below research plans
+			xsArraySetInt(influenceMaintainPlans, i, planID);
 		}
 	}
 }
@@ -2275,31 +2578,60 @@ minInterval 13
 }
 
 
-// Update this. TODO (James)
 rule baseDefenseForce
 inactive
 minInterval 20
 {
-	int numMilitaryUnits = kbUnitCount(cMyID, cUnitTypeLogicalTypeLandMilitary, cUnitStateAlive);
+	int numMilitaryUnits = kbUnitCount(cMyID, cUnitTypeAbstractInfantry, cUnitStateAlive);
+	int numSpecificUnit = -1;
 	if (gBaseDefendPlan < 0)
 	{
-		gBaseDefendPlan = aiPlanCreate("Base Land Defend", cPlanDefend);
-		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeLogicalTypeLandMilitary, (numMilitaryUnits / 6), (numMilitaryUnits / 6), (numMilitaryUnits / 6));
-
-		aiPlanSetVariableVector(gBaseDefendPlan, cDefendPlanDefendPoint, 0, gHomeBase);
-		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanDefendBaseID, 0, kbBaseGetMainID(cMyID));
-		aiPlanSetVariableFloat(gBaseDefendPlan, cDefendPlanEngageRange, 0, cvDefenseReflexRadiusActive);
-		aiPlanSetVariableBool(gBaseDefendPlan, cDefendPlanPatrol, 0, false);
-		aiPlanSetInitialPosition(gBaseDefendPlan, (gHomeBase + gDirection_UP * 30.0));
-		aiPlanSetUnitStance(gBaseDefendPlan, cUnitStanceDefensive);
-		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanRefreshFrequency, 0, 10);
-		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanAttackTypeID, 0, cUnitTypeUnit); // Only units
-		aiPlanSetDesiredPriority(gBaseDefendPlan, 99);
+		gBaseDefendPlan = aiPlanCreate("Main Base Combat (Defend) Plan", cPlanCombat);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeAbstractInfantry, 1, numMilitaryUnits / 4, 20);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanCombatType, 0, cCombatPlanCombatTypeDefend);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanTargetMode, 0, cCombatPlanTargetModeBase);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanTargetPlayerID, 0, cMyID);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanTargetBaseID, 0, gMainBase);
+		aiPlanSetVariableVector(gBaseDefendPlan, cCombatPlanTargetPoint, 0, gHomeBase + gDirection_UP * 20.0);
+		aiPlanSetVariableFloat(gBaseDefendPlan, cCombatPlanGatherDistance, 0, 20.0);
+		aiPlanSetInitialPosition(gBaseDefendPlan, gHomeBase);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanRefreshFrequency, 0, 300);
+		aiPlanSetVariableInt(gBaseDefendPlan, cCombatPlanRetreatMode, 0, cCombatPlanRetreatModeNone);
+		aiPlanSetDesiredPriority(gBaseDefendPlan, 60);
 		aiPlanSetActive(gBaseDefendPlan);
-		debugMilitary("Creating primary land defend plan");
+
+		/* aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeAbstractInfantry, 1, numMilitaryUnits / 4, 20);
+		aiPlanSetVariableVector(gBaseDefendPlan, cDefendPlanDefendPoint, 0, gHomeBase + gDirection_UP * 30.0);
+		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanDefendBaseID, 0, kbBaseGetMainID(cMyID));
+		aiPlanSetVariableFloat(gBaseDefendPlan, cDefendPlanEngageRange, 0, 40.0);
+		aiPlanSetInitialPosition(gBaseDefendPlan, gHomeBase);
+		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanRefreshFrequency, 0, 300);
+		aiPlanSetVariableInt(gBaseDefendPlan, cDefendPlanAttackTypeID, 0, cUnitTypeUnit); // Only units
+		aiPlanSetDesiredPriority(gBaseDefendPlan, 60);
+		aiPlanSetActive(gBaseDefendPlan); */
+
+		debugMilitary("Creating primary Land Combat (Defend) plan.");
 	}
 	else
-		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeLogicalTypeLandMilitary, (numMilitaryUnits / 6), (numMilitaryUnits / 6), (numMilitaryUnits / 6)); 
+	{
+		// aiPlanSetVariableFloat(gBaseDefendPlan, cDefendPlanEngageRange, 0, 40.0 + 10.0 * kbGetAge());
+		aiPlanSetVariableVector(gBaseDefendPlan, cCombatPlanTargetPoint, 0, gHomeBase + gDirection_UP * (10.0 + 8.0 * kbGetAge()));
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeAbstractInfantry, 1, numMilitaryUnits / 4, 20);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypeMinuteman, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeMinuteman, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypeypIrregular, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeypIrregular, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypeypPeasant, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypeypPeasant, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypexpWarrior, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypexpWarrior, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypedeSpearmanLevy, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypedeSpearmanLevy, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypedeBowmanLevy, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypedeBowmanLevy, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+		numSpecificUnit = kbUnitCount(cMyID, cUnitTypedeGunnerLevy, cUnitStateAlive);
+		aiPlanAddUnitType(gBaseDefendPlan, cUnitTypedeGunnerLevy, numSpecificUnit, numSpecificUnit, numSpecificUnit * 2, true, true);
+	}
 }
 
 
@@ -3638,127 +3970,5 @@ minInterval 30
 	if (shogunPlan >= 0)
 	{
 		aiPlanSetVariableInt(shogunPlan, cTrainPlanNumberToMaintain, 0, numberToMaintain);
-	}
-}
-
-
-//==============================================================================
-/* Influence Manager
-//
-// Train units and research techs with influence resource.
-*/
-//==============================================================================
-rule influenceManager
-inactive
-minInterval 45
-{
-	// Maintain plans
-	static int influenceUPID = -1;
-	static int influenceMaintainPlans = -1;
-
-	researchSimpleTech(cTechDEImportedCannons, cUnitTypedePalace);
-
-	if (cvOkToTrainArmy == false)
-		return;
-
-	if (influenceUPID < 0)
-	{
-		// Create it.
-		influenceUPID = kbUnitPickCreate("Influence military units");
-		if (influenceUPID < 0)
-			return;
-
-		influenceMaintainPlans = xsArrayCreateInt(3, -1, "Influence maintain plans");
-	}
-
-	int numberResults = 0;
-	int i = 0;
-	int trainUnitID = -1;
-	int planID = -1;
-	int numberToMaintain = 0;
-	int popCount = 0;
-	int buildLimit = 0;
-	float totalFactor = 0.0;
-	float unitCost = 0.0;
-
-	// Default init.
-	kbUnitPickResetAll(influenceUPID);
-
-	// Desired number units types, buildings.
-	kbUnitPickSetDesiredNumberUnitTypes(influenceUPID, 2, 1, true);
-
-	setUnitPickerCommon(influenceUPID);
-
-	kbUnitPickSetMinimumCounterModePop(influenceUPID, 15);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeMercenary, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeAbstractNativeWarrior, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypedeMaigadi, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypedeSebastopolMortar, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeFalconet, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeOrganGun, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeCulverin, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeMortar, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeypMahout, 1.0);
-	kbUnitPickSetPreferenceFactor(influenceUPID, cUnitTypeypHowdah, 1.0);
-	kbUnitPickRun(influenceUPID);
-
-	for (i = 0; < 2)
-		totalFactor = totalFactor + kbUnitPickGetResultFactor(influenceUPID, i);
-
-	float influenceAmount = kbResourceGet(cResourceInfluence);
-
-	for (i = 0; < 2)
-	{
-		trainUnitID = kbUnitPickGetResult(influenceUPID, i);
-		planID = xsArrayGetInt(influenceMaintainPlans, i);
-
-		if (planID >= 0)
-		{
-			if (trainUnitID != aiPlanGetVariableInt(planID, cTrainPlanUnitType, 0))
-			{
-				aiPlanDestroy(planID);
-				planID = -1;
-			}
-		}
-		if (trainUnitID < 0)
-			continue;
-
-		// if we do not have enough influence for this unit, don't plan training anymore.
-		if (influenceAmount > 0.0)
-		{
-			popCount = kbGetProtoUnitPopCount(trainUnitID);
-			unitCost = kbUnitCostPerResource(trainUnitID, cResourceInfluence);
-			// hardcoded to at most half of our military pop.
-			if (popCount > 0)
-			{
-				numberToMaintain =
-					0.5 * (kbUnitPickGetResultFactor(influenceUPID, i) / totalFactor) * aiGetMilitaryPop() / popCount;
-			}
-			else
-			{
-				numberToMaintain = 0.5 * (kbUnitPickGetResultFactor(influenceUPID, i) / totalFactor) * aiGetMilitaryPop() /
-					(unitCost * 0.01);
-			}
-			buildLimit = kbGetBuildLimit(cMyID, trainUnitID);
-			if (buildLimit > 0 && numberToMaintain > buildLimit)
-				numberToMaintain = buildLimit;
-			influenceAmount =
-				influenceAmount - ((numberToMaintain - kbUnitCount(cMyID, trainUnitID, cUnitStateABQ)) * unitCost);
-		}
-		else
-		{
-			numberToMaintain = 0;
-		}
-
-		if (planID >= 0)
-		{
-			aiPlanSetVariableInt(planID, cTrainPlanNumberToMaintain, 0, numberToMaintain);
-		}
-		else
-		{
-			planID = createSimpleMaintainPlan(trainUnitID, numberToMaintain, false, kbBaseGetMainID(cMyID), 1);
-			aiPlanSetDesiredResourcePriority(planID, 45 - i); // below research plans
-			xsArraySetInt(influenceMaintainPlans, i, planID);
-		}
 	}
 }

@@ -2012,6 +2012,8 @@ minInterval 2
 				continue;
 			}
 
+			debugBuildings("Considering for architect: " + aiPlanGetName(planID));
+
 			int prio = aiPlanGetDesiredPriority(planID);
 			if (prio > bestPlanPrio)
 			{
@@ -2022,21 +2024,21 @@ minInterval 2
 
 		if (bestPlanID >= 0)
 		{
-			// aiPlanAddUnitType(bestPlanID, cUnitTypedeArchitect, 1, 1, 1, true, true);
+			aiPlanAddUnitType(bestPlanID, cUnitTypedeArchitect, 1, 1, 1);
 			aiPlanAddUnit(bestPlanID, architectID);
 			aiPlanSetActive(bestPlanID, true);
-			// echoMessage("Activating " + aiPlanGetName(planID) + " for architect construction.");
+			debugBuildings("Activating " + aiPlanGetName(planID) + " for architect construction.");
 		}
 		else
 		{
 			if (kbUnitCount(cMyID, gTowerUnit, cUnitStateABQ) < kbGetBuildLimit(cMyID, gTowerUnit))
 			{
-				// echoMessage("Queueing tower build plan for architect construction.");
+				debugBuildings("Queueing tower build plan for architect construction.");
 				createArchitectBuildPlan(gTowerUnit, 45, gHomeBase);
 			}
 			else
 			{
-				// echoMessage("Nothing to build, looking for tree.");
+				debugBuildings("Nothing to build, looking for tree.");
 				int treeID = getClosestTreeID(gHomeBase);
 				if (treeID >= 0)
 					aiTaskUnitWork(architectID, treeID);
@@ -2304,7 +2306,7 @@ minInterval 10
 
 rule ungarrisonVillagers
 inactive
-minInterval 20
+minInterval 5
 {
 	if (gGarrisonableBuilding < 0)
 		return;

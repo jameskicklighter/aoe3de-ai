@@ -324,9 +324,6 @@ extern int gNextShipmentTechID = -1;
 extern int gNextShipmentIndexInArray = -1; // The index of gNextShipmentTechID in our storage array.
 extern int gSentCardList = -1;
 extern int gPriorityCards = -1;
-extern int gMilitaryDefensiveCards = -1;
-extern int gLandGrabCard = -1;
-extern int gColonialMilitiaCard = -1;
 
 
 //==============================================================================

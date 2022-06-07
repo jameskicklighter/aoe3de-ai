@@ -13,7 +13,7 @@ int findBestScoutType(void)
 	// If possible, cheap infantry is used
 	int scoutType = -1;
 	if (kbUnitCount(cMyID, cUnitTypeGuardian, cUnitStateAlive) >= 1)
-		scoutType = cUnitTypeGuardian;   
+		scoutType = cUnitTypeGuardian;
 	else if (kbUnitCount(cMyID, cUnitTypeCrossbowman, cUnitStateAlive) >= 1)
 		scoutType = cUnitTypeCrossbowman;
 	else if (kbUnitCount(cMyID, cUnitTypePikeman, cUnitStateAlive) >= 1)
@@ -65,9 +65,9 @@ int findBestScoutType(void)
 	else if (kbUnitCount(cMyID, cUnitTypeypAshigaru, cUnitStateAlive) >= 1)
 		scoutType = cUnitTypeypAshigaru;
 	else if (kbUnitCount(cMyID, cUnitTypedeChasqui, cUnitStateAlive) >= 1)
-		scoutType = cUnitTypedeChasqui;  	  
+		scoutType = cUnitTypedeChasqui;
 	else if (kbUnitCount(cMyID, cUnitTypedeJungleBowman, cUnitStateAlive) >= 1)
-		scoutType = cUnitTypedeJungleBowman;	  
+		scoutType = cUnitTypedeJungleBowman;
 	else if (kbUnitCount(cMyID, cUnitTypedeIncaRunner, cUnitStateAlive) >= 1)
 		scoutType = cUnitTypedeIncaRunner;
 	else
@@ -296,7 +296,7 @@ minInterval 30
 		aiPlanSetVariableInt(islandExplorePlan, cExplorePlanNumberOfLoops, 0, 0);
 		aiPlanSetVariableBool(islandExplorePlan, cExplorePlanDoLoops, 0, false);
 		aiPlanSetVariableBool(islandExplorePlan, cExplorePlanOkToGatherNuggets, 0, false);
-		
+
 		// Add a waypoint if we are on the enemy player's island
 		location = guessEnemyLocation();
 		if (kbAreaGroupGetIDByPosition(location) == kbAreaGroupGetIDByPosition(kbUnitGetPosition(scoutUnitID)))
@@ -332,7 +332,7 @@ minInterval 30
 			
 		// finished exploring, set priority to very low so transport plan can move the scout back
 		aiPlanSetDesiredPriority(islandExplorePlan, 1);
-		islandExplorePlan = -1;      
+		islandExplorePlan = -1;
 		islandExploreMode = cIslandExploreModeSearch;
 		break;
 	}
@@ -669,7 +669,7 @@ minInterval 10
 
 	int time = xsGetTime();
 	static int exploreMode = cExploreModeStart;
-	static int age2Time = -1;
+	static int age3Time = -1;
 	static int nextStaffTime = -1; // Prevent the explore plan from constantly sucking in units.
 	static bool hasExploredShoreline = false;
 	int() createExplorerControlPlan = []() -> int {
@@ -755,8 +755,8 @@ minInterval 10
 		return (controlPlan);
 	};
 
-	if ((age2Time < 0) && (kbGetAge() >= cAge2))
-		age2Time = time;
+	if ((age3Time < 0) && (kbGetAge() >= cAge3))
+		age3Time = time;
 
 	// Check for a failed plan
 	if ((gLandExplorePlan >= 0) && (aiPlanGetState(gLandExplorePlan) < 0))
@@ -774,7 +774,7 @@ minInterval 10
 			aiPlanSetActive(gLandExplorePlan); // Reactivate if we were shut off.
 		}
 	}
-			
+
 	switch (exploreMode)
 	{
 		case cExploreModeStart:
@@ -783,83 +783,55 @@ minInterval 10
 			{ // Need to create it.
 				gLandExplorePlan = aiPlanCreate("Land Explore", cPlanExplore);
 				aiPlanSetDesiredPriority(gLandExplorePlan, 75);
-				if (cvOkToGatherNuggets == true)
+				switch (cMyCiv)
 				{
-					switch (cMyCiv)
+					case cCivDEInca:
 					{
-						case cCivDEInca:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypedeIncaWarChief, 1, 1, 1);
-							break;
-						}
-						case cCivXPAztec:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpAztecWarchief, 1, 1, 1);
-							break;
-						}
-						case cCivXPIroquois:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpIroquoisWarChief, 1, 1, 1);
-							break;
-						}
-						case cCivXPSioux:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpLakotaWarchief, 1, 1, 1);
-							break;
-						}
-						case cCivChinese:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkChinese, 1, 1, 1);
-							break;
-						}
-						case cCivIndians:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian, 1, 1, 1);
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian2, 1, 1, 1);
-							break;
-						}
-						case cCivJapanese:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese, 1, 1, 1);
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese2, 1, 1, 1);
-							break;
-						}
-						default:
-						{
-							aiPlanAddUnitType(gLandExplorePlan, cUnitTypeExplorer, 1, 1, 1);
-							break;
-						}
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypedeIncaWarChief, 1, 1, 1);
+						break;
 					}
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeLogicalTypeScout, 1, 6, 10);
-					aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanOkToGatherNuggets, 0, true);
-					exploreMode = cExploreModeNugget;
+					case cCivXPAztec:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpAztecWarchief, 1, 1, 1);
+						break;
+					}
+					case cCivXPIroquois:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpIroquoisWarChief, 1, 1, 1);
+						break;
+					}
+					case cCivXPSioux:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpLakotaWarchief, 1, 1, 1);
+						break;
+					}
+					case cCivChinese:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkChinese, 1, 1, 1);
+						break;
+					}
+					case cCivIndians:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian, 1, 1, 1);
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian2, 1, 1, 1);
+						break;
+					}
+					case cCivJapanese:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese, 1, 1, 1);
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese2, 1, 1, 1);
+						break;
+					}
+					default:
+					{
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeExplorer, 1, 1, 1);
+						break;
+					}
 				}
-				else
-				{
-					if (cMyCiv == cCivDutch) // Dutch will only use envoys (mainly handled in envoyMonitor rule)
-					{
-						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeEnvoy, 1, 1, 1);
-					}
-					else
-					{
-						aiPlanAddUnitType(gLandExplorePlan, findBestScoutType(), 1, 1, 1);
-					}
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeExplorer, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypedeIncaWarChief, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpAztecWarchief, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpIroquoisWarChief, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpLakotaWarchief, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkChinese, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian2, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese, 0, 0, 0);
-					aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese2, 0, 0, 0);
-					aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanOkToGatherNuggets, 0, false);
-					exploreMode = cExploreModeStaff;
-					nextStaffTime = time + 120000; // Two minutes from now, let it get another soldier if it loses this one.
-					if (gExplorerControlPlan < 0)
-						gExplorerControlPlan = createExplorerControlPlan();
-				}
+				aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanOkToGatherNuggets, 0, true);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeLogicalTypeScout, 1, 2, 4);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpMedicineManAztec, 0, 0, 0, true, true);
+				exploreMode = cExploreModeNugget;
 				aiPlanSetEscrowID(gLandExplorePlan, cEconomyEscrowID);
 				aiPlanSetBaseID(gLandExplorePlan, kbBaseGetMainID(cMyID));
 				aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanDoLoops, 0, true);
@@ -883,15 +855,26 @@ minInterval 10
 		}
 		case cExploreModeNugget:
 		{
-			// Check to see if we're out of time, and switch to single-unit exploring if we are.
-			if (age2Time >= 0)
+			if (aiGetFallenExplorerID() >= 0)
 			{
-				if ((aiGetFallenExplorerID() >= 0) ||
-					(/*((time - age2Time) > 180000)*/ (age2Time >= 0) &&
+				aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanOkToGatherNuggets, 0, false);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeLogicalTypeScout, 1, 1, 1);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpMedicineManAztec, 0, 0, 0, true, true);
+			}
+			else
+			{
+				aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanOkToGatherNuggets, 0, true);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeLogicalTypeScout, 1, 2, 4);
+				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpMedicineManAztec, 0, 0, 0, true, true);
+			}
+			// Check to see if we're out of time, and switch to single-unit exploring if we are.
+			if (age3Time >= 0)
+			{
+				if ((age3Time >= 0) &&
 					((aiPlanGetState(gLandExplorePlan) != cPlanStateClaimNugget) ||
-					((time - age2Time) >
-					300000)))) // Our explorer is unconscious or we've been in age 2 for a long time already.
-				{		// Switch to a normal explore plan, create explorer control plan
+					((time - age3Time) >
+					300000))) // Our explorer is unconscious or we've been in age 3 for a long time already.
+				{	// Switch to a normal explore plan, create explorer control plan
 					if (gExplorerControlPlan < 0)
 						gExplorerControlPlan = createExplorerControlPlan();
 
@@ -905,35 +888,15 @@ minInterval 10
 					}
 					else
 					{
-						aiPlanAddUnitType(gLandExplorePlan, findBestScoutType(), 1, 1, 1);
+						aiPlanAddUnitType(gLandExplorePlan, cUnitTypeAbstractCavalryInfantry, 1, 1, 1);
 					}
 					aiPlanSetNoMoreUnits(gLandExplorePlan, false);
 					aiPlanSetVariableInt(gLandExplorePlan, cExplorePlanNumberOfLoops, 0, 0);
 					aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanDoLoops, 0, false);
 					exploreMode = cExploreModeStaff;
-					nextStaffTime = time + 120000; // Two minutes from now, let it get another soldier.
+					nextStaffTime = time + 60000; // One minutes from now, let it get another soldier.
 					debugExploration("Allowing the explore plan to grab a unit.");
 				}
-			}
-			if (cvOkToGatherNuggets == false)
-			{
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeExplorer, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypedeIncaWarChief, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpAztecWarchief, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpIroquoisWarChief, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypexpLakotaWarchief, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkChinese, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkIndian2, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, cUnitTypeypMonkJapanese2, 0, 0, 0);
-				aiPlanAddUnitType(gLandExplorePlan, findBestScoutType(), 1, 1, 1);
-				aiPlanSetNoMoreUnits(gLandExplorePlan, false);
-				aiPlanSetVariableInt(gLandExplorePlan, cExplorePlanNumberOfLoops, 0, 0);
-				aiPlanSetVariableBool(gLandExplorePlan, cExplorePlanDoLoops, 0, false);
-				exploreMode = cExploreModeStaff;
-				nextStaffTime = time + 120000; // Two minutes from now, let it get another soldier.
-				debugExploration("Allowing the explore plan to grab a unit.");
 			}
 			break;
 		}
@@ -951,7 +914,7 @@ minInterval 10
 			{
 				aiPlanSetNoMoreUnits(gLandExplorePlan, false); // Let it grab a unit
 				debugExploration("Setting the explore plan to grab a unit if needed.");
-				nextStaffTime = time + 120000;
+				nextStaffTime = time + 60000;
 				exploreMode = cExploreModeStaff;
 			}
 			break;
