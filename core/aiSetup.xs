@@ -2083,12 +2083,6 @@ void gameStartup(void)
 
 	xsEnableRule("exploreMonitor");
 
-	//Create a herd plan to gather all herdables that we encounter.
-	gHerdPlanID = aiPlanCreate("GatherHerdable Plan", cPlanHerd);
-	aiPlanAddUnitType(gHerdPlanID, cUnitTypeHerdable, 0, 100, 100);
-	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypeTownCenter);
-	aiPlanSetVariableFloat(gHerdPlanID, cHerdPlanDistance, 0, 4.0);
-	aiPlanSetActive(gHerdPlanID);
 	xsEnableRule("herdMonitor");
 
 	updateResourceDistribution();
