@@ -213,7 +213,6 @@ extern bool gGoodFishingMap = false;      // Set in init(), can be overridden in
 extern int gFishingPlan = -1;             // Plan ID for main fishing plan.
 extern int gFishingBoatMaintainPlan = -1; // Fishing boats to maintain
 extern bool gTimeToFish = false;          // Set to true when we want to start fishing.
-extern int gHerdPlanID = -1;
 extern int gResourceNeeds = -1;
 extern int gExtraResourceNeeds = -1;
 extern bool gLowOnResources = false;

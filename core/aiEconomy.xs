@@ -2485,55 +2485,155 @@ minInterval 20
 	}
 }
 
+bool isLivestockPenTracked(int buildingID = -1)
+{
+	return(aiPlanGetIDSubStr("TrackLivestockPen" + buildingID) >= 0);
+}
+
+void trackLivestockPen(int buildingID = -1)
+{
+	int trackPlan = aiPlanCreate("TrackLivestockPen" + buildingID, cPlanData);
+	aiPlanAddUserVariableInt(trackPlan, 0, "Number of tasked herdables", 1);
+	aiPlanSetUserVariableInt(trackPlan, 0, 0, 0);
+}
+
+void untrackLivestockPen(int buildingID = -1)
+{
+	aiPlanDestroy(aiPlanGetIDSubStr("TrackLivestockPen" + buildingID));
+}
+
+int getNumberTaskedHerdables(int buildingID = -1)
+{
+	int trackPlan = aiPlanGetIDSubStr("TrackLivestockPen" + buildingID);
+	return(aiPlanGetUserVariableInt(trackPlan, 0, 0));
+}
+
+void updateNumberTaskedHerdables(int buildingID = -1, int newNumber = 0)
+{
+	int trackPlan = aiPlanGetIDSubStr("TrackLivestockPen" + buildingID);
+	if (trackPlan == -1)
+		return;
+	if (newNumber < 0)
+		newNumber = 0;
+	aiPlanSetUserVariableInt(trackPlan, 0, 0, newNumber);
+}
+
+
 rule herdMonitor
 inactive
-minInterval 30
+minInterval 10
 {
-	// Activated when a livestock pen is being built.  Wait for completion, and then
-	// move the herd plan to the livestock pen.
-	if (civIsNative() == true)
+	int mainBase = kbBaseGetMainID(cMyID);
+	vector mainBaseLoc = kbBaseGetLocation(cMyID, mainBase);
+
+	int herdableID = -1;
+	vector herdablePos = cInvalidVector;
+	int buildingID = -1;
+	vector buildingPos = cInvalidVector;
+	vector normalVec = cInvalidVector;
+
+	static int trackedLivestockPensArray = -1;
+	int arrayIndex = 0;
+	static int herdableQuery = -1;
+	static int buildingQuery = -1;
+
+	// Initialize
+	if (trackedLivestockPensArray == -1)
 	{
-		if (kbUnitCount(cMyID, cUnitTypeFarm, cUnitStateAlive) > 0)
-		{
-			aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypeFarm);
-			aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, true);
-			return;
-		}
+		trackedLivestockPensArray = xsArrayCreateInt(100, -1, "herdMonitor tracked buildings");
+
+		herdableQuery = kbUnitQueryCreate("herdMonitor herdable query");
+		kbUnitQuerySetUnitType(herdableQuery, cUnitTypeHerdable);
+		kbUnitQuerySetPlayerRelation(herdableQuery, -1);
+		kbUnitQuerySetPlayerID(herdableQuery, cMyID, false);
+		kbUnitQuerySetState(herdableQuery, cUnitStateAlive);
+		kbUnitQuerySetIgnoreKnockedOutUnits(herdableQuery, true);
+
+		buildingQuery = kbUnitQueryCreate("herdMonitor building query");
+		kbUnitQuerySetUnitType(buildingQuery, cUnitTypeLogicalTypeBuildingsNotWalls);
+		kbUnitQuerySetPlayerRelation(buildingQuery, -1);
+		kbUnitQuerySetPlayerID(buildingQuery, cMyID, false);
+		kbUnitQuerySetState(buildingQuery, cUnitStateAlive);
+		kbUnitQuerySetIgnoreKnockedOutUnits(buildingQuery, true);
+		kbUnitQuerySetMaximumDistance(buildingQuery, 5000.0);
+		kbUnitQuerySetAscendingSort(buildingQuery, true);
 	}
-	else if (cMyCiv == cCivDEMexicans)
+	
+	kbUnitQueryResetResults(herdableQuery);
+	for(i = 0; < kbUnitQueryExecute(herdableQuery))
 	{
-		if (kbUnitCount(cMyID, cUnitTypedeHacienda, cUnitStateAlive) > 0)
+		herdableID = kbUnitQueryGetResult(herdableQuery, i);
+		herdablePos = kbUnitGetPosition(herdableID);
+
+		if (kbUnitGetTargetUnitID(herdableID) >= 0)
+			continue;
+	  
+		bool skip = civIsAfrican() || kbUnitGetResourceAmount(herdableID, cResourceFood) >= kbUnitGetCarryCapacity(herdableID, cResourceFood);
+
+		bool assigned = false;
+
+		kbUnitQueryResetResults(buildingQuery);
+		kbUnitQuerySetPosition(buildingQuery, herdablePos);
+		for(j = 0; < kbUnitQueryExecute(buildingQuery))
 		{
-			aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypedeHacienda);
-			aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, true);
-			return;
+			if (skip)
+				break;
+
+			buildingID = kbUnitQueryGetResult(buildingQuery, j);
+			buildingPos = kbUnitGetPosition(buildingID);
+
+			if (kbUnitIsType(buildingID, gLivestockPenUnit) == false)
+				continue;
+			
+			if (kbCanPath2(herdablePos, buildingPos, kbUnitGetProtoUnitID(herdableID)) == false)
+				continue;
+			
+			if (isLivestockPenTracked(buildingID) == false)
+			{
+				trackLivestockPen(buildingID);
+				updateNumberTaskedHerdables(buildingID, kbUnitGetNumberWorkers(buildingID));
+				xsArraySetInt(trackedLivestockPensArray, arrayIndex, buildingID);
+				arrayIndex++;
+			}
+
+			// assume that all gLivestockPenUnit can house 10 herdables.
+			if (getNumberTaskedHerdables(buildingID) >= 10)
+				continue;
+			
+			aiTaskUnitWork(herdableID, buildingID);
+			updateNumberTaskedHerdables(buildingID, getNumberTaskedHerdables(buildingID) + 1);
+			assigned = true;
+			break;
 		}
-	}
-	else if (cMyCiv == cCivJapanese)
-	{
-		if (kbUnitCount(cMyID, cUnitTypeAbstractShrine, cUnitStateAlive) > 0)
+
+		if (assigned)
+			continue;
+		
+		kbUnitQueryResetResults(buildingQuery);
+		kbUnitQuerySetPosition(buildingQuery, herdablePos);
+		for(j = 0; < kbUnitQueryExecute(buildingQuery))
 		{
-			aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, cUnitTypeAbstractShrine);
-			aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, true);
-			return;
-		}
-	}
-	else
-	{
-		if (kbUnitCount(cMyID, gLivestockPenUnit, cUnitStateAlive) > 0)
-		{
-			aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, gLivestockPenUnit);
-			aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, true);
-			return;
+			buildingID = kbUnitQueryGetResult(buildingQuery, j);
+			buildingPos = kbUnitGetPosition(buildingID);
+
+			if (kbCanPath2(herdablePos, buildingPos, kbUnitGetProtoUnitID(herdableID)) == false)
+				continue;
+			
+			if (mainBase >= 0 && xsVectorLength(buildingPos - mainBaseLoc) > 60.0)
+				continue;
+			
+			if (xsVectorLength(herdablePos - buildingPos) < 6.0 || xsVectorLength(herdablePos - buildingPos) > 16.0)
+			{
+				normalVec = xsVectorNormalize(herdablePos - buildingPos);
+				aiTaskUnitMove(herdableID, buildingPos + normalVec * 8.0);
+			}
+
+			break;
 		}
 	}
 
-	// Gather at TC as fallback.
-	int tcID = getUnit(cUnitTypeAgeUpBuilding);
-	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, kbUnitGetProtoUnitID(tcID));
-	if (aiPlanGetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0) != tcID)
-		aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0, tcID);
-	aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, false);
+	for(i = 0; < arrayIndex)
+		untrackLivestockPen(xsArrayGetInt(trackedLivestockPensArray, i));
 }
 
 rule maintainCreeCoureurs
