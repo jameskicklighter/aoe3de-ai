@@ -2485,34 +2485,32 @@ minInterval 20
 	}
 }
 
-// TODO -- These functions definitely should be given better names.
-
-bool isBuildingTracked(int buildingID = -1)
+bool isLivestockPenTracked(int buildingID = -1)
 {
-   return(aiPlanGetIDSubStr("Track" + buildingID) >= 0);
+   return(aiPlanGetIDSubStr("TrackLivestockPen" + buildingID) >= 0);
 }
 
-void trackBuilding(int buildingID = -1)
+void trackLivestockPen(int buildingID = -1)
 {
-   int trackPlan = aiPlanCreate("Track" + buildingID, cPlanData);
+   int trackPlan = aiPlanCreate("TrackLivestockPen" + buildingID, cPlanData);
    aiPlanAddUserVariableInt(trackPlan, 0, "Number of tasked herdables", 1);
    aiPlanSetUserVariableInt(trackPlan, 0, 0, 0);
 }
 
-void untrackBuilding(int buildingID = -1)
+void untrackLivestockPen(int buildingID = -1)
 {
-   aiPlanDestroy(aiPlanGetIDSubStr("Track" + buildingID));
+   aiPlanDestroy(aiPlanGetIDSubStr("TrackLivestockPen" + buildingID));
 }
 
-int getNumberWorkers(int buildingID = -1)
+int getNumberTaskedHerdables(int buildingID = -1)
 {
-   int trackPlan = aiPlanGetIDSubStr("Track" + buildingID);
+   int trackPlan = aiPlanGetIDSubStr("TrackLivestockPen" + buildingID);
    return(aiPlanGetUserVariableInt(trackPlan, 0, 0));
 }
 
-void updateNumberWorkers(int buildingID = -1, int newNumber = 0)
+void updateNumberTaskedHerdables(int buildingID = -1, int newNumber = 0)
 {
-   int trackPlan = aiPlanGetIDSubStr("Track" + buildingID);
+   int trackPlan = aiPlanGetIDSubStr("TrackLivestockPen" + buildingID);
    if (trackPlan == -1)
       return;
    if (newNumber < 0)
@@ -2534,15 +2532,15 @@ minInterval 10
    vector buildingPos = cInvalidVector;
    vector normalVec = cInvalidVector;
 
-   static int trackedBuildingsArray = -1;
+   static int trackedLivestockPensArray = -1;
    int arrayIndex = 0;
    static int herdableQuery = -1;
    static int buildingQuery = -1;
 
    // Initialize
-   if (trackedBuildingsArray == -1)
+   if (trackedLivestockPensArray == -1)
    {
-      trackedBuildingsArray = xsArrayCreateInt(100, -1, "herdMonitor tracked buildings");
+      trackedLivestockPensArray = xsArrayCreateInt(100, -1, "herdMonitor tracked buildings");
 
       herdableQuery = kbUnitQueryCreate("herdMonitor herdable query");
       kbUnitQuerySetUnitType(herdableQuery, cUnitTypeHerdable);
@@ -2612,20 +2610,20 @@ minInterval 10
          if (kbCanPath2(herdablePos, buildingPos, kbUnitGetProtoUnitID(herdableID)) == false)
             continue;
          
-         if (isBuildingTracked(buildingID) == false)
+         if (isLivestockPenTracked(buildingID) == false)
          {
-            trackBuilding(buildingID);
-            updateNumberWorkers(buildingID, kbUnitGetNumberWorkers(buildingID));
-            xsArraySetInt(trackedBuildingsArray, arrayIndex, buildingID);
+            trackLivestockPen(buildingID);
+            updateNumberTaskedHerdables(buildingID, kbUnitGetNumberWorkers(buildingID));
+            xsArraySetInt(trackedLivestockPensArray, arrayIndex, buildingID);
             arrayIndex++;
          }
 
          // assume that all gLivestockPenUnit can house 10 herdables.
-         if (getNumberWorkers(buildingID) >= 10)
+         if (getNumberTaskedHerdables(buildingID) >= 10)
             continue;
          
          aiTaskUnitWork(herdableID, buildingID);
-         updateNumberWorkers(buildingID, getNumberWorkers(buildingID) + 1);
+         updateNumberTaskedHerdables(buildingID, getNumberTaskedHerdables(buildingID) + 1);
          assigned = true;
       }
 
@@ -2656,7 +2654,7 @@ minInterval 10
    }
 
    for(i = 0; < arrayIndex)
-      untrackBuilding(xsArrayGetInt(trackedBuildingsArray, i));
+      untrackLivestockPen(xsArrayGetInt(trackedLivestockPensArray, i));
 }
 
 rule maintainCreeCoureurs
