@@ -2567,33 +2567,8 @@ minInterval 10
 
       if (kbUnitGetTargetUnitID(herdableID) >= 0)
          continue;
-
-      if (kbUnitGetResourceAmount(herdableID, cResourceFood) >= kbUnitGetCarryCapacity(herdableID, cResourceFood))
-      {
-         kbUnitQueryResetResults(buildingQuery);
-         kbUnitQuerySetPosition(buildingQuery, herdablePos);
-         for(j = 0; < kbUnitQueryExecute(buildingQuery))
-         {
-            buildingID = kbUnitQueryGetResult(buildingQuery, j);
-            buildingPos = kbUnitGetPosition(buildingID);
-
-            if (kbCanPath2(herdablePos, buildingPos, kbUnitGetProtoUnitID(herdableID)) == false)
-               continue;
-            
-            if (mainBase >= 0 && xsVectorLength(buildingPos - mainBaseLoc) > 60.0)
-               continue;
-            
-            if (xsVectorLength(herdablePos - buildingPos) < 6.0 || xsVectorLength(herdablePos - buildingPos) > 16.0)
-            {
-               normalVec = xsVectorNormalize(herdablePos - buildingPos);
-               aiTaskUnitMove(herdableID, buildingPos + normalVec * 8.0);
-            }
-
-            break;
-         }
-
-         continue;
-      }
+	  
+	  bool skip = civIsAfrican() || kbUnitGetResourceAmount(herdableID, cResourceFood) >= kbUnitGetCarryCapacity(herdableID, cResourceFood);
 
       bool assigned = false;
 
@@ -2601,6 +2576,9 @@ minInterval 10
       kbUnitQuerySetPosition(buildingQuery, herdablePos);
       for(j = 0; < kbUnitQueryExecute(buildingQuery))
       {
+		 if (skip)
+		    break;
+		 
          buildingID = kbUnitQueryGetResult(buildingQuery, j);
          buildingPos = kbUnitGetPosition(buildingID);
 
@@ -2625,6 +2603,7 @@ minInterval 10
          aiTaskUnitWork(herdableID, buildingID);
          updateNumberTaskedHerdables(buildingID, getNumberTaskedHerdables(buildingID) + 1);
          assigned = true;
+		 break;
       }
 
       if (assigned)
