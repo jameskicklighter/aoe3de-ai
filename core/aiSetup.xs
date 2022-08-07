@@ -2231,7 +2231,7 @@ minInterval 10
 	{
 		for (player = 1; < cNumberPlayers)
 		{
-			aiChat(player, "Better AI Mod. Version 4.2.2: Last updated on 6 June 2022.");
+			aiChat(player, "Better AI Mod. Version 4.3: Last updated on 6 August 2022.");
 		}
 	}
 

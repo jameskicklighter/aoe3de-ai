@@ -461,28 +461,28 @@ void selectCards(void)
 		{	// Cards
 			addCardInfoToArrays(cTechHCXPAdoption);
 			addCardInfoToArrays(cTechHCXPLandGrab);
-			addCardInfoToArrays(cTechHCFoodSilos);
 			addCardInfoToArrays(cTechHCXPCommandSkill, false, true);
 			addCardInfoToArrays(cTechHCXPSiouxTwoKettleSupport, true);
 			addCardInfoToArrays(cTechHCXPSiouxSanteeSupport, true);
 			addCardInfoToArrays(cTechHCXPShipWarRifles1, true);
-			addCardInfoToArrays(cTechHCXPShipVillagers2);
+			addCardInfoToArrays(cTechHCXPEarthBounty);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCCampMovements);
 			addCardInfoToArrays(cTechHCXPGreatHunter);
-			addCardInfoToArrays(cTechHCXPShipVillagers4);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCXPShipAxeRiders3, true);
+			addCardInfoToArrays(cTechHCXPShipWarBows1, true);
 			addCardInfoToArrays(cTechHCXPTownDance, false, true);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechHCXPMustangs, false, true);
-			addCardInfoToArrays(cTechHCRidingSchool, false, true);
+			addCardInfoToArrays(cTechDEHCAkicita, false, true);
+			addCardInfoToArrays(cTechDEHCLakotaImprovedSiege, false, true);
 			addCardInfoToArrays(cTechHCXPFriendlyTerritory, false, true);
 			addCardInfoToArrays(cTechHCXPNewWaysSioux);
-			addCardInfoToArrays(cTechHCXPNomadicExpansion);
 			addCardInfoToArrays(cTechHCXPWindRunner, false, true);
 			addCardInfoToArrays(cTechHCXPCavalryCombatSioux, false, true);
 			addCardInfoToArrays(cTechHCXPOnikare, false, true);
-			addCardInfoToArrays(cTechHCXPBuffalo2, true);
+			addCardInfoToArrays(cTechHCXPBuffalo2, true); // TODO (James): Temporarily marked as military so it can be considered multiple times in the shipment logic.
 			addCardInfoToArrays(cTechHCXPShipAxeRidersRepeat, true);
 			break;
 		}
@@ -645,12 +645,12 @@ void selectCards(void)
 			addCardInfoToArrays(cTechDEHCFasilidesCastle);
 			addCardInfoToArrays(cTechDEHCJesuitInfluence);
 			addCardInfoToArrays(cTechDEHCShipChonkyCattle);
-			addCardInfoToArrays(cTechDEHCShipVillagers2);
 			addCardInfoToArrays(cTechDEHCShipGascenya1, true);
 			addCardInfoToArrays(cTechDEHCLalibelaRockChurch);
 			addCardInfoToArrays(cTechDEHCMassLeviesAfrican, false, true);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechDEHCHeyWat);
+			addCardInfoToArrays(cTechDEHCGondarineArchitecture, false, true);
 			addCardInfoToArrays(cTechDEHCFasterTrainingUnitsAfrican, false, true);
 			addCardInfoToArrays(cTechDEHCChewaWarriors, false, true);
 			addCardInfoToArrays(cTechDEHCCartridgeCurrency, false, true);
@@ -670,9 +670,9 @@ void selectCards(void)
 			addCardInfoToArrays(cTechDEHCFulaniCattleFertilizer);
 			addCardInfoToArrays(cTechDEHCKoose);
 			addCardInfoToArrays(cTechDEHCShipFulaWarriors2, true);
-			addCardInfoToArrays(cTechDEHCShipVillagers1Repeat);
+			addCardInfoToArrays(cTechDEHCShipVillagers3);
 			addCardInfoToArrays(cTechDEHCPalaceAmina);
-			addCardInfoToArrays(cTechDEHCShipVillagers2);
+			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechDEHCFulaniCrossingFestival);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechDEHCShipFulaWarriors1, true);

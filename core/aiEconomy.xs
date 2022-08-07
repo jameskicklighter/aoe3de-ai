@@ -2487,7 +2487,7 @@ minInterval 20
 
 rule herdMonitor
 inactive
-minInterval 30
+minInterval 15
 {
 	// Activated when a livestock pen is being built.  Wait for completion, and then
 	// move the herd plan to the livestock pen.
@@ -2529,11 +2529,24 @@ minInterval 30
 	}
 
 	// Gather at TC as fallback.
-	int tcID = getUnit(cUnitTypeAgeUpBuilding);
-	aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, kbUnitGetProtoUnitID(tcID));
-	if (aiPlanGetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0) != tcID)
-		aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0, tcID);
-	aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, false);
+	static int tcID = -1;
+	if (tcID < 0)
+	{
+		getUnit(cUnitTypeAgeUpBuilding);
+	}
+
+	if (kbUnitGetHealth(tcID) < 0.01)
+	{
+		tcID = getUnit(cUnitTypeAgeUpBuilding);
+	}
+
+	if (tcID >= 0)
+	{
+		aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingTypeID, 0, kbUnitGetProtoUnitID(tcID));
+		if (aiPlanGetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0) != tcID)
+			aiPlanSetVariableInt(gHerdPlanID, cHerdPlanBuildingID, 0, tcID);
+		aiPlanSetVariableBool(gHerdPlanID, cHerdPlanUseMultipleBuildings, 0, false);
+	}
 }
 
 rule maintainCreeCoureurs
