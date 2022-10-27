@@ -1654,6 +1654,10 @@ void buildingConstructedHandler(int buildingPUID = -1)
 			}
 			break;
 		}
+		case cUnitTypedeLombard:
+		{
+			createProtoUnitCommandResearchPlan(cProtoUnitCommanddeInvestFood, getUnit(cUnitTypedeLombard), cMilitaryEscrowID, 50, 50);
+		}
 		case cUnitTypeCommunityPlaza:
 		{
 			if (xsIsRuleEnabled("plazaMonitor") == false)
@@ -1831,4 +1835,21 @@ void buildingConstructedHandler(int buildingPUID = -1)
 			break;
 		}
 	}
+}
+
+
+rule testBasilica
+active
+minInterval 30
+{
+	if (cMyCiv != cCivDEItalians)
+	{
+		xsDisableSelf();
+		return;
+	}
+
+	if (kbUnitCount(cMyID, cUnitTypedeBasilica, cUnitStateAlive) == 0)
+		return;
+
+	aiTaskUnitResearch(getUnit(cUnitTypedeBasilica), cTechDEBasilicaShipPapalGuards2);
 }

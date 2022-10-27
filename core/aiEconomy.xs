@@ -2176,11 +2176,31 @@ minInterval 1
 			kbUnitCount(cMyID, cUnitTypeTownCenter, cUnitStateABQ) > 0)
 			return;
 	}
-	// Let villagers auto-gather their starting crates. For Africans, let them auto-gather the first herdable.
-	int numCrates = -1;
-	static bool wait = true;
 
-	int crateQuery = createSimpleUnitQuery(cUnitTypeAbstractResourceCrate, cMyID, cUnitStateAlive, gHomeBase, 25.0);
+	// Let villagers auto-gather starting crates that they need for villager production.
+	// For Africans, let them auto-gather the first herdable.
+	int numCrates = -1;
+	int crateType = -1;
+	switch (cMyCiv)
+	{
+		case cCivDutch:
+		{
+			crateType = cUnitTypeAbstractCoinCrate;
+			break;
+		}
+		case cCivIndians:
+		{
+			crateType = cUnitTypeAbstractWoodCrate;
+			break;
+		}
+		default:
+		{
+			crateType = cUnitTypeAbstractFoodCrate;
+			break;
+		}
+	}
+
+	int crateQuery = createSimpleUnitQuery(crateType, cMyID, cUnitStateAlive, gHomeBase, 25.0);
 	kbUnitQuerySetAscendingSort(crateQuery, true);
 	numCrates = kbUnitQueryExecute(crateQuery);
 
@@ -2189,18 +2209,11 @@ minInterval 1
 		return;
 
 	if (civIsAfrican() == true)
-	{	// Wait until the first slain cattle is fully gathered, then proceed.
-		if (wait == true)
-		{
-			xsSetRuleMinIntervalSelf(5);
-			wait = false;
-			return;
-		}
-		xsSetRuleMinIntervalSelf(1);
-		int slainCattleID = getClosestUnit(cUnitTypeHerdable, 0, cUnitStateDead, gHomeBase, 10.0);
+	{	// Wait until the first slain cattle is half gathered, then proceed.
+		int slainCattleID = getClosestUnit(cUnitTypeHerdable, 0, cUnitStateDead, gHomeBase, 15.0);
 		if (slainCattleID >= 0)
 		{
-			if (kbUnitGetResourceAmount(slainCattleID, cResourceFood) > 1.0)
+			if (kbUnitGetResourceAmount(slainCattleID, cResourceFood) > kbUnitGetCarryCapacity(slainCattleID, cResourceFood) * 0.5)
 				return;
 		}
 	}

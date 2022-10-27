@@ -426,12 +426,12 @@ extern bool gLowDifficulty = false;
 //==============================================================================
 // Debug variables.
 //==============================================================================
-extern const bool cDebugUtilities = false;
-extern const bool cDebugBuildings = false;
-extern const bool cDebugTechs = false;
+extern const bool cDebugUtilities = true;
+extern const bool cDebugBuildings = true;
+extern const bool cDebugTechs = true;
 extern const bool cDebugExploration = false;
-extern const bool cDebugEconomy = false;
-extern const bool cDebugMilitary = false;
+extern const bool cDebugEconomy = true;
+extern const bool cDebugMilitary = true;
 extern const bool cDebugHCCards = false;
 extern const bool cDebugChats = false;
 extern const bool cDebugSetup = false;
