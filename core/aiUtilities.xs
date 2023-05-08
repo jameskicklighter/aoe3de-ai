@@ -13,7 +13,7 @@
 
 void echoMessage (string message = "")
 {
-	return; // When I release updates.
+	//return; // When I release updates.
 
 	for (player = 0; <cNumberPlayers)
 	{

@@ -63,9 +63,9 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCShipSettlers4);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCShipRodeleros5, true);
-			addCardInfoToArrays(cTechHCXPEconomicTheory);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechDEHCLiberationMarch, false, true);
+			addCardInfoToArrays(cTechHCInquisition);
 			addCardInfoToArrays(cTechHCAdvancedArsenal);
 			addCardInfoToArrays(cTechHCRoyalDecreeSpanish);
 			addCardInfoToArrays(cTechDEHCPeninsularGuerrillas, false, true);
@@ -84,7 +84,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCShipMusketeers4, true);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
-			addCardInfoToArrays(cTechHCShipSettlers3);
+			addCardInfoToArrays(cTechHCCheaperManors);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCShipSettlers4);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
@@ -120,7 +120,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCShipCrossbowmen1, true);
 			addCardInfoToArrays(cTechHCXPEconomicTheory);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
-			addCardInfoToArrays(cTechHCFencingSchool, false, true);
+			addCardInfoToArrays(cTechDEHCFencingSchoolFrench, false, true);
 			addCardInfoToArrays(cTechHCRidingSchool, false, true);
 			addCardInfoToArrays(cTechHCAdvancedArsenal);
 			addCardInfoToArrays(cTechHCXPThoroughbreds, false, true);
@@ -143,11 +143,10 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
 			addCardInfoToArrays(cTechHCXPEconomicTheory);
-			addCardInfoToArrays(cTechHCColonialMilitia, false, true);
+			addCardInfoToArrays(cTechDEHCFeitorias);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCShipMusketeers1, true);
-			addCardInfoToArrays(cTechHCTeamWoodCrates);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechHCFencingSchool, false, true);
 			addCardInfoToArrays(cTechHCRidingSchool, false, true);
@@ -158,6 +157,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCDragoonCombatPortuguese, false, true);
 			addCardInfoToArrays(cTechHCRangedInfantryDamagePortuguese, false, true);
 			addCardInfoToArrays(cTechHCRangedInfantryHitpointsPortugueseTeam, false, true);
+			addCardInfoToArrays(cTechDEHCGrapeshot, false, true);
 			addCardInfoToArrays(cTechHCXPShipMusketeersRepeat, true);
 			break;
 		}
@@ -171,7 +171,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCShipSkirmishers3, true);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
-			addCardInfoToArrays(cTechHCShipSettlers3);
+			addCardInfoToArrays(cTechDEHCShipSettlersDutch3);
 			addCardInfoToArrays(cTechHCXPBankWagon);
 			addCardInfoToArrays(cTechHCDutchEastIndiaCompany);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
@@ -227,7 +227,6 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCRobberBaronsGerman);
 			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCUnlockFortGerman);
-			addCardInfoToArrays(cTechHCShipSkirmishers3German, true);
 			addCardInfoToArrays(cTechHCShipUhlans4, true);
 			addCardInfoToArrays(cTechHCGuildArtisans);
 			addCardInfoToArrays(cTechHCRefrigerationGerman);
@@ -247,6 +246,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCCavalryCombatGerman, false, true);
 			addCardInfoToArrays(cTechHCUhlanCombatGerman, false, true);
 			addCardInfoToArrays(cTechHCRangedInfantryHitpointsGerman, false, true);
+			addCardInfoToArrays(cTechHCHandInfantryCombatGerman, false, true);
 			addCardInfoToArrays(cTechHCXPShipCannonsRepeat, true);
 			break;
 		}
@@ -256,24 +256,24 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCRobberBarons);
 			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCUnlockFort);
-			addCardInfoToArrays(cTechHCShipSpahis3, true);
 			addCardInfoToArrays(cTechHCShipFalconets3, true);
 			addCardInfoToArrays(cTechHCShipAbusGuns1, true);
-			addCardInfoToArrays(cTechHCShipJanissaries4, true);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
-			addCardInfoToArrays(cTechHCShipSettlers3);
+			addCardInfoToArrays(cTechDEHCShipSettlersOttoman1);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
-			addCardInfoToArrays(cTechHCShipSettlers4);
+			addCardInfoToArrays(cTechDEHCShipSettlersOttoman2);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCShipJanissaries1, true);
 			addCardInfoToArrays(cTechHCXPEconomicTheory);
 			addCardInfoToArrays(cTechHCRoyalDecreeOttoman);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechHCJanissaryCost, false, true);
+			addCardInfoToArrays(cTechDEHCFencingSchoolOttoman, false, true);
 			addCardInfoToArrays(cTechHCRidingSchool, false, true);
 			addCardInfoToArrays(cTechHCEngineeringSchool, false, true);
 			addCardInfoToArrays(cTechHCAdvancedArsenal);
+			addCardInfoToArrays(cTechDEHCHeavyInfHitpointsOttoman, false, true);
 			addCardInfoToArrays(cTechHCJanissaryCombatOttoman, false, true);
 			addCardInfoToArrays(cTechHCCavalryCombatOttoman, false, true);
 			addCardInfoToArrays(cTechHCShipGreatBombards1, true);
@@ -318,10 +318,10 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCUnlockFort);
 			addCardInfoToArrays(cTechHCShipFalconets3, true);
 			addCardInfoToArrays(cTechDEHCFreemasonry);
-			addCardInfoToArrays(cTechDEHCAdvancedLombard);
 			addCardInfoToArrays(cTechDEHCUsury);
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCRoyalMint);
+			addCardInfoToArrays(cTechHCXPCapitalism);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechDEHCUffizi);
 			addCardInfoToArrays(cTechDEHCMonteDiPieta);
@@ -383,21 +383,21 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCRefrigeration);
 			addCardInfoToArrays(cTechHCTextileMills);
 			addCardInfoToArrays(cTechDEHCImmigrantsIrish);
+			addCardInfoToArrays(cTechDEHCImmigrantsFrench);
 			addCardInfoToArrays(cTechDEHCImmigrantsDutch);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
+			addCardInfoToArrays(cTechDEHCImmigrantsSpanish);
 			addCardInfoToArrays(cTechHCXPLandGrab);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechDEHCShipStateMilitia1, true);
 			addCardInfoToArrays(cTechDEHCSpringfieldArmory);
 			addCardInfoToArrays(cTechDEHCUSMarines, false, true);
-			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechDEHCTrainTimeUS, false, true);
 			addCardInfoToArrays(cTechDEHCLongRifles, false, true);
 			addCardInfoToArrays(cTechDEHCRegularCombat, false, true);
 			addCardInfoToArrays(cTechDEHCContinentalRangers, false, true);
 			addCardInfoToArrays(cTechDEHCBuffaloSoldiers, false, true);
 			addCardInfoToArrays(cTechDEHCCoffeeMillGun, false, true);
-			addCardInfoToArrays(cTechDEHCShipHorseArtilleryRepeat1, true);
 			break;
 		}
 		case cCivDEMexicans:
@@ -431,9 +431,10 @@ void selectCards(void)
 		case cCivXPIroquois:
 		{	// Cards
 			addCardInfoToArrays(cTechHCXPLandGrab);
-			addCardInfoToArrays(cTechHCXPShipLightCannon2, true);
 			addCardInfoToArrays(cTechHCXPFrenchAllies1, true);
 			addCardInfoToArrays(cTechHCXPShipMusketWarriors3, true);
+			addCardInfoToArrays(cTechDEHCEnvironmentalism);
+			addCardInfoToArrays(cTechDEHCNorthAmericaTrade);
 			addCardInfoToArrays(cTechHCSustainableAgriculture);
 			addCardInfoToArrays(cTechHCRumDistillery);
 			addCardInfoToArrays(cTechHCXPShipVillagers3);
@@ -447,10 +448,9 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCXPWarHutTrainingIroquois, false, true);
 			addCardInfoToArrays(cTechHCXPInfantryCombatIroquois, false, true);
 			addCardInfoToArrays(cTechHCXPInfantryLOSTeam, false, true);
+			addCardInfoToArrays(cTechDEHCSiegeConstruction, false, true);
 			addCardInfoToArrays(cTechHCXPWarChiefIroquois1, false, true);
 			addCardInfoToArrays(cTechHCXPWarChiefIroquois2, false, true);
-			addCardInfoToArrays(cTechHCXPSiegeDiscipline, false, true);
-			addCardInfoToArrays(cTechHCEngineeringSchool, false, true);
 			addCardInfoToArrays(cTechHCXPSiegeCombat, false, true);
 			addCardInfoToArrays(cTechHCXPConservativeTactics, false, true);
 			addCardInfoToArrays(cTechHCXPShipMixedCratesRepeat);
@@ -464,14 +464,14 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCXPCommandSkill, false, true);
 			addCardInfoToArrays(cTechHCXPSiouxTwoKettleSupport, true);
 			addCardInfoToArrays(cTechHCXPSiouxSanteeSupport, true);
-			addCardInfoToArrays(cTechHCXPShipWarRifles1, true);
+			addCardInfoToArrays(cTechDEHCNorthAmericaTrade);
 			addCardInfoToArrays(cTechHCXPEarthBounty);
+			addCardInfoToArrays(cTechHCXPShipVillagers3);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechDEHCCampMovements);
 			addCardInfoToArrays(cTechHCXPGreatHunter);
 			addCardInfoToArrays(cTechHCShipCoinCrates3);
 			addCardInfoToArrays(cTechHCXPShipAxeRiders3, true);
-			addCardInfoToArrays(cTechHCXPShipWarBows1, true);
 			addCardInfoToArrays(cTechHCXPTownDance, false, true);
 			addCardInfoToArrays(cTechHCImprovedBuildings, false, true);
 			addCardInfoToArrays(cTechHCXPMustangs, false, true);
@@ -501,7 +501,7 @@ void selectCards(void)
 			addCardInfoToArrays(cTechHCXPShipVillagers3);
 			addCardInfoToArrays(cTechHCShipWoodCrates3);
 			addCardInfoToArrays(cTechHCXPShipMedicineMen2Aztec);
-			addCardInfoToArrays(cTechHCXPShipVillagers4);
+			addCardInfoToArrays(cTechHCXPShipVillagers2);
 			addCardInfoToArrays(cTechHCXPCoinCratesAztec3);
 			addCardInfoToArrays(cTechHCXPShipMacehualtins3, true);
 			addCardInfoToArrays(cTechHCXPTownDance, false, true);

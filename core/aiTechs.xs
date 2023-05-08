@@ -31,6 +31,7 @@ minInterval 10
 			if (civIsAsian() == false)
 			{
 				politician = arrayGetInt(gAgeUpList, kbGetAge());
+				//echoMessage("Aging up with: " + kbGetTechName(politician));
 				if (politician >= 0)
 					aiPlanSetVariableInt(gAgeUpResearchPlan, cResearchPlanTechID, 0, politician);
 			}
