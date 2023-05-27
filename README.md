@@ -1,5 +1,6 @@
 # aoe3de-ai
 Ongoing AI Mod for Age of Empires 3 Definitive Edition.
+MOD LINK: https://www.ageofempires.com/mods/details/19188/
 
 I began working on this mod in October 2020 shortly after the release of Age of Empires III: Definitive Edition. I work to try to improve many aspects of the AI, and while there is a great degree of freedom in adding new AI strategy and functionality, some things are still limited by the source code functions that are unchangeable except for the developers.
 
